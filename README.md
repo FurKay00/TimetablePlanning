@@ -10,3 +10,13 @@ Latter should include basic functionalities such as checking room availability a
   - FastAPI as a REST-Service and SQLAlchemy for ORM
 - Database:
   - PostgreSQL     
+
+## Setup - Frontend
+  
+Prerequisites: Node installed
+  
+1. Installation of Angular CLI in terminal:  
+    npm install -g @angular/cli
+2. When using IDE, start "Angular CLI Server (backend)"-command
+3. If Terminal only, then the following command:
+   npm run start 
