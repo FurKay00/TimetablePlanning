@@ -1,8 +1,8 @@
 <app-header [name]="currentRole.name" [role]="currentRole.role" [imgUrl]="currentRole.imgUrl"></app-header>
 <div class="main-layout">
-  <app-navigation [role]="currentRole.role"></app-navigation>
+  <app-navigation [currentRole]="currentRole"></app-navigation>
   <div class="content">
-    <app-toolbar></app-toolbar>
+    <app-toolbar ></app-toolbar>
     <div class="schedule-container">
       <p>Schedule will be here</p>
     </div>

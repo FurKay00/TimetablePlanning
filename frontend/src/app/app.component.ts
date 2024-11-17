@@ -20,7 +20,7 @@ export class AppComponent {
   }
 
   lecturerRole:ProfileInfo = {
-    name: 'John Lecturer', role: 'Lecturer', imgUrl: '/images/lecturer_image.png'
+    name: 'John Lecturer', role: 'Lecturer', imgUrl: '/images/lecturer_image.png', faculty: 'Technology'
   }
 
   secretaryRole:ProfileInfo = {

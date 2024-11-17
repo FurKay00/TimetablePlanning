@@ -1,9 +1,17 @@
 <header class="header">
 
-    <h1>Welcome, {{name}} ! 👋</h1>
+  <div class="header-left">
+    <img
+      class="site-image"
+      src="/images/website_icon.png"
+      alt="Logo"
+    />
+    <h1>Welcome, {{ name }}! 👋</h1>
+  </div>
 
   <div class="header-right">
     <mat-icon class="notification">notifications</mat-icon>
     <img class="profile" [src]="imgUrl" alt="ProfilePic"/>
   </div>
+
 </header>
