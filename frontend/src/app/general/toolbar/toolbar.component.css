@@ -1,0 +1,27 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 20px;
+  background-color: white;
+  border-bottom: 1px solid #ccc;
+  font-size: 1rem;
+}
+.today-button, .view-button {
+  color: #00bfa5;
+  font-weight: 500;
+}
+.nav-button mat-icon {
+  font-size: 1.5rem;
+}
+.edit-icon {
+  margin-left: auto;
+  cursor: pointer;
+  color: #555;
+}
+.distance-checkbox {
+  margin-left: 15px;
+}
+.filter-button mat-icon {
+  color: #555;
+}

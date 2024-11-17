@@ -1,0 +1,21 @@
+<aside class="navigation">
+  <section>
+    <h3>Courses from faculty [Faculty]</h3>
+    <ul>
+      <li *ngFor="let course of courses">{{ course }}</li>
+    </ul>
+  </section>
+  <section>
+    <h3>Search schedules by</h3>
+    <ul>
+      <li>
+        <mat-icon>person</mat-icon>
+        Lecturer
+      </li>
+      <li>
+        <mat-icon>location_on</mat-icon>
+        Room
+      </li>
+    </ul>
+  </section>
+</aside>
