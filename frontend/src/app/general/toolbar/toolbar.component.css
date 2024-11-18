@@ -7,15 +7,15 @@
   font-size: 1rem;
 }
 .toolbox-button {
-  display: inline-flex; /* Use inline-flex for proper alignment of inline content */
-  align-items: center; /* Vertically align the icon and label */
-  justify-content: center; /* Center the content horizontally */
-  gap: 8px; /* Spacing between the icon and label */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   color: white;
   background-color: #00bfa5;
   border: 1px solid #00796b;
   border-radius: 10px;
-  padding: 8px 12px; /* Adjust padding for better alignment */
+  padding: 8px 12px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -30,8 +30,8 @@
 
 .button-icon {
   font-size: 1.2rem;
-  line-height: 1; /* Ensure the icon does not add extra space */
-  vertical-align: middle; /* Aligns the icon to the middle of the text */
+  line-height: 1;
+  vertical-align: middle;
   color: white;
 }
 
