@@ -1,16 +1,35 @@
 <div class="toolbar">
-  <button mat-button class="today-button">Today</button>
+  <button class="toolbox-button">
+    <mat-icon class="button-icon">calendar_today</mat-icon>
+    <span>Today</span>
+  </button>
+
   <button mat-icon-button class="nav-button">
     <mat-icon>chevron_left</mat-icon>
   </button>
+
   <mat-icon>calendar_today</mat-icon>
+
   <button mat-icon-button class="nav-button">
     <mat-icon>chevron_right</mat-icon>
   </button>
-  <button mat-button class="view-button">Day</button>
-  <button mat-button class="view-button">Week</button>
+
+  <button class="toolbox-button" [class.active]="viewMode === 'day'" (click)="setViewMode('day')">
+    <mat-icon class="button-icon">view_day</mat-icon>
+    <span>Daily</span>
+  </button>
+
+  <button class="toolbox-button" [class.active]="viewMode === 'week'" (click)="setViewMode('week')">
+    <mat-icon class="button-icon">view_week</mat-icon>
+    <span>Weekly</span>
+  </button>
+
   <mat-icon class="edit-icon">edit</mat-icon>
-  <mat-checkbox [(ngModel)]="showDistance" class="distance-checkbox">Show est. distance</mat-checkbox>
+
+  <label class="checkbox-label">
+    <input type="checkbox" /> Show est. distance
+  </label>
+
   <button mat-icon-button class="filter-button">
     <mat-icon>filter_list</mat-icon>
   </button>

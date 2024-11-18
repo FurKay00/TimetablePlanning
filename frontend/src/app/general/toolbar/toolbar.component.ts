@@ -19,6 +19,11 @@ import {MatCheckbox} from '@angular/material/checkbox';
 })
 export class ToolbarComponent {
   showDistance = false;
+  viewMode: 'day' | 'week' = 'week';
+
+  setViewMode(mode: 'day' | 'week'): void {
+    this.viewMode = mode;
+  }
 
   goToday() {
     console.log('Reset to today');
@@ -30,9 +35,5 @@ export class ToolbarComponent {
 
   next() {
     console.log('Go to next');
-  }
-
-  toggleView(view: string) {
-    console.log(`Switched to ${view} view`);
   }
 }
