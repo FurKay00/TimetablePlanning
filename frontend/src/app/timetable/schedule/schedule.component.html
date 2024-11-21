@@ -1,0 +1,28 @@
+<div class="schedule">
+  <div class="week-header">
+    <div *ngFor="let day of weekDays" class="day-header">
+      <div class="day-name">{{ day.name }}</div>
+      <div class="day-date">{{ day.date }}</div>
+    </div>
+  </div>
+  <div class="time-scale">
+    <div *ngFor="let hour of timeScale" class="time-slot">
+      {{ hour }}
+    </div>
+  </div>
+  <div class="appointments">
+    <app-appointment
+      *ngFor="let appointment of appointments"
+      [date]="appointment.date"
+      [startTime]="appointment.startTime"
+      [endTime]="appointment.endTime"
+      [lecturers]="appointment.lecturers"
+      [courses]="appointment.courses"
+      [rooms]="appointment.rooms"
+      [topic]="appointment.topic"
+      [maxHours]="appointment.maxHours"
+      [id]="appointment.id"
+      [draggable]="draggable"
+    ></app-appointment>
+  </div>
+</div>

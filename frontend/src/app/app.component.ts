@@ -4,11 +4,12 @@ import {HeaderComponent} from './general/header/header.component';
 import {ToolbarComponent} from './general/toolbar/toolbar.component';
 import {NavigationComponent} from './general/navigation/navigation.component';
 import {ProfileInfo} from './models/ProfileInfo';
+import {ScheduleComponent} from './timetable/schedule/schedule.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, ToolbarComponent, NavigationComponent,],
+  imports: [RouterOutlet, HeaderComponent, ToolbarComponent, NavigationComponent, ScheduleComponent,],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
