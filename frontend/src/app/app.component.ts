@@ -17,22 +17,24 @@ import {RoleService} from './services/role.service';
 export class AppComponent {
   title = 'TimetablePlanning';
 
-  constructor(roleService:RoleService) {
-    roleService.setRole(this.currentProfile.role)
-  }
   studentProfile:ProfileInfo = {
-    class: 'TINF22B6', name: 'John Student', role: 'Student', classes: [], imgUrl: '/images/student_image.png'
+    id:"1", class: 'TINF22B6', name: 'John Student', role: 'Student', classes: [], imgUrl: '/images/student_image.png'
   }
 
   lecturerProfile:ProfileInfo = {
-    name: 'John Lecturer', role: 'Lecturer', imgUrl: '/images/lecturer_image.png', classes: [], faculty: 'Technology'
+    id:"2", name: 'John Lecturer', role: 'Lecturer', imgUrl: '/images/lecturer_image.png', classes: [], faculty: 'Technology'
   }
 
   secretaryProfile:ProfileInfo = {
-    name: 'John Secretary', role: 'Secretary', imgUrl: '/images/secretary_image.png', classes: ['Class 1', 'Class 2', 'Class N'], faculty: 'Technology'
+    id:"3", name: 'John Secretary', role: 'Secretary', imgUrl: '/images/secretary_image.png', classes: ['Class 1', 'Class 2', 'Class N'], faculty: 'Technology'
   }
 
   currentProfile:ProfileInfo = this.secretaryProfile;
   //currentProfile:ProfileInfo = this.studentProfile;
   //currentProfile:ProfileInfo = this.lecturerProfile;
+
+  constructor(roleService:RoleService) {
+    roleService.setCurrentProfile(this.currentProfile)
+    roleService.setRole(this.currentProfile.role)
+  }
 }

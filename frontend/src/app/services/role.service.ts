@@ -8,11 +8,14 @@ export class RoleService {
 
   private currentRole: string = "";
   private currentProfile: ProfileInfo = {
-    name: 'John Secretary', role: 'Secretary', imgUrl: '/images/secretary_image.png', classes: ['Class 1', 'Class 2', 'Class N'], faculty: 'Technology'
+    id: "3", name: 'John Secretary', role: 'Secretary', imgUrl: '/images/secretary_image.png', classes: ['Class 1', 'Class 2', 'Class N'], faculty: 'Technology'
   };
 
   constructor() { }
 
+  setCurrentProfile(currentProfile:ProfileInfo){
+    this.currentProfile = currentProfile;
+  }
   setRole(role:string): void{
     this.currentRole = role;
   }
@@ -21,11 +24,22 @@ export class RoleService {
     return this.currentRole;
   }
 
-  hasRole(role:string): boolean{
-    return this.currentRole === role;
+  getId(){
+    return this.currentProfile.id;
   }
 
+  getClass():string{
+    return this.currentProfile.class || "";
+  }
   getSecretaryClasses():any[]{
       return this.currentProfile.classes.map( (classItem) => ({id: classItem, label: classItem, icon: 'groups' , path: '/secretary-schedule/' + classItem }));
+  }
+
+  getDynamicHeader() {
+    if(this.currentRole === 'Secretary'){
+      return "Classes from faculty " + this.currentProfile.faculty;
+    }else {
+      return "Schedule from " + this.currentProfile.name
+    }
   }
 }

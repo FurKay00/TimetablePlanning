@@ -1,13 +1,28 @@
-<aside class="navigation">
+<nav class="navigation-container">
 
-  <ul>
+  <section class="navigation-section">
+    <h3>{{dynamicHeader}}</h3>
     <li *ngFor="let link of filteredLinks" class="navigation-item">
       <a [routerLink]="link.path">
         <mat-icon class="search-icon">{{link.icon}}</mat-icon>
         {{link.label}}
       </a>
     </li>
-  </ul>
+  </section>
+
+
+  <section class="navigation-section">
+    <h3>Search schedules by </h3>
+    <ul>
+      <li *ngFor="let link of staticLinks" class="navigation-item">
+        <a [routerLink]="link.path">
+          <mat-icon class="search-icon">{{link.icon}}</mat-icon>
+          {{link.label}}
+        </a>
+      </li>
+    </ul>
+  </section>
+
   <!--
   <section class="faculty-section" *ngIf="currentRole.role==='Secretary'">
     <h3>Classes from faculty {{currentRole.faculty}}</h3>
@@ -44,4 +59,4 @@
       </li>
     </ul>
   </section>-->
-</aside>
+</nav>
