@@ -2,16 +2,17 @@
   class="appointment"
   cdkDrag
   [cdkDragDisabled]="!draggable"
-  (cdkDragEnded)="onDragEnded($event)"
-  [style.height]="height"
-  [style.top]="top"
-  [style.width]="width"
-  [style.left]="left"
+[cdkDragBoundary]="'.schedule-grid'"
+[style.height]="height"
+[style.top]="top"
+[style.width]="width"
+[style.left]="left"
+
 >
-  <div class="time">{{ startTime }} - {{ endTime }}</div>
-  <div class="details">
-    <div class="topic">{{ topic }}</div>
-    <div class="room">{{ rooms.join(', ') }}</div>
-    <div class="lecturer">{{ lecturers.join(', ') }}</div>
-  </div>
+<div class="time">{{ startTime }} - {{ endTime }}</div>
+<div class="details">
+  <div class="topic">{{ topic }}</div>
+  <div class="room">{{ rooms.join(', ') }}</div>
+  <div class="lecturer">{{ lecturers.join(', ') }}</div>
+</div>
 </div>

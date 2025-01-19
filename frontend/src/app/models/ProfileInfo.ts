@@ -1,7 +1,8 @@
 export interface ProfileInfo{
   name: string,
   role: string,
-  course?: string,
+  class?: string,
+  classes: string[],
   faculty?: string,
   imgUrl: string,
 }

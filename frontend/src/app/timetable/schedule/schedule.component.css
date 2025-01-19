@@ -35,9 +35,21 @@
   font-size: 0.8rem;
 }
 
-.appointments {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+.schedule-grid {
   position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* 7 days */
+  grid-auto-rows: 100px; /* 1 hour = 100px */
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Prevent items from leaving bounds */
 }
+
+.appointments {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+

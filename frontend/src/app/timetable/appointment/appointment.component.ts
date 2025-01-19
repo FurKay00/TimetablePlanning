@@ -21,32 +21,35 @@ export class AppointmentComponent implements OnInit {
   @Input() maxHours!: number;
   @Input() id!: string;
   @Input() draggable: boolean = false;
+  @Input() scheduleHeight!: number;
+  @Input() gridWidth!: number;
+  @Input() overlapCount!: number;
+  @Input() overlapIndex!: number;
 
   height!: string;
   top!: string;
-  width: string = '100%';
-  left: string = '0';
+  width!: string;
+  left!: string;
 
   ngOnInit() {
     this.calculateDimensions();
   }
 
   calculateDimensions() {
-    const startHour = parseFloat(this.startTime.split(':')[0]) + parseFloat(this.startTime.split(':')[1]) / 60;
-    const endHour = parseFloat(this.endTime.split(':')[0]) + parseFloat(this.endTime.split(':')[1]) / 60;
+    const startHour = this.convertTimeToHours(this.startTime);
+    const endHour = this.convertTimeToHours(this.endTime);
+    const scheduleStartHour = 8;
 
     this.height = `${(endHour - startHour) * 100}px`;
-    this.top = `${startHour * 100}px`;
+    this.top = `${(startHour - scheduleStartHour) * 100}px`;
+
+    const columnIndex = (this.date.getDay() + 6) % 7;
+    this.width = `${this.gridWidth / this.overlapCount}px`;
+    this.left = `${columnIndex * this.gridWidth + this.overlapIndex * (this.gridWidth / this.overlapCount)}px`;
   }
 
-  onDragEnded(event: CdkDragEnd) {
-    const newTop = event.source.getFreeDragPosition().y;
-    const newHour = newTop / 100;
-
-    const newStartHour = Math.floor(newHour);
-    const newStartMinutes = Math.round((newHour - newStartHour) * 60);
-
-    this.startTime = `${String(newStartHour).padStart(2, '0')}:${String(newStartMinutes).padStart(2, '0')}`;
-    console.log(`Updated startTime: ${this.startTime}`);
+  convertTimeToHours(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours + minutes / 60;
   }
 }

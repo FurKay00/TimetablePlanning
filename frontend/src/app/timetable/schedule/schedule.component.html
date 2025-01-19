@@ -1,28 +1,34 @@
-<div class="schedule">
+<div class="schedule-grid">
   <div class="week-header">
     <div *ngFor="let day of weekDays" class="day-header">
       <div class="day-name">{{ day.name }}</div>
       <div class="day-date">{{ day.date }}</div>
     </div>
   </div>
+
   <div class="time-scale">
-    <div *ngFor="let hour of timeScale" class="time-slot">
-      {{ hour }}
+    <div *ngFor="let time of timeScale" class="time-slot">
+      {{ time }}
     </div>
   </div>
+
   <div class="appointments">
     <app-appointment
-      *ngFor="let appointment of appointments"
-      [date]="appointment.date"
-      [startTime]="appointment.startTime"
-      [endTime]="appointment.endTime"
-      [lecturers]="appointment.lecturers"
-      [courses]="appointment.courses"
-      [rooms]="appointment.rooms"
-      [topic]="appointment.topic"
-      [maxHours]="appointment.maxHours"
-      [id]="appointment.id"
+      *ngFor="let overlap of calculateOverlaps()"
+      [date]="overlap.appointment.date"
+      [startTime]="overlap.appointment.startTime"
+      [endTime]="overlap.appointment.endTime"
+      [lecturers]="overlap.appointment.lecturers"
+      [courses]="overlap.appointment.courses"
+      [rooms]="overlap.appointment.rooms"
+      [topic]="overlap.appointment.topic"
+      [maxHours]="overlap.appointment.maxHours"
+      [id]="overlap.appointment.id"
       [draggable]="draggable"
+      [scheduleHeight]="scheduleHeight"
+      [gridWidth]="gridWidth"
+      [overlapCount]="overlap.overlapCount"
+      [overlapIndex]="overlap.overlapIndex"
     ></app-appointment>
   </div>
 </div>
