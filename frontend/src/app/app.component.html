@@ -1,10 +1,13 @@
 <app-header [name]="currentProfile.name" [role]="currentProfile.role" [imgUrl]="currentProfile.imgUrl"></app-header>
 <div class="main-layout">
   <app-navigation></app-navigation>
+
   <div class="content">
-    <app-toolbar ></app-toolbar>
+    <router-outlet></router-outlet>
+    <!--<app-toolbar ></app-toolbar>
     <div class="schedule-container">
       <app-schedule></app-schedule>
     </div>
+    -->
   </div>
 </div>

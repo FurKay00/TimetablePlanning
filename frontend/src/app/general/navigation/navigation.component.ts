@@ -21,16 +21,16 @@ export class NavigationComponent implements OnInit{
 
   dynamicHeader:string = "";
   staticLinks = [
-    { path: '/schedule-per-room', label: 'Classroom Schedules', icon: 'home', description: 'Classroom Schedule', roles: ['Student', 'Lecturer', 'Secretary'] },
-    { path: '/schedule-per-lecturer', label: 'Teacher Schedules', icon: 'person', description: 'Teacher Schedule', roles: ['Student', 'Lecturer', 'Secretary'] }
+    { path: '/schedule-per-room', label: 'Classroom', icon: 'home', description: 'Classroom', roles: ['Student', 'Lecturer', 'Secretary'] },
+    { path: '/schedule-per-lecturer', label: 'Lecturer', icon: 'person', description: 'Teacher', roles: ['Student', 'Lecturer', 'Secretary'] }
   ]
   dynamicLinks:any = [];
   filteredLinks:any = []
 
   constructor(private roleService:RoleService) {
     this.dynamicLinks = [
-      { path: `/student-schedule/${this.roleService.getId()}`, label: this.roleService.getClass(), icon: 'calendar_today', description: 'Schedule from', roles: ['Student'] },
-      { path: `/lecturer-schedule/${this.roleService.getId()}`, label: 'My Schedule', icon: 'calendar_today', description: 'Schedule for', roles: ['Lecturer'] },
+      { path: `/student-schedule/${this.roleService.getClass()}`, label: this.roleService.getClass(), icon: 'calendar_today', description: 'Schedule from', roles: ['Student'] },
+      { path: `/lecturer-schedule/${this.roleService.getId()}`, label: this.roleService.getUsername(), icon: 'calendar_today', description: 'Schedule for', roles: ['Lecturer'] },
     ];
   }
 

@@ -5,10 +5,11 @@ import {LecturerScheduleComponent} from './pages/lecturer/lecturer-schedule/lect
 import {SchedulePerLecturerComponent} from './pages/shared/schedule-per-lecturer/schedule-per-lecturer.component';
 import {SchedulePerRoomComponent} from './pages/shared/schedule-per-room/schedule-per-room.component';
 import {AppComponent} from './app.component';
+import {HomepageComponent} from './pages/homepage/homepage.component';
 
 export const routes: Routes = [
-  {path: 'homepage', component: AppComponent},
-  {path: '**', redirectTo: '/homepage', pathMatch: 'prefix'},
+  {path: 'homepage', component: HomepageComponent},
+  {path: '', redirectTo: 'homepage', pathMatch: "full"},
   {path: 'student-schedule/:classId', component: StudentScheduleComponent},
   {path: 'lecturer-schedule/:lecturerId', component: LecturerScheduleComponent},
   {path: 'secretary-schedule/:classId', component: SecretaryScheduleComponent},

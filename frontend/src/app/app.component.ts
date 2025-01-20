@@ -29,9 +29,9 @@ export class AppComponent {
     id:"3", name: 'John Secretary', role: 'Secretary', imgUrl: '/images/secretary_image.png', classes: ['Class 1', 'Class 2', 'Class N'], faculty: 'Technology'
   }
 
-  currentProfile:ProfileInfo = this.secretaryProfile;
+  //currentProfile:ProfileInfo = this.secretaryProfile;
   //currentProfile:ProfileInfo = this.studentProfile;
-  //currentProfile:ProfileInfo = this.lecturerProfile;
+  currentProfile:ProfileInfo = this.lecturerProfile;
 
   constructor(roleService:RoleService) {
     roleService.setCurrentProfile(this.currentProfile)

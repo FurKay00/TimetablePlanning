@@ -28,6 +28,9 @@ export class RoleService {
     return this.currentProfile.id;
   }
 
+  getUsername(){
+    return this.currentProfile.name;
+  }
   getClass():string{
     return this.currentProfile.class || "";
   }
