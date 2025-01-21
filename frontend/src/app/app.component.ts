@@ -26,12 +26,12 @@ export class AppComponent {
   }
 
   secretaryProfile:ProfileInfo = {
-    id:"3", name: 'John Secretary', role: 'Secretary', imgUrl: '/images/secretary_image.png', classes: ['Class 1', 'Class 2', 'Class N'], faculty: 'Technology'
+    id:"3", name: 'John Secretary', role: 'Secretary', imgUrl: '/images/secretary_image.png', classes: ['TINF22B6', 'TINF22B5', 'TINF22B4'], faculty: 'Technology'
   }
 
-  //currentProfile:ProfileInfo = this.secretaryProfile;
+  currentProfile:ProfileInfo = this.secretaryProfile;
   //currentProfile:ProfileInfo = this.studentProfile;
-  currentProfile:ProfileInfo = this.lecturerProfile;
+  //currentProfile:ProfileInfo = this.lecturerProfile;
 
   constructor(roleService:RoleService) {
     roleService.setCurrentProfile(this.currentProfile)

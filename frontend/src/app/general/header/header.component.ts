@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {NgOptimizedImage} from '@angular/common';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -8,7 +9,8 @@ import {NgOptimizedImage} from '@angular/common';
   styleUrl: './header.component.css',
   imports: [
     MatIcon,
-    NgOptimizedImage
+    NgOptimizedImage,
+    RouterLink
   ],
   standalone: true
 })

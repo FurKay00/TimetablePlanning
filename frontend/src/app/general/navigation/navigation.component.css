@@ -32,7 +32,7 @@
 
 .navigation-item {
   margin-bottom: 8px;
-  display: flex;
+  display: block;
   align-items: center;
 }
 
@@ -47,14 +47,22 @@
   display: flex;
   align-items: center;
   padding: 8px 12px;
-  border-radius: 4px;
+  border-radius: 14px;
   transition: background-color 0.2s ease;
 }
 
-.navigation-item a:hover {
+.active-link {
   background-color: #d8f3dc;
+  color: #1b4332;
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 8px 12px;
 }
 
+.navigation-item a:hover {
+  background-color: #b7e4c7;
+  color: #081c15;
+}
 
 .navigation-icon {
   margin-right: 8px;

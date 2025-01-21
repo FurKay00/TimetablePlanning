@@ -3,19 +3,23 @@
   <section class="navigation-section">
     <h3>{{dynamicHeader}}</h3>
     <li *ngFor="let link of filteredLinks" class="navigation-item">
-      <a [routerLink]="link.path">
+      <a [routerLink]="link.path"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{exact:true}">
         <mat-icon class="search-icon">{{link.icon}}</mat-icon>
         {{link.label}}
       </a>
     </li>
   </section>
 
-
   <section class="navigation-section">
     <h3>Search schedules by </h3>
     <ul>
       <li *ngFor="let link of staticLinks" class="navigation-item">
-        <a [routerLink]="link.path">
+        <a [routerLink]="link.path"
+           routerLinkActive="active-link"
+           [routerLinkActiveOptions]="{exact:true}"
+           >
           <mat-icon class="search-icon">{{link.icon}}</mat-icon>
           {{link.label}}
         </a>
@@ -23,40 +27,4 @@
     </ul>
   </section>
 
-  <!--
-  <section class="faculty-section" *ngIf="currentRole.role==='Secretary'">
-    <h3>Classes from faculty {{currentRole.faculty}}</h3>
-    <ul class="course-list">
-      <li *ngFor="let classes of currentRole.classes" class="course-item" >
-        <mat-icon class="course-icon">groups</mat-icon> {{ classes }}
-      </li>
-    </ul>
-  </section>
-
-  <section class="faculty-section" *ngIf="currentRole.role==='Student'">
-    <h3>Schedule from {{currentRole.name}}</h3>
-    <li class="search-item">
-      <mat-icon class="search-icon">person</mat-icon> {{currentRole.class}}
-    </li>
-  </section>
-
-  <section class="faculty-section" *ngIf="currentRole.role==='Lecturer'">
-    <h3>Schedule from {{currentRole.name}}</h3>
-    <li class="search-item">
-      <mat-icon class="search-icon">person</mat-icon> {{currentRole.name}}
-    </li>
-  </section>
-
-  <hr class="divider" />
-  <section class="search-section">
-    <h3>Search schedules by</h3>
-    <ul class="search-list">
-      <li class="search-item">
-        <mat-icon class="search-icon">person</mat-icon> Lecturer
-      </li>
-      <li class="search-item">
-        <mat-icon class="search-icon">location_on</mat-icon> Room
-      </li>
-    </ul>
-  </section>-->
 </nav>

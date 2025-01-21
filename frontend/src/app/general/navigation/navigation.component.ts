@@ -3,7 +3,7 @@ import {NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {ProfileInfo} from '../../models/ProfileInfo';
 import {RoleService} from '../../services/role.service';
-import {RouterLink} from '@angular/router';
+import {RouterLink, RouterLinkActive} from '@angular/router';
 
 @Component({
   selector: 'app-navigation',
@@ -12,7 +12,8 @@ import {RouterLink} from '@angular/router';
     NgForOf,
     MatIcon,
     NgIf,
-    RouterLink
+    RouterLink,
+    RouterLinkActive
   ],
   templateUrl: './navigation.component.html',
   styleUrl: './navigation.component.css'
