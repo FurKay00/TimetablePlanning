@@ -1,0 +1,8 @@
+@use '@angular/material' as mat;
+
+:root {
+  @include mat.datepicker-overrides((
+    calendar-date-selected-state-text-color: #ffffff,
+    calendar-date-selected-state-background-color: #1f933c,
+  ));
+}

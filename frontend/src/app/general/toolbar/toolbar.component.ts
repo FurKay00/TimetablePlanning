@@ -8,6 +8,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInput, MatInputModule, MatLabel} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {DatePipe} from '@angular/common';
+import {DateService} from '../../services/date.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -29,6 +30,7 @@ import {DatePipe} from '@angular/common';
 })
 export class ToolbarComponent {
   @Output() weekDaysSelected  = new EventEmitter<Date[]>();
+  @Output() selectedDay = new EventEmitter<Date>();
 
   showDistance = false;
   viewMode: 'day' | 'week' = 'week';
@@ -36,7 +38,7 @@ export class ToolbarComponent {
   endOfWeek!: Date;
   currentDate:Date = new Date();
 
-  constructor() {
+  constructor(private dateService:DateService) {
     this.resetToCurrentWeek();
   }
 
@@ -45,10 +47,10 @@ export class ToolbarComponent {
   }
 
   onDateSelected(selectedDate: Date): void {
-    this.startOfWeek = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Week starts on Monday
-    this.endOfWeek = endOfWeek(selectedDate, { weekStartsOn: 1 });
+    this.startOfWeek = this.dateService.calculateStartOfWeek(selectedDate); // Week starts on Monday
+    this.endOfWeek =this.dateService.calculateEndOfWeek(selectedDate);
     this.currentDate = selectedDate;
-
+    this.selectedDay.emit(this.currentDate);
     this.emitWeekDays();
   }
 
@@ -63,17 +65,14 @@ export class ToolbarComponent {
   resetToCurrentWeek(): void {
     const today = new Date();
     this.currentDate = today;
-    this.startOfWeek = startOfWeek(today, { weekStartsOn: 1 });
-    this.endOfWeek = endOfWeek(today, { weekStartsOn: 1 });
+    this.startOfWeek = this.dateService.calculateStartOfWeek(today);
+    this.endOfWeek = this.dateService.calculateEndOfWeek(today);
 
     this.emitWeekDays();
   }
 
   emitWeekDays(): void {
-    const weekDays = eachDayOfInterval({
-      start: this.startOfWeek,
-      end: this.endOfWeek,
-    });
+    const weekDays = this.dateService.calculateWeekDays(this.startOfWeek, this.endOfWeek);
     this.weekDaysSelected.emit(weekDays);
   }
 }

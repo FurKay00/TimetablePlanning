@@ -3,8 +3,11 @@
   align-items: center;
   gap: 15px;
   padding: 10px 20px;
-  background-color: white;
+  background-color: #e8eae6;
   font-size: 1rem;
+  border-radius: 10px;
+  border-color: #00ffdc;
+  border-left-width: 4px;
 }
 .toolbox-button {
   display: inline-flex;
@@ -68,6 +71,5 @@
   font-weight: bold;
   margin-left: auto;
 }
-
 
 
