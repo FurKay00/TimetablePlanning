@@ -1,14 +1,25 @@
-from fastapi import FastAPI
-from app.routes import rooms, modules, classes, students, appointments
-app = FastAPI()
+from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel
+from typing import List, Annotated
+import app.models as models
+from app.database import engine, SessionLocal
+from sqlalchemy.orm import Session
 
-app.include_router(rooms.router, prefix="/rooms", tags=["Rooms"])
-app.include_router(modules.router, prefix="/modules", tags=["Modules"])
-app.include_router(classes.router, prefix="/classes", tags=["Classes"])
-app.include_router(students.router, prefix="/students", tags=["Students"])
-app.include_router(appointments.router, prefix="/appointments", tags=["Appointments"])
+app = FastAPI()
+models.Base.metadata.create_all(bind=engine)
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+db_dependency = Annotated[Session, Depends(get_db)]
 
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the University Scheduling System!"}
+    return {"message": "Welcome to University Scheduler!"}

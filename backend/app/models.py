@@ -1,56 +1,72 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from datetime import date, time
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time
+from app.database import Base
 
 
-class Room(BaseModel):
-    id: str = Field(..., pattern=r"^[A-D][1-5][0-9]{2}$", description="Room ID, e.g., A222")
-    capacity: int = Field(..., gt=0, description="Maximum participant capacity")
+class Account(Base):
+    __tablename__ = 'account'
+    id = Column(Integer, primary_key=True, index=True)
+    fullname = Column(String, index=True)
+    role = Column(String, index=True)
+    imgUrl = Column(String, index=True)
+    faculty = Column(String, index=True, nullable=True)
+    class_id = Column(String, ForeignKey("class.id"), nullable=True)
 
 
-class Module(BaseModel):
-    id: str = Field(..., pattern=r"^[A-Z]{2}\d{4}$", description="Module ID, e.g., TI3000")
-    title: str
-    workload: int = Field(..., gt=0, description="Workload in hours")
+class Room(Base):
+    __tablename__ = 'room'
+    id = Column(Integer, primary_key=True, index=True)
+    room = Column(String, index=True)
+    building = Column(String, index=True)
+    capacity = Column(Integer, index=True)
 
 
-class Class(BaseModel):
-    id: str = Field(..., pattern=r"^[A-Z]{4}\d{2}B\d+$", description="Class ID, e.g., TINF22B6")
-    size: int = Field(..., gt=0, description="Number of students in the class")
+class Module(Base):
+    __tablename__ = 'module'
+    id = Column(String, primary_key=True, index=True)
+    workload = Column(Integer, index=True)
 
 
-class Student(BaseModel):
-    id: int = Field(..., description="Student's serial ID")
-    fullname: str
-    class_id: str = Field(..., pattern=r"^[A-Z]{4}\d{2}B\d+$", description="Class ID the student belongs to")
+class Class(Base):
+    __tablename__ = 'class'
+    id = Column(String, primary_key=True, index=True)
+    size = Column(Integer, index=True)
 
 
-class Secretary(BaseModel):
-    id: int = Field(..., description="Secretary's serial ID")
-    fullname: str
-    faculty: str
-    class_ids: List[str] = Field(..., description="List of Class IDs overseen by the secretary")
+class Appointment(Base):
+    __tablename__ = 'appointment'
+    id = Column(Integer, primary_key=True, index=True)
+    type = Column(String, index=True)
+    title = Column(String, index=True)
+    module = Column(String, index=True, nullable=True)
+    date = Column(Date, index=True)
+    start_time = Column(Time, index=True)
+    end_time = Column(Time, index=True)
 
 
-class Lecturer(BaseModel):
-    id: int = Field(..., description="Lecturer's serial ID")
-    fullname: str
+class PersonalAppointment(Base):
+    __tablename__ = 'personalAppointment'
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date, index=True)
+    start_time = Column(Time, index=True)
+    end_time = Column(Time, index=True)
 
 
-class Appointment(BaseModel):
-    id: str = Field(..., description="Appointment unique ID")
-    appointment_type: str = Field(..., description="Type of appointment (e.g., lecture, exam)")
-    title: str
-    date: date
-    start_time: time
-    end_time: time
-    room_ids: List[str] = Field(..., description="List of Room IDs used")
-    lecturer_ids: List[int] = Field(..., description="List of Lecturer IDs participating")
-    class_ids: List[str] = Field(..., description="List of Class IDs attending")
+class App2Lec(Base):
+    __tablename__ = 'app2lec'
+    id = Column(Integer, primary_key=True, index=True)
+    app_id = Column(Integer, ForeignKey('appointment.id'))
+    lec_id = Column(Integer, ForeignKey('account.id'))
 
 
-class PersonalAppointment(BaseModel):
-    lecturer_id: int = Field(..., description="ID of the lecturer setting the appointment")
-    date: date
-    start_time: time
-    end_time: time
+class App2Class(Base):
+    __tablename__ = 'app2class'
+    id = Column(Integer, primary_key=True, index=True)
+    app_id = Column(Integer, ForeignKey('appointment.id'))
+    lec_id = Column(String, ForeignKey('class.id'))
+
+
+class App2Room(Base):
+    __tablename__ = 'app2room'
+    id = Column(Integer, primary_key=True, index=True)
+    app_id = Column(Integer, ForeignKey('appointment.id'))
+    room_id = Column(Integer, ForeignKey('room.id'))

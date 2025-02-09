@@ -29,13 +29,14 @@ export class NavigationComponent implements OnInit,OnChanges{
   filteredLinks:any = []
 
   constructor(private roleService:RoleService) {
+    this.uploadDynamicHeader();
   }
 
   ngOnInit() {
     this.uploadDynamicHeader();
   }
 
-  ngOnChanges(){
+  ngOnChanges(changes:SimpleChanges){
       this.uploadDynamicHeader();
   }
 
