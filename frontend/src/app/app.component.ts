@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import {HeaderComponent} from './general/header/header.component';
 import {ToolbarComponent} from './general/toolbar/toolbar.component';
 import {NavigationComponent} from './general/navigation/navigation.component';
@@ -16,6 +16,7 @@ import {RoleService} from './services/role.service';
 })
 export class AppComponent {
   title = 'TimetablePlanning';
+  changeProfile = false;
 
   studentProfile:ProfileInfo = {
     id:"1", class: 'TINF22B6', name: 'John Student', role: 'Student', classes: [], imgUrl: '/images/student_image.png'
@@ -33,8 +34,30 @@ export class AppComponent {
   //currentProfile:ProfileInfo = this.studentProfile;
   //currentProfile:ProfileInfo = this.lecturerProfile;
 
-  constructor(roleService:RoleService) {
+  constructor(private roleService:RoleService, private router:Router) {
     roleService.setCurrentProfile(this.currentProfile)
     roleService.setRole(this.currentProfile.role)
+  }
+
+  setSecretaryView(){
+    this.currentProfile = this.secretaryProfile;
+    this.updateCurrentRole();
+  }
+
+  setLecturerView(){
+    this.currentProfile = this.lecturerProfile;
+    this.updateCurrentRole();
+  }
+
+  setStudentView(){
+    this.currentProfile = this.studentProfile;
+    this.updateCurrentRole();
+  }
+
+  private updateCurrentRole() {
+    this.changeProfile = !this.changeProfile;
+    this.roleService.setCurrentProfile(this.currentProfile);
+    this.roleService.setRole(this.currentProfile.role);
+    this.router.navigate(["/homepage"])
   }
 }

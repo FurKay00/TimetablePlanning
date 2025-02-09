@@ -1,7 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
-import {ProfileInfo} from '../../models/ProfileInfo';
 import {RoleService} from '../../services/role.service';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 
@@ -18,7 +17,8 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
   templateUrl: './navigation.component.html',
   styleUrl: './navigation.component.css'
 })
-export class NavigationComponent implements OnInit{
+export class NavigationComponent implements OnInit,OnChanges{
+  @Input() changeProfile:boolean = false;
 
   dynamicHeader:string = "";
   staticLinks = [
@@ -29,13 +29,21 @@ export class NavigationComponent implements OnInit{
   filteredLinks:any = []
 
   constructor(private roleService:RoleService) {
+  }
+
+  ngOnInit() {
+    this.uploadDynamicHeader();
+  }
+
+  ngOnChanges(){
+      this.uploadDynamicHeader();
+  }
+
+  uploadDynamicHeader():void{
     this.dynamicLinks = [
       { path: `/student-schedule/${this.roleService.getClass()}`, label: this.roleService.getClass(), icon: 'calendar_today', description: 'Schedule from', roles: ['Student'] },
       { path: `/lecturer-schedule/${this.roleService.getId()}`, label: this.roleService.getUsername(), icon: 'calendar_today', description: 'Schedule for', roles: ['Lecturer'] },
     ];
-  }
-
-  ngOnInit() {
     this.dynamicHeader = this.roleService.getDynamicHeader();
     const userRole = this.roleService.getUserRole();
     if (userRole === 'Secretary'){

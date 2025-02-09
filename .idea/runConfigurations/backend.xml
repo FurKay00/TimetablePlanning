@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="backend" type="Python.FastAPI">
-    <option name="file" value="$PROJECT_DIR$/backend/main.py" />
+    <option name="file" value="C:\Users\Furkan Kay\IdeaProjects\TimetablePlanning\backend\app\main.py" />
     <module name="backend" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />

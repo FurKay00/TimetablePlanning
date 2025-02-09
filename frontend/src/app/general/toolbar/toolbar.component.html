@@ -8,6 +8,7 @@
     <mat-icon>chevron_left</mat-icon>
   </button>
 
+  <div class="datepicker-container">
   <mat-form-field>
     <mat-label>Select Date</mat-label>
     <input
@@ -17,6 +18,7 @@
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
+  </div>
 
   <button mat-icon-button class="nav-button" (click)="setToNextWeek()">
     <mat-icon>chevron_right</mat-icon>
