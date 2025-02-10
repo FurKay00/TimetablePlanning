@@ -24,6 +24,7 @@ class Module(Base):
     __tablename__ = 'module'
     id = Column(String, primary_key=True, index=True)
     workload = Column(Integer, index=True)
+    title = Column(String, index=True)
 
 
 class Class(Base):
