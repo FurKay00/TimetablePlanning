@@ -1,29 +1,18 @@
 from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel
-from typing import List, Annotated
-import app.models as models
-from app.database import engine, SessionLocal
-from sqlalchemy.orm import Session
-from app.routers import room_routes, building_routes
+import app.models.models as models
+from app.database import db_dependency
+from app.routes import room_routes, building_routes, appointment_routes
+
+
 app = FastAPI()
 
 
 # models.Base.metadata.create_all(bind=engine)
 
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-db_dependency = Annotated[Session, Depends(get_db)]
-
-
 app.include_router(room_routes.router, prefix="/rooms", tags=["Rooms"])
 app.include_router(building_routes.router, prefix="/buildings", tags=["Buildings"])
+
+app.include_router(appointment_routes.router, prefix="/appointments", tags=["Appointments"])
 
 
 @app.get("/")

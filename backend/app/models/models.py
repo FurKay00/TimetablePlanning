@@ -31,6 +31,7 @@ class Class(Base):
     __tablename__ = 'class'
     id = Column(String, primary_key=True, index=True)
     size = Column(Integer, index=True)
+    secretary_id = Column(Integer, ForeignKey("account.id"), index=True)
 
 
 class Appointment(Base):
@@ -50,6 +51,7 @@ class PersonalAppointment(Base):
     date = Column(Date, index=True)
     start_time = Column(Time, index=True)
     end_time = Column(Time, index=True)
+    lec_id = Column(Integer, ForeignKey('account.id'))
 
 
 class App2Lec(Base):
@@ -63,7 +65,7 @@ class App2Class(Base):
     __tablename__ = 'app2class'
     id = Column(Integer, primary_key=True, index=True)
     app_id = Column(Integer, ForeignKey('appointment.id'))
-    lec_id = Column(String, ForeignKey('class.id'))
+    class_id = Column(String, ForeignKey('class.id'))
 
 
 class App2Room(Base):
