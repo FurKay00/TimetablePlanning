@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import {SecretaryScheduleComponent} from './pages/secretary/secretary-schedule/secretary-schedule.component';
-import {StudentScheduleComponent} from './pages/student/student-schedule/student-schedule.component';
-import {LecturerScheduleComponent} from './pages/lecturer/lecturer-schedule/lecturer-schedule.component';
-import {SchedulePerLecturerComponent} from './pages/shared/schedule-per-lecturer/schedule-per-lecturer.component';
-import {SchedulePerRoomComponent} from './pages/shared/schedule-per-room/schedule-per-room.component';
-import {HomepageComponent} from './pages/homepage/homepage.component';
+import {SecretaryScheduleComponent} from './components/pages/secretary/secretary-schedule/secretary-schedule.component';
+import {StudentScheduleComponent} from './components/pages/student/student-schedule/student-schedule.component';
+import {LecturerScheduleComponent} from './components/pages/lecturer/lecturer-schedule/lecturer-schedule.component';
+import {SchedulePerLecturerComponent} from './components/pages/shared/schedule-per-lecturer/schedule-per-lecturer.component';
+import {SchedulePerRoomComponent} from './components/pages/shared/schedule-per-room/schedule-per-room.component';
+import {HomepageComponent} from './components/pages/homepage/homepage.component';
 
 export const routes: Routes = [
   {path: 'homepage', component: HomepageComponent},

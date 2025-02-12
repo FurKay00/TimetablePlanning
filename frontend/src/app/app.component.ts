@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import {Router, RouterOutlet} from '@angular/router';
-import {HeaderComponent} from './general/header/header.component';
-import {ToolbarComponent} from './general/toolbar/toolbar.component';
-import {NavigationComponent} from './general/navigation/navigation.component';
+import {HeaderComponent} from './components/general/header/header.component';
+import {ToolbarComponent} from './components/general/toolbar/toolbar.component';
+import {NavigationComponent} from './components/general/navigation/navigation.component';
 import {ProfileInfo} from './models/ProfileInfo';
-import {ScheduleComponent} from './timetable/schedule/schedule.component';
+import {ScheduleComponent} from './components/timetable/schedule/schedule.component';
 import {RoleService} from './services/role.service';
 
 @Component({

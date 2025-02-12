@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
-import {RoleService} from '../../services/role.service';
+import {RoleService} from '../../../services/role.service';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 
 @Component({

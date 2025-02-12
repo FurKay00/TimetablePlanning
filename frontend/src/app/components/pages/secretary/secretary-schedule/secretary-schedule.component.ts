@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
+import {DateService} from '../../../../services/date.service';
 import {ToolbarComponent} from '../../../general/toolbar/toolbar.component';
-import {DateService} from '../../../services/date.service';
 
 @Component({
   selector: 'app-secretary-schedule',
   standalone: true,
   imports: [
+    ToolbarComponent,
     ToolbarComponent
   ],
   templateUrl: './secretary-schedule.component.html',

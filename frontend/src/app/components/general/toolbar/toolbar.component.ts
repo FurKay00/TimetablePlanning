@@ -8,7 +8,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInput, MatInputModule, MatLabel} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {DatePipe} from '@angular/common';
-import {DateService} from '../../services/date.service';
+import {DateService} from '../../../services/date.service';
 
 @Component({
   selector: 'app-toolbar',
