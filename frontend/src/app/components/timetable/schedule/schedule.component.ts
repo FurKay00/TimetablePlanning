@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {
   CalendarEvent,
   CalendarModule,
@@ -19,7 +19,7 @@ import {Subject} from 'rxjs';
   imports: [CommonModule, CalendarModule],
   standalone: true
 })
-export class ScheduleComponent {
+export class ScheduleComponent implements OnInit{
   view: CalendarView = CalendarView.Week;
   viewDate: Date = new Date();
 
@@ -29,15 +29,17 @@ export class ScheduleComponent {
       end: addDays(new Date(), 1),
       title: 'Advanced Software Engineering',
       draggable:true,
-      color: { primary: '#03A9F4', secondary: '#B3E5FC' },
-      meta: { location: 'Building A - Room 135', lecturer: 'Max Mustermann' }
+      color: { primary: '#03A9F4', secondary: '#03A9F4' },
+      meta: { location: 'Building A - Room 135', lecturer: 'Max Mustermann' },
+      cssClass: 'custom-event-style'
     },
     {
       start: subDays(new Date(), 1),
       end: new Date(),
       title: 'IT-Security',
-      color: { primary: '#0288D1', secondary: '#81D4FA' },
-      meta: { location: 'Building A - Room 230', lecturer: 'John Doe' }
+      color: { primary: '#03A9F4', secondary: '#03A9F4' },
+      meta: { location: 'Building A - Room 230', lecturer: 'John Doe' },
+      cssClass: 'custom-event-style'
     }
   ];
   refresh: Subject<void> = new Subject<void>();
@@ -47,7 +49,7 @@ export class ScheduleComponent {
       start: new Date(),
       end: addDays(new Date(), 1),
       title: 'New Course Added',
-      color: { primary: '#FF9800', secondary: '#FFCC80' },
+      color: { primary: '#FF9800', secondary: '#FF9800' },
       meta: { location: 'Building C - Room 120', lecturer: 'Jane Doe' }
     });
 
@@ -63,5 +65,12 @@ export class ScheduleComponent {
     event.start = newStart;
     event.end = newEnd;
     this.refresh.next();
+  }
+
+  constructor(private cdr: ChangeDetectorRef) {
+  }
+
+  ngOnInit(){
+    this.cdr.detectChanges();
   }
 }
