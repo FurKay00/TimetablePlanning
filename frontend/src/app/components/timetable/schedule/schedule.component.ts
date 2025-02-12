@@ -1,14 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {
-  CalendarEvent,
-  CalendarModule,
-  CalendarView,
-  DateAdapter,
-  CalendarUtils,
-  CalendarEventTimesChangedEvent
-} from 'angular-calendar';
-import {adapterFactory} from 'angular-calendar/date-adapters/date-fns';
-import { subDays, addDays } from 'date-fns';
+import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarModule, CalendarView} from 'angular-calendar';
+import {addDays, subDays} from 'date-fns';
 import {CommonModule} from '@angular/common';
 import {Subject} from 'rxjs';
 
