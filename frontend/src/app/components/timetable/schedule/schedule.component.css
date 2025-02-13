@@ -1,6 +1,6 @@
 mwl-calendar-week-view {
   width: 100%;
-  height: 80vh; /* Adjust based on need */
+  height: 80vh;
   display: block;
 }
 
@@ -11,10 +11,11 @@ mwl-calendar-week-view {
   font-size: 14px;
   text-align: left;
   overflow: hidden;
+  white-space: collapse;
 }
 
 .custom-event strong {
-  display: block;
+  display: flex;
   font-size: 16px;
 }
 
@@ -26,23 +27,3 @@ mwl-calendar-week-view {
   text-overflow: ellipsis;
 }
 
-.custom-event-style {
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 14px;
-  text-align: left;
-  background-color: #ff0099 !important;  /* Ensures event background matches */
-  color: white !important; /* Ensures text is visible */
-  border: none;
-}
-
-.custom-event-style strong {
-  font-size: 16px;
-  display: block;
-}
-
-.custom-event-style small {
-  font-size: 12px;
-  display: block;
-  opacity: 0.8;
-}

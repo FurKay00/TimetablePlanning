@@ -8,11 +8,6 @@
   [eventTitleTemplate]="weekEventTemplate"
 (eventTimesChanged)="eventTimesChanged($event)">
 
-  <ng-template #weekEventTitleTemplate let-event="event">
-    <div class="custom-event-title">
-      <strong>{{ event.title }}</strong>
-    </div>
-  </ng-template>
 
 <ng-template #weekEventTemplate let-event="event">
   <div class="custom-event" [style.background-color]="event.color.primary">
