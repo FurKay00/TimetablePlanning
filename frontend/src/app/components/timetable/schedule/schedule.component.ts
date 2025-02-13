@@ -17,19 +17,21 @@ export class ScheduleComponent implements OnInit{
 
   events: CalendarEvent[] = [
     {
+      id: 1,
       start: new Date(),
       end: addDays(new Date(), 1),
       title: 'Advanced Software Engineering',
       draggable:true,
-      color: { primary: '#03A9F4', secondary: '#03A9F4' },
+      color: { primary: '#62D2DC', secondary: '#62D2DC' },
       meta: { location: 'Building A - Room 135', lecturer: 'Max Mustermann' },
       cssClass: 'custom-event-style'
     },
     {
+      id: 2,
       start: subDays(new Date(), 1),
       end: new Date(),
       title: 'IT-Security',
-      color: { primary: '#03A9F4', secondary: '#03A9F4' },
+      color: { primary: '#62D2DC', secondary: '#62D2DC' },
       meta: { location: 'Building A - Room 230', lecturer: 'John Doe' },
       cssClass: 'custom-event-style'
     }
@@ -42,7 +44,8 @@ export class ScheduleComponent implements OnInit{
       end: addDays(new Date(), 1),
       title: 'New Course Added',
       color: { primary: '#FF9800', secondary: '#FF9800' },
-      meta: { location: 'Building C - Room 120', lecturer: 'Jane Doe' }
+      meta: { location: 'Building C - Room 120', lecturer: 'Jane Doe' },
+      cssClass: 'custom-event-style'
     });
 
     // 🔹 Trigger UI refresh
@@ -57,6 +60,10 @@ export class ScheduleComponent implements OnInit{
     event.start = newStart;
     event.end = newEnd;
     this.refresh.next();
+  }
+
+  trackByEventId(index: number, event: CalendarEvent): string | number {
+    return event.id ?? index;
   }
 
   constructor(private cdr: ChangeDetectorRef) {

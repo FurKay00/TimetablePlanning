@@ -10,7 +10,9 @@
 
 
 <ng-template #weekEventTemplate let-event="event">
-  <div class="custom-event" [style.background-color]="event.color.primary">
+  <div class="custom-event"
+       [style.background-color]="event.color.primary"
+       [ngStyle]="{ 'background-color': event.color?.primary }">
     <strong>{{ event.title }}</strong>
     <br>
     <small>{{ event.meta.location }}</small>
