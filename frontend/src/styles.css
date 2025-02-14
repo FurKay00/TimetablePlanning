@@ -1,21 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-color: #e0e0e0
+}
 
 .cal-event{
+  user-select: none;
   border-radius: 15px;
   border: black solid 2px !important;
+  cursor: default;
+}
+
+.cal-week-view{
+  background-color: transparent;
+  border-top:  solid 0 transparent !important;
 }
 
 .cal-day-headers {
+  user-select: none;
   background-color: #34c3a3 !important;
   color: white !important;
   font-weight: bold;
   padding: 10px;
   text-align: center;
+  border-radius: 20px 20px 0 0;
+
 }
 .cal-header {
+  user-select: none;
   background-color: #34c3a3 !important;
   color: white !important;
   font-weight: bold;
@@ -24,3 +36,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   font-size: 16px;
 }
 
+.cal-time-events{
+  border-bottom: transparent 4px solid !important;
+}

@@ -1,5 +1,5 @@
 <div class="toolbar">
-  <button class="toolbox-button" (click)="resetToCurrentWeek()">
+  <button class="today-button" (click)="resetToCurrentWeek()" [class.active]="currentDateSelected">
     <mat-icon class="button-icon">calendar_today</mat-icon>
     <span>Today</span>
   </button>

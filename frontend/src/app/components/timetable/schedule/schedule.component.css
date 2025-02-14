@@ -2,6 +2,8 @@ mwl-calendar-week-view {
   width: 100%;
   height: 80vh;
   display: block;
+  margin-top: 5px;
+  border-radius: 4px;
 }
 
 .custom-event {
@@ -25,5 +27,12 @@ mwl-calendar-week-view {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.schedule-container{
+  background-color: white;
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 5px;
 }
 

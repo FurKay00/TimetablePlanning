@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnInit} from '@angular/core';
 import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarModule, CalendarView} from 'angular-calendar';
 import {addDays, subDays} from 'date-fns';
 import {CommonModule} from '@angular/common';
@@ -11,10 +11,12 @@ import {Subject} from 'rxjs';
   imports: [CommonModule, CalendarModule],
   standalone: true
 })
-export class ScheduleComponent implements OnInit{
+export class ScheduleComponent implements OnInit, OnChanges{
+  @Input() pickedView:CalendarView = CalendarView.Week;
+  @Input() pickedDate: Date = new Date();
   view: CalendarView = CalendarView.Week;
   viewDate: Date = new Date();
-
+  excludeDays: number[] = [0, 6];
   events: CalendarEvent[] = [
     {
       id: 1,
@@ -62,14 +64,20 @@ export class ScheduleComponent implements OnInit{
     this.refresh.next();
   }
 
-  trackByEventId(index: number, event: CalendarEvent): string | number {
-    return event.id ?? index;
-  }
-
   constructor(private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(){
     this.cdr.detectChanges();
+    if(this.pickedDate !== null){
+      this.viewDate = this.pickedDate;
+    }
   }
+
+  ngOnChanges(){
+    this.viewDate = this.pickedDate;
+    this.view = this.pickedView;
+  }
+
+  protected readonly CalendarView = CalendarView;
 }

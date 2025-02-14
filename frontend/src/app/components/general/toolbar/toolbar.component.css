@@ -9,7 +9,7 @@
   border: 1px solid #2b655e;
 }
 
-.toolbox-button {
+.toolbox-button, .today-button{
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -23,11 +23,16 @@
   transition: background-color 0.3s;
 }
 
-.toolbox-button:hover {
+.today-button:is(.active){
+  color: white;
+  background-color: #00bfa5;
+}
+
+.toolbox-button:hover, .today-button:hover{
   background-color: #00796b;
 }
 
-.toolbox-button:active {
+.toolbox-button:active, .today-button:active{
   background-color: #004d40;
 }
 
@@ -38,14 +43,15 @@
   color: white;
 }
 
-.toolbox-button span {
+.toolbox-button span, .today-button span{
   line-height: 1;
   vertical-align: middle;
 }
 
-.toolbox-button:not(.active) {
+.toolbox-button:not(.active), .today-button:not(.active) {
   background-color: #8a9a95;
 }
+
 
 .nav-button mat-icon {
   font-size: 1.5rem;

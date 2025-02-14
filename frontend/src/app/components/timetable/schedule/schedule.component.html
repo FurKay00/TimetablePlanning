@@ -1,26 +1,41 @@
-<mwl-calendar-week-view
-  [viewDate]="viewDate"
-  [events]="events"
-  [refresh]="refresh"
-  [weekStartsOn]="1"
-  [dayStartHour]="8"
-  [dayEndHour]="18"
-  [eventTitleTemplate]="weekEventTemplate"
-(eventTimesChanged)="eventTimesChanged($event)">
+<div class="schedule-container" [ngSwitch]="view">
+  <mwl-calendar-week-view
+    *ngSwitchCase="CalendarView.Week"
+    [viewDate]="viewDate"
+    [events]="events"
+    [refresh]="refresh"
+    [weekStartsOn]="1"
+    [dayStartHour]="8"
+    [dayEndHour]="18"
+    [eventTitleTemplate]="weekEventTemplate"
+    [excludeDays]="excludeDays"
+    (eventTimesChanged)="eventTimesChanged($event)">
+  </mwl-calendar-week-view>
 
+  <mwl-calendar-day-view
+    *ngSwitchCase="CalendarView.Day"
+    [viewDate]="viewDate"
+    [events]="events"
+    [refresh]="refresh"
+    [dayStartHour]="8"
+    [dayEndHour]="18"
+    [eventTitleTemplate]="weekEventTemplate"
+    (eventTimesChanged)="eventTimesChanged($event)">
 
-<ng-template #weekEventTemplate let-event="event">
-  <div class="custom-event"
-       [style.background-color]="event.color.primary"
-       [ngStyle]="{ 'background-color': event.color?.primary }">
-    <strong>{{ event.title }}</strong>
-    <br>
-    <small>{{ event.meta.location }}</small>
-    <br>
-    <small>{{ event.meta.lecturer }}</small>
-  </div>
-</ng-template>
-</mwl-calendar-week-view>
+  </mwl-calendar-day-view>
+  <ng-template #weekEventTemplate let-event="event">
+    <div class="custom-event"
+         [style.background-color]="event.color.primary"
+         [ngStyle]="{ 'background-color': event.color?.primary }">
+      <strong>{{ event.title }}</strong>
+      <br>
+      <small>{{ event.meta.location }}</small>
+      <br>
+      <small>{{ event.meta.lecturer }}</small>
+    </div>
+  </ng-template>
+
+</div>
 
 <!-- Button to add a test event -->
 <button (click)="addEvent()">Add Event</button>
