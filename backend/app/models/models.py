@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time
+from sqlalchemy import  Column, ForeignKey, Integer, String, Date, Time
 from app.database import Base
 
 
@@ -51,6 +51,7 @@ class PersonalAppointment(Base):
     date = Column(Date, index=True)
     start_time = Column(Time, index=True)
     end_time = Column(Time, index=True)
+    title = Column(String, index=True)
     lec_id = Column(Integer, ForeignKey('account.id'))
 
 

@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, Input, OnChanges, OnInit} from '@angular/core';
 import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarModule, CalendarView} from 'angular-calendar';
-import {addDays, subDays} from 'date-fns';
+import {addDays, addHours, subDays} from 'date-fns';
 import {CommonModule} from '@angular/common';
 import {Subject} from 'rxjs';
 
@@ -21,7 +21,7 @@ export class ScheduleComponent implements OnInit, OnChanges{
     {
       id: 1,
       start: new Date(),
-      end: addDays(new Date(), 1),
+      end: addHours(new Date(), 4),
       title: 'Advanced Software Engineering',
       draggable:true,
       color: { primary: '#62D2DC', secondary: '#62D2DC' },
@@ -31,7 +31,7 @@ export class ScheduleComponent implements OnInit, OnChanges{
     {
       id: 2,
       start: subDays(new Date(), 1),
-      end: new Date(),
+      end: addHours(subDays(new Date(), 1), 6),
       title: 'IT-Security',
       color: { primary: '#62D2DC', secondary: '#62D2DC' },
       meta: { location: 'Building A - Room 230', lecturer: 'John Doe' },
