@@ -16,6 +16,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   border-top:  solid 0 transparent !important;
 }
 
+.cal-week-view, .cal-event{
+  overflow: scroll !important;
+}
 .cal-day-headers {
   user-select: none;
   background-color: #34c3a3 !important;

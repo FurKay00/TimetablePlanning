@@ -5,8 +5,8 @@
     [events]="events"
     [refresh]="refresh"
     [weekStartsOn]="1"
-    [dayStartHour]="8"
-    [dayEndHour]="18"
+    [dayStartHour]="7"
+    [dayEndHour]="19"
     [eventTitleTemplate]="weekEventTemplate"
     [excludeDays]="excludeDays"
     (eventTimesChanged)="eventTimesChanged($event)">
@@ -27,7 +27,7 @@
     <div class="custom-event"
          [style.background-color]="event.color.primary"
          [ngStyle]="{ 'background-color': event.color?.primary }">
-      <strong>{{ event.title }}</strong>
+      <strong>{{ event.title }} <br>{{event.start | date: "shortTime"}}-{{event.end | date: "shortTime"}}</strong>
       <br>
       <small>{{ event.meta.location }}</small>
       <br>

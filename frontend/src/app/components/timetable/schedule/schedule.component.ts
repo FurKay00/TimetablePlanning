@@ -17,7 +17,7 @@ export class ScheduleComponent implements OnInit, OnChanges{
   view: CalendarView = CalendarView.Week;
   viewDate: Date = new Date();
   excludeDays: number[] = [0, 6];
-  events: CalendarEvent[] = [
+  @Input() events: CalendarEvent[] = [
     {
       id: 1,
       start: new Date(),

@@ -1,12 +1,24 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException
 import app.models.models as models
 from app.database import db_dependency
 from app.routes import room_routes, building_routes, appointment_routes
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 
+origins = [
+    "http://localhost:4200",  # Angular Dev Server
+    "http://127.0.0.1:4200",  # Alternative local address
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # models.Base.metadata.create_all(bind=engine)
 
 app.include_router(room_routes.router, prefix="/rooms", tags=["Rooms"])

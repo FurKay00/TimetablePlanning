@@ -61,6 +61,7 @@ class PersonalAppointmentView(BaseModel):
 
 
 class AppointmentView(BaseModel):
+    id: int
     type: str
     title: str
     module: str
@@ -95,6 +96,7 @@ async def get_basic_appointment(appointment_id: int, db: db_dependency):
     db_classes = db_classes_request["classes"]
 
     db_appointment = AppointmentView(
+        id=appointment_id,
         type=db_appointment_request.type,
         title=db_appointment_request.title,
         module=db_appointment_request.module,
@@ -306,7 +308,7 @@ async def get_basic_appointments_by_class(class_id: str, db: db_dependency):
         appointment_query = await get_basic_appointment(app2class_entry.app_id, db)
         appointments.append(appointment_query["appointment"])
 
-    return {"message": "Appointments retrieved successfully", "Appointments": appointments}
+    return {"message": "Appointments retrieved successfully", "appointments": appointments}
 
 
 @router.get("/appointmentsByRoom/{room_id}")
@@ -320,4 +322,4 @@ async def get_basic_appointments_by_room(room_id: int, db: db_dependency):
         appointment_query = await get_basic_appointment(app2room_entry.app_id, db)
         appointments.append(appointment_query["appointment"])
 
-    return {"message": "Appointments retrieved successfully", "Appointments": appointments}
+    return {"message": "Appointments retrieved successfully", "appointments": appointments}
