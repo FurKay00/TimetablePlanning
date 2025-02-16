@@ -1,0 +1,8 @@
+<div class="dropdown">
+  <button class="dropbtn">{{ selectedLecturer ? selectedLecturer.fullname : 'Select a Lecturer' }}</button>
+  <div class="dropdown-content">
+    <a *ngFor="let lecturer of lecturers" (click)="onLecturerSelect(lecturer)">
+      {{ lecturer.fullname }}
+    </a>
+  </div>
+</div>

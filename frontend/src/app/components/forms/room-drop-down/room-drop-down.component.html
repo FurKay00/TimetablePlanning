@@ -1,0 +1,8 @@
+<div class="dropdown">
+  <button class="dropbtn">{{ selectedRoom ? selectedRoom.room_name : 'Select a Room' }}</button>
+  <div class="dropdown-content">
+    <a *ngFor="let room of rooms" (click)="onRoomSelect(room)">
+      {{ room.room_name }}
+    </a>
+  </div>
+</div>

@@ -52,12 +52,10 @@
   background-color: #8a9a95;
 }
 
-
 .nav-button mat-icon {
   font-size: 1.5rem;
 }
 .edit-icon {
-  margin-left: auto;
   cursor: pointer;
   color: #555;
 }
@@ -75,7 +73,6 @@
 
 .week-display {
   font-weight: bold;
-  margin-left: auto;
 }
 
 .mat-form_field{

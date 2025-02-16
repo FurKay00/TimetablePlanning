@@ -1,1 +1,3 @@
-<p>schedule-per-room works!</p>
+<app-toolbar (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"
+             [showRoomSelect]="true" [roomOptions]="currentRooms" (selectedRoom)="onRoomSelected($event)"></app-toolbar>
+<app-schedule [pickedDate]="selectedDay" [pickedView]="calendarView" [events]="roomAppointments"></app-schedule>

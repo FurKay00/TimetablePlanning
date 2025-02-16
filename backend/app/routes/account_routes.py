@@ -4,6 +4,7 @@ from typing import List
 from app.main import db_dependency
 from app.models import models
 from typing import Optional
+from app.routes.appointment_routes import LecturerView
 
 router = APIRouter()
 
@@ -53,3 +54,16 @@ async def get_classes_by_secretary(sec_id: int, db: db_dependency):
         classes.append(class_.id)
 
     return {"message": "Classes retrieved successfully", "classes": classes}
+
+
+@router.get("/lecturers/")
+async def get_all_lecturers(db: db_dependency):
+    lecturers = []
+    db_lecturers = db.query(models.Account).filter(models.Account.role == "LECTURER")
+    for lecturer_entry in db_lecturers:
+        lecturer = LecturerView(
+            lec_id=lecturer_entry.id,
+            fullname=lecturer_entry.fullname
+        )
+        lecturers.append(lecturer)
+    return {"message": "Lecturers retrieved successfully", "lecturers": lecturers}

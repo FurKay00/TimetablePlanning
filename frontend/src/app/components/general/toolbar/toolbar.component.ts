@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
@@ -7,9 +7,12 @@ import {addDays, addWeeks, subDays, subWeeks} from 'date-fns';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInput, MatLabel} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {DatePipe, formatDate} from '@angular/common';
+import {DatePipe, formatDate, NgIf} from '@angular/common';
 import {DateService} from '../../../services/date.service';
 import {CalendarView} from 'angular-calendar';
+import {LecturerDropDownComponent} from '../../forms/lecturer-drop-down/lecturer-drop-down.component';
+import {RoomDropDownComponent} from '../../forms/room-drop-down/room-drop-down.component';
+import {LecturerView, RoomView} from '../../../models/response_models';
 
 @Component({
   selector: 'app-toolbar',
@@ -25,7 +28,10 @@ import {CalendarView} from 'angular-calendar';
     DatePipe,
     MatLabel,
     MatInput,
-    DatePipe
+    DatePipe,
+    NgIf,
+    LecturerDropDownComponent,
+    RoomDropDownComponent
   ],
   templateUrl: './toolbar.component.html',
   styleUrl: './toolbar.component.css'
@@ -34,6 +40,16 @@ export class ToolbarComponent {
   @Output() weekDaysSelected  = new EventEmitter<Date[]>();
   @Output() selectedDay = new EventEmitter<Date>();
   @Output() selectedView = new EventEmitter<CalendarView>();
+  @Output() selectedLecturer = new EventEmitter<LecturerView>();
+  @Output() selectedRoom = new EventEmitter<RoomView>();
+
+  @Input() showEditfield:boolean = false;
+  @Input() showRoomSelect:boolean = false;
+  @Input() showLecturerSelect:boolean = false;
+  @Input() lecturerOptions: LecturerView[] = [];
+  @Input() roomOptions: RoomView[] = [];
+
+
   showDistance = false;
   viewMode: 'day' | 'week' = 'week';
   startOfWeek!: Date;
@@ -96,4 +112,13 @@ export class ToolbarComponent {
     const weekDays = this.dateService.calculateWeekDays(this.startOfWeek, this.endOfWeek);
     this.weekDaysSelected.emit(weekDays);
   }
+
+  emitSelectedRoom(room: RoomView):void{
+    this.selectedRoom.emit(room);
+  }
+
+  emitSelectedLecturer(lecturer: LecturerView):void{
+    this.selectedLecturer.emit(lecturer)
+  }
+
 }

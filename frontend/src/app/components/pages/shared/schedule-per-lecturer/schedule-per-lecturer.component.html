@@ -1,1 +1,3 @@
-<p>schedule-per-lecturer works!</p>
+<app-toolbar (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"
+             [showLecturerSelect]="true" [lecturerOptions]="currentLecturers" (selectedLecturer)="onLecturerSelected($event)"></app-toolbar>
+<app-schedule [pickedDate]="selectedDay" [pickedView]="calendarView" [events]="lecturerAppointments"></app-schedule>

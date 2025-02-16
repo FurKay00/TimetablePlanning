@@ -56,4 +56,5 @@ export class SecretaryScheduleComponent implements OnInit{
   onViewSelected($event: CalendarView) {
     this.calendarView = $event;
   }
+
 }

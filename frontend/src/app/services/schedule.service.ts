@@ -29,6 +29,18 @@ export class ScheduleService {
       );
   }
 
+  getAppointmentsByRoom(room_id: string): Observable<CalendarEvent[]> {
+    return this.http.get<{
+      message: string;
+      appointments: AppointmentView[]
+    }>(this.URL + "appointmentsByRoom/" + room_id)
+      .pipe(
+        map(response => response.appointments.map(
+          appointment => this.mapAppointmentToEvent(appointment))
+        )
+      );
+  }
+
   // This method is used, when the lecturer wants to retrieve their own full schedule
   getFullAppointmentsByLecturer(lec_id: string):Observable<{appointments:CalendarEvent[], personalAppointments:CalendarEvent[]}> {
     return this.http.get<{
@@ -39,7 +51,24 @@ export class ScheduleService {
       .pipe(
         map(response => ({
             appointments: response.appointments.map(appointment => this.mapAppointmentToEvent(appointment)),
-            personalAppointments: response.personalAppointments.map(personalAppointment => this.mapPersonalAppointmentToEvent(personalAppointment))
+            personalAppointments: response.personalAppointments.map(personalAppointment => this.mapPersonalAppointmentToEvent(personalAppointment, false))
+          })
+        )
+      );
+  }
+
+  getPartialAppointmentsByLecturer(lec_id: string):Observable<{appointments:CalendarEvent[], personalAppointments:CalendarEvent[]}> {
+    return this.http.get<{
+      message: string;
+      appointments: AppointmentView[],
+      personalAppointments: PersonalAppointmentView[]
+    }>(this.URL + "appointmentsByLecturer/" + lec_id)
+      .pipe(
+        map(response => ({
+            appointments: response.appointments.map(appointment => this.mapAppointmentToEvent(appointment)),
+            personalAppointments: response.personalAppointments.map(personalAppointment =>
+              this.mapPersonalAppointmentToEvent(personalAppointment,true)
+            )
           })
         )
       );
@@ -61,12 +90,12 @@ export class ScheduleService {
     };
   }
 
-  private mapPersonalAppointmentToEvent(personalAppointment:PersonalAppointmentView):any{
+  private mapPersonalAppointmentToEvent(personalAppointment:PersonalAppointmentView, pseudonomized:boolean):any{
     return {
       id: personalAppointment.id,
       start: new Date(personalAppointment.date + 'T' + personalAppointment.start_time),
       end: new Date(personalAppointment.date + 'T' + personalAppointment.end_time),
-      title: personalAppointment.title,
+      title: pseudonomized? "Personal appointment" : personalAppointment.title,
       draggable: false,
       color: this.getAppointmentColor("PERSONAL"),
       meta: {

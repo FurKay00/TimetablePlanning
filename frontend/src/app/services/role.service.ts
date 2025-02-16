@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {ProfileInfo} from '../models/ProfileInfo';
 import {map} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
+import {LecturerView, RoomView} from '../models/response_models';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,8 @@ import {HttpClient} from '@angular/common/http';
 export class RoleService {
   URL: string = "http://127.0.0.1:8000/accounts/"
   currentAccounts: ProfileInfo[] = []
+  currentLecturers: LecturerView[] = []
+  currentRooms: RoomView[] = []
   private currentRole: string = "";
   private currentProfile: ProfileInfo = {
     id: "3", fullname: 'John Secretary', role: 'SECRETARY', imgUrl: '/images/secretary_image.png', classes: ['Class 1', 'Class 2', 'Class N'], faculty: 'Technology'
@@ -64,5 +67,15 @@ export class RoleService {
 
   getAllAccounts():ProfileInfo[]{
     return this.currentAccounts;
+  }
+
+  retrieveAllLecturers(){
+    return this.http.get<{
+      message: string,
+      lecturers: LecturerView[]
+    }>(this.URL + "lecturers/")
+      .pipe(
+        map( response => this.currentLecturers = response.lecturers
+        ));
   }
 }
