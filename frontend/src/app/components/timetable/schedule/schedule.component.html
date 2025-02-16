@@ -9,6 +9,7 @@
     [dayEndHour]="19"
     [eventTitleTemplate]="weekEventTemplate"
     [excludeDays]="excludeDays"
+    [hourSegments]="4"
     (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-week-view>
 
@@ -19,10 +20,11 @@
     [refresh]="refresh"
     [dayStartHour]="8"
     [dayEndHour]="18"
+    [hourSegments]="4"
     [eventTitleTemplate]="weekEventTemplate"
     (eventTimesChanged)="eventTimesChanged($event)">
-
   </mwl-calendar-day-view>
+
   <ng-template #weekEventTemplate let-event="event">
     <div class="custom-event"
          [style.background-color]="event.color.primary"

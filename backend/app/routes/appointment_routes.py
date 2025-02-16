@@ -28,6 +28,16 @@ class ClassView(BaseModel):
     class_id: str
 
 
+class AccountView(BaseModel):
+    id: int
+    fullname: str
+    role: str
+    imgUrl: str
+    faculty: str
+    class_id: str
+    classes: List[str]
+
+
 class AppointmentBase(BaseModel):
     type: str
     title: str
@@ -80,7 +90,7 @@ class LecturerAppointmentsFullView(BaseModel):
 
 @router.get("/appointment_basic/{appointment_id}")
 async def get_basic_appointment(appointment_id: int, db: db_dependency):
-    if not appointment_id:
+    if appointment_id is None:
         raise HTTPException(status_code=400, detail="No appointment_id provided")
 
     db_appointment_request = db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
@@ -112,7 +122,7 @@ async def get_basic_appointment(appointment_id: int, db: db_dependency):
 
 @router.get("/appointments_personal/{lec_id}")
 async def get_personal_appointments(lec_id: int, db: db_dependency):
-    if not lec_id:
+    if lec_id is None:
         raise HTTPException(status_code=400, detail="No lec_id provided")
     db_appointments = db.query(models.PersonalAppointment).filter(models.PersonalAppointment.lec_id == lec_id)
     personal_appointments = []
@@ -236,7 +246,7 @@ async def create_multiple_personal_appointments(appointments: List[PersonalAppoi
 
 @router.get("/appointment_lecturers/{appointment_id}")
 async def get_basic_appointment_lecturers(appointment_id: int, db: db_dependency):
-    if not appointment_id:
+    if appointment_id is None:
         raise HTTPException(status_code=400, detail="No appointment_id provided")
 
     db_appointment = db.query(models.App2Lec).filter(models.App2Lec.app_id == appointment_id)
@@ -251,7 +261,7 @@ async def get_basic_appointment_lecturers(appointment_id: int, db: db_dependency
 
 @router.get("/appointment_rooms/{appointment_id}")
 async def get_basic_appointment_rooms(appointment_id: int, db: db_dependency):
-    if not appointment_id:
+    if appointment_id is None:
         raise HTTPException(status_code=400, detail="No appointment_id provided")
 
     db_appointment = db.query(models.App2Room).filter(models.App2Room.app_id == appointment_id)
@@ -266,7 +276,7 @@ async def get_basic_appointment_rooms(appointment_id: int, db: db_dependency):
 
 @router.get("/appointment_classes/{appointment_id}")
 async def get_basic_appointment_classes(appointment_id: int, db: db_dependency):
-    if not appointment_id:
+    if appointment_id is None:
         raise HTTPException(status_code=400, detail="No appointment_id provided")
 
     db_appointment = db.query(models.App2Class).filter(models.App2Class.app_id == appointment_id)
@@ -281,7 +291,7 @@ async def get_basic_appointment_classes(appointment_id: int, db: db_dependency):
 
 @router.get("/appointmentsByLecturer/{lecturer_id}")
 async def get_basic_appointments_by_lecturer(lecturer_id: int, db: db_dependency):
-    if not lecturer_id:
+    if lecturer_id is None:
         raise HTTPException(status_code=400, detail="No lecturer_id provided")
     db_appointments = db.query(models.App2Lec).filter(models.App2Lec.lec_id == lecturer_id)
     appointments = []
@@ -293,8 +303,8 @@ async def get_basic_appointments_by_lecturer(lecturer_id: int, db: db_dependency
     db_personal_appointments = await get_personal_appointments(lecturer_id, db)
     personal_appointments = db_personal_appointments["appointments"]
 
-    return {"message": "Appointments retrieved successfully", "PersonalAppointments": personal_appointments,
-            "Appointments": appointments}
+    return {"message": "Appointments retrieved successfully", "personalAppointments": personal_appointments,
+            "appointments": appointments}
 
 
 @router.get("/appointmentsByClass/{class_id}")

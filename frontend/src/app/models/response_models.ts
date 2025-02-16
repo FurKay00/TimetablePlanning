@@ -13,7 +13,7 @@ export interface ClassView {
 }
 
 export interface AppointmentView {
-  id: string,
+  id: string;
   type: string;
   title: string;
   module: string;
@@ -23,4 +23,13 @@ export interface AppointmentView {
   lecturers: LecturerView[];
   rooms: RoomView[];
   classes: ClassView[];
+}
+
+export interface PersonalAppointmentView{
+  id: number;
+  title: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+
 }

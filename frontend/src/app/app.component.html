@@ -1,8 +1,11 @@
-<app-header [name]="currentProfile.name" [role]="currentProfile.role" [imgUrl]="currentProfile.imgUrl"></app-header>
+<app-header [name]="currentProfile.fullname" [role]="currentProfile.role" [imgUrl]="currentProfile.imgUrl"></app-header>
 <div class="profile_picker">
+  Select Account: <app-profile-drop-down [profiles]="currentProfiles" (profileSelected)="updateCurrentProfile($event)"></app-profile-drop-down>
+
+  <!--
   <button (click)="setSecretaryView()">Secretary View</button>
   <button (click)="setLecturerView()">Lecturer View</button>
-  <button (click)="setStudentView()">Student View</button>
+  <button (click)="setStudentView()">Student View</button>-->
 </div>
 
 <div class="main-layout">

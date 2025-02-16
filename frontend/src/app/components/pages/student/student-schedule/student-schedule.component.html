@@ -1,1 +1,2 @@
-<p>Here is the schedule for class {{classId}}</p>
+<app-toolbar (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
+<app-schedule [pickedDate]="selectedDay" [pickedView]="calendarView" [events]="classAppointments"></app-schedule>

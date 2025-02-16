@@ -16,6 +16,6 @@ import {RouterLink} from '@angular/router';
 })
 export class HeaderComponent {
   @Input() name = "Standardname";
-  @Input() role = "Student";
+  @Input() role = "STUDENT";
   @Input() imgUrl = "public/secretary_image.png";
 }

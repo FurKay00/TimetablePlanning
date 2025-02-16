@@ -22,8 +22,8 @@ export class NavigationComponent implements OnInit,OnChanges{
 
   dynamicHeader:string = "";
   staticLinks = [
-    { path: '/schedule-per-room', label: 'Classroom', icon: 'home', description: 'Classroom', roles: ['Student', 'Lecturer', 'Secretary'] },
-    { path: '/schedule-per-lecturer', label: 'Lecturer', icon: 'person', description: 'Teacher', roles: ['Student', 'Lecturer', 'Secretary'] }
+    { path: '/schedule-per-room', label: 'Classroom', icon: 'home', description: 'Classroom', roles: ['STUDENT', 'LECTURER', 'SECRETARY'] },
+    { path: '/schedule-per-lecturer', label: 'Lecturer', icon: 'person', description: 'Teacher', roles: ['STUDENT', 'LECTURER', 'SECRETARY'] }
   ]
   dynamicLinks:any = [];
   filteredLinks:any = []
@@ -42,17 +42,17 @@ export class NavigationComponent implements OnInit,OnChanges{
 
   uploadDynamicHeader():void{
     this.dynamicLinks = [
-      { path: `/student-schedule/${this.roleService.getClass()}`, label: this.roleService.getClass(), icon: 'calendar_today', description: 'Schedule from', roles: ['Student'] },
-      { path: `/lecturer-schedule/${this.roleService.getId()}`, label: this.roleService.getUsername(), icon: 'calendar_today', description: 'Schedule for', roles: ['Lecturer'] },
+      { path: `/student-schedule/${this.roleService.getClass()}`, label: this.roleService.getClass(), icon: 'calendar_today', description: 'Schedule from', roles: ['STUDENT'] },
+      { path: `/lecturer-schedule/${this.roleService.getId()}`, label: this.roleService.getUsername(), icon: 'calendar_today', description: 'Schedule for', roles: ['LECTURER'] },
     ];
     this.dynamicHeader = this.roleService.getDynamicHeader();
     const userRole = this.roleService.getUserRole();
-    if (userRole === 'Secretary'){
+    if (userRole === 'SECRETARY'){
       this.dynamicLinks = this.roleService.getSecretaryClasses().map((classItem) => ({
         path: classItem.path,
         label: classItem.label,
         icon: classItem.icon,
-        roles: ['Secretary'],
+        roles: ['SECRETARY'],
       }));
     }
     this.filteredLinks = [...this.dynamicLinks].filter((link) => link.roles.includes(userRole));

@@ -1,1 +1,2 @@
-<p>Schedule for lecturer with id {{lecturerId}} works!</p>
+<app-toolbar (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
+<app-schedule [pickedDate]="selectedDay" [pickedView]="calendarView" [events]="fullAppointments"></app-schedule>

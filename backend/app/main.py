@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 import app.models.models as models
 from app.database import db_dependency
-from app.routes import room_routes, building_routes, appointment_routes
+from app.routes import room_routes, building_routes, appointment_routes, account_routes
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -22,9 +22,12 @@ app.add_middleware(
 # models.Base.metadata.create_all(bind=engine)
 
 app.include_router(room_routes.router, prefix="/rooms", tags=["Rooms"])
+
 app.include_router(building_routes.router, prefix="/buildings", tags=["Buildings"])
 
 app.include_router(appointment_routes.router, prefix="/appointments", tags=["Appointments"])
+
+app.include_router(account_routes.router, prefix="/accounts", tags=["Accounts"])
 
 
 @app.get("/")

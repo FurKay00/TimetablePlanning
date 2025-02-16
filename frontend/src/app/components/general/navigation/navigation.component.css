@@ -6,11 +6,30 @@
   border-color: #00bfa5;
   border-width: 1px;
 }
-
-
 .navigation-section {
   margin-bottom: 24px;
+  overflow: auto;
 }
+
+.dynamic-section {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.dynamic-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dynamic-section::-webkit-scrollbar-thumb {
+  background-color: #00bfa5;
+  border-radius: 10px;
+}
+
+.dynamic-section::-webkit-scrollbar-track {
+  background: #f6f9f8;
+}
+
 
 .navigation-section h3 {
   font-size: 16px;

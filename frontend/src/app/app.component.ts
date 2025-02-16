@@ -6,28 +6,30 @@ import {NavigationComponent} from './components/general/navigation/navigation.co
 import {ProfileInfo} from './models/ProfileInfo';
 import {ScheduleComponent} from './components/timetable/schedule/schedule.component';
 import {RoleService} from './services/role.service';
+import {ProfileDropDownComponent} from './components/forms/profile-drop-down/profile-drop-down.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, ToolbarComponent, NavigationComponent, ScheduleComponent,],
+  imports: [RouterOutlet, HeaderComponent, ToolbarComponent, NavigationComponent, ScheduleComponent,ProfileDropDownComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'TimetablePlanning';
   changeProfile = false;
+  currentProfiles:ProfileInfo[] = [];
 
   studentProfile:ProfileInfo = {
-    id:"1", class: 'TINF22B6', name: 'John Student', role: 'Student', classes: [], imgUrl: '/images/student_image.png'
+    id:"1", class_id: 'TINF22B6', fullname: 'John Student', role: 'STUDENT', classes: [], imgUrl: '/images/student_image.png'
   }
 
   lecturerProfile:ProfileInfo = {
-    id:"2", name: 'John Lecturer', role: 'Lecturer', imgUrl: '/images/lecturer_image.png', classes: [], faculty: 'Technology'
+    id:"35", fullname: 'John Lecturer', role: 'LECTURER', imgUrl: '/images/lecturer_image.png', classes: [], faculty: 'Technology'
   }
 
   secretaryProfile:ProfileInfo = {
-    id:"3", name: 'John Secretary', role: 'Secretary', imgUrl: '/images/secretary_image.png', classes: ['TINF22B6', 'TINF22B5', 'TINF22B4'], faculty: 'Technology'
+    id:"3", fullname: 'John Secretary', role: 'SECRETARY', imgUrl: '/images/secretary_image.png', classes: ['TINF22B6', 'TINF22B5', 'TINF22B4'], faculty: 'Technology'
   }
 
   currentProfile:ProfileInfo = this.secretaryProfile;
@@ -35,8 +37,9 @@ export class AppComponent {
   //currentProfile:ProfileInfo = this.lecturerProfile;
 
   constructor(private roleService:RoleService, private router:Router) {
-    roleService.setCurrentProfile(this.currentProfile)
-    roleService.setRole(this.currentProfile.role)
+    roleService.setCurrentProfile(this.currentProfile);
+    roleService.setRole(this.currentProfile.role);
+    roleService.retrieveAllAccounts().subscribe(data=> this.currentProfiles = data);
   }
 
   setSecretaryView(){
@@ -51,6 +54,11 @@ export class AppComponent {
 
   setStudentView(){
     this.currentProfile = this.studentProfile;
+    this.updateCurrentRole();
+  }
+
+  updateCurrentProfile(profile:ProfileInfo){
+    this.currentProfile = profile;
     this.updateCurrentRole();
   }
 

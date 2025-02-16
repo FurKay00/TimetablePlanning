@@ -1,6 +1,6 @@
 <nav class="navigation-container">
 
-  <section class="navigation-section">
+  <section class="navigation-section dynamic-section">
     <h3>{{dynamicHeader}}</h3>
     <li *ngFor="let link of filteredLinks" class="navigation-item">
       <a [routerLink]="link.path"
