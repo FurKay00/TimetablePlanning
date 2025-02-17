@@ -5,13 +5,18 @@ import {ToolbarComponent} from '../../../general/toolbar/toolbar.component';
 import {CalendarEvent, CalendarView} from 'angular-calendar';
 import {ScheduleComponent} from '../../../timetable/schedule/schedule.component';
 import {ScheduleService} from '../../../../services/schedule.service';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  CreateAppointmentModalComponent
+} from '../../../forms/create-appointment-modal/create-appointment-modal.component';
 
 @Component({
   selector: 'app-secretary-schedule',
   standalone: true,
   imports: [
     ToolbarComponent,
-    ScheduleComponent
+    ScheduleComponent,
+    CreateAppointmentModalComponent
   ],
   templateUrl: './secretary-schedule.component.html',
   styleUrl: './secretary-schedule.component.css'
@@ -24,7 +29,7 @@ export class SecretaryScheduleComponent implements OnInit{
   calendarView = CalendarView.Week;
   classAppointments: CalendarEvent[] = []
 
-  constructor(private route:ActivatedRoute, private dateService:DateService, private scheduleService:ScheduleService) {
+  constructor(private route:ActivatedRoute, private dateService:DateService, private scheduleService:ScheduleService, public dialog:MatDialog) {
     this.selectedWeekDays = dateService.initializeWeekDays();
   }
 
@@ -57,4 +62,16 @@ export class SecretaryScheduleComponent implements OnInit{
     this.calendarView = $event;
   }
 
+
+  openAppointmentModal(): void {
+    const dialogRef = this.dialog.open(CreateAppointmentModalComponent, {
+      height: '90%',
+      width: '90%',
+      data: { title: 'New Appointment' },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Modal closed', result);
+    });
+  }
 }
