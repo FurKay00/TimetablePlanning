@@ -1,0 +1,68 @@
+<div class="modal-container">
+  <div class="modal-form">
+    <div class="modal-header">
+      <h2>New/Update Appointment</h2>
+      <button mat-icon-button class="close-btn" (click)="closeDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="toggle-buttons">
+      <button [class.active]="appointmentType === 'single'" (click)="toggleAppointmentType('single')">
+        Single appointment
+      </button>
+      <button [class.active]="appointmentType === 'block'" (click)="toggleAppointmentType('block')">
+        Block appointment
+      </button>
+    </div>
+
+    <!-- Appointment Form -->
+    <form [formGroup]="appointmentForm">
+      <label>Type:</label>
+      <select formControlName="type">
+        <option>Lecture</option>
+        <option>Exam</option>
+        <option>Informational</option>
+      </select>
+
+      <label>Title:</label>
+      <input type="text" formControlName="title" />
+
+      <label>Date:</label>
+      <input type="date" formControlName="date" />
+
+      <label>Start:</label>
+      <input type="time" formControlName="startTime" />
+
+      <label>End:</label>
+      <input type="time" formControlName="endTime" />
+
+      <label>Lecturer/s:</label>
+      <input type="text" formControlName="lecturer" />
+
+      <label>Room/s:</label>
+      <input type="text" formControlName="room" />
+
+      <!-- Block Appointment Fields (Only Show If Selected) -->
+      <div *ngIf="appointmentType === 'block'">
+        <label>Max hours:</label>
+        <input type="number" formControlName="maxHours" />
+
+        <label>Frequency:</label>
+        <input type="number" formControlName="frequency" />
+      </div>
+
+      <!-- Preview and Submit Buttons -->
+      <div class="submit-buttons">
+        <button type="button" (click)="previewEvent()">Preview</button>
+        <button type="submit" (click)="submitEvent()">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Calendar Preview -->
+  <div class="modal-calendar">
+    <app-toolbar (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
+    <app-schedule [pickedDate]="selectedDay" [pickedView]="calendarView"></app-schedule>
+  </div>
+</div>
