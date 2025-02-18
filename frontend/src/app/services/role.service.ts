@@ -39,9 +39,11 @@ export class RoleService {
   getUsername(){
     return this.currentProfile.fullname;
   }
+
   getClass():string{
     return this.currentProfile.class_id || "";
   }
+
   getSecretaryClasses():any[]{
       return this.currentProfile.classes?.map( (classItem) => ({id: classItem, label: classItem, icon: 'groups' , path: '/secretary-schedule/' + classItem })) ||  [];
   }

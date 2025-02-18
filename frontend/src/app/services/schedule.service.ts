@@ -12,8 +12,8 @@ export class ScheduleService {
   lectureColor = {primary: '#62D2DC', secondary: '#62D2DC'}
   examColor = {primary: '#D83B3B', secondary: '#D83B3B'}
   informationalColor = {primary: '#DFED70', secondary: '#DFED70'}
-  personalColor = {primary: '#2C81E7CC', secondary: '#2C81E7CC'}
-
+  personalColor = {primary: '#2C81E7FF', secondary: '#2C81E7FF'}
+  previousColor = {primary: '#7E7F86FF', secondary: '#7E7F86FF'}
   constructor(private http: HttpClient) {
   }
 
@@ -119,5 +119,9 @@ export class ScheduleService {
       default:
         return this.lectureColor;
     }
+  }
+
+  createPreviousAppointments(previousAppointments:CalendarEvent[]):CalendarEvent[]{
+    return previousAppointments.map(appointment => ({...appointment, color: this.previousColor}));
   }
 }

@@ -1,5 +1,11 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, OnInit} from '@angular/core';
-import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarModule, CalendarView} from 'angular-calendar';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angular/core';
+import {
+  CalendarEvent,
+  CalendarEventTimesChangedEvent,
+  CalendarEventTimesChangedEventType,
+  CalendarModule,
+  CalendarView
+} from 'angular-calendar';
 import {addDays, addHours, subDays} from 'date-fns';
 import {CommonModule} from '@angular/common';
 import {Subject} from 'rxjs';
@@ -14,6 +20,9 @@ import {Subject} from 'rxjs';
 export class ScheduleComponent implements OnInit, OnChanges{
   @Input() pickedView:CalendarView = CalendarView.Week;
   @Input() pickedDate: Date = new Date();
+
+  @Output() eventMoved: EventEmitter<CalendarEvent> = new EventEmitter<CalendarEvent>();
+
   view: CalendarView = CalendarView.Week;
   viewDate: Date = new Date();
   excludeDays: number[] = [0, 6];
@@ -62,6 +71,7 @@ export class ScheduleComponent implements OnInit, OnChanges{
     event.start = newStart;
     event.end = newEnd;
     this.refresh.next();
+    this.eventMoved.emit(event);
   }
 
   constructor(private cdr: ChangeDetectorRef) {

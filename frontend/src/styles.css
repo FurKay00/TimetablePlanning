@@ -43,3 +43,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   border-bottom: transparent 4px solid !important;
 }
 
+.mat-form-field-outline {
+  border-color: #000a08 !important; /* 🔹 Match theme */
+}
+
+.mat-select-value {
+  color: black !important; /* 🔹 Improve contrast */
+}
+
+.mat-option {
+  background-color: white !important;
+  color: black !important;
+}
+
+.mat-option:hover {
+  background-color: #f0f0f0 !important; /* 🔹 Light gray hover */
+}

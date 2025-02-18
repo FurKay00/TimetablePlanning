@@ -5,7 +5,7 @@ import {ToolbarComponent} from '../../../general/toolbar/toolbar.component';
 import {CalendarEvent, CalendarView} from 'angular-calendar';
 import {ScheduleComponent} from '../../../timetable/schedule/schedule.component';
 import {ScheduleService} from '../../../../services/schedule.service';
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {
   CreateAppointmentModalComponent
 } from '../../../forms/create-appointment-modal/create-appointment-modal.component';
@@ -16,7 +16,8 @@ import {
   imports: [
     ToolbarComponent,
     ScheduleComponent,
-    CreateAppointmentModalComponent
+    CreateAppointmentModalComponent,
+
   ],
   templateUrl: './secretary-schedule.component.html',
   styleUrl: './secretary-schedule.component.css'
@@ -64,10 +65,11 @@ export class SecretaryScheduleComponent implements OnInit{
 
 
   openAppointmentModal(): void {
+
     const dialogRef = this.dialog.open(CreateAppointmentModalComponent, {
       height: '90%',
       width: '90%',
-      data: { title: 'New Appointment' },
+      data: { previousEvents: this.scheduleService.createPreviousAppointments(this.classAppointments)},
     });
 
     dialogRef.afterClosed().subscribe(result => {

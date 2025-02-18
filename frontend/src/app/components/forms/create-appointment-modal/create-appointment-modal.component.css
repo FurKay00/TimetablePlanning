@@ -51,6 +51,7 @@
 }
 
 form label {
+  width: 100%;
   display: block;
   margin-top: 10px;
 }
@@ -90,4 +91,25 @@ button[type="submit"] {
 
 .close-btn:hover {
   color: #000;
+}
+
+mat-form-field {
+  width: 100%;
+  display: block;
+}
+
+
+.mat-select-panel {
+  background: white !important;
+  color: black !important;
+}
+
+
+mat-form-field.mat-focused .mat-form-field-outline {
+  color: #34c3a3 !important;
+  border-color: #34c3a3 !important;
+}
+
+mat-form-field.mat-focused .mat-form-field-label {
+  color: #34c3a3 !important;
 }
