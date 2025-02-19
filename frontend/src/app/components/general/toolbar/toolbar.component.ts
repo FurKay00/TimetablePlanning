@@ -49,13 +49,13 @@ export class ToolbarComponent {
   @Input() showLecturerSelect:boolean = false;
   @Input() lecturerOptions: LecturerView[] = [];
   @Input() roomOptions: RoomView[] = [];
-
+  @Input() currentDate:Date = new Date();
 
   showDistance = false;
   viewMode: 'day' | 'week' = 'week';
   startOfWeek!: Date;
   endOfWeek!: Date;
-  currentDate:Date = new Date();
+
   currentDateSelected:Boolean =true;
 
   constructor(private dateService:DateService) {

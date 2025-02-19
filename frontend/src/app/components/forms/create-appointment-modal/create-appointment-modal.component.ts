@@ -38,6 +38,7 @@ import {MatLabel} from '@angular/material/input';
 })
 export class CreateAppointmentModalComponent {
   @Input() previousEvents: CalendarEvent[] = [];
+  @Input() pickedDate: Date = new Date();
 
   appointmentForm: FormGroup;
   appointmentType: 'single' | 'block' = 'single';
@@ -55,6 +56,8 @@ export class CreateAppointmentModalComponent {
               private roleService: RoleService,
               private roomService: RoomService) {
     this.previousEvents = data.previousEvents;
+    this.pickedDate = data.pickedDate;
+
     this.appointmentForm = this.fb.group({
       type: ['Lecture'],
       title: ['New Appointment'],
@@ -113,7 +116,7 @@ export class CreateAppointmentModalComponent {
   }
 
   onDaySelected(day: Date):void{
-    this.selectedDay = day;
+    this.pickedDate = day;
   }
 
   onViewSelected($event: CalendarView) {

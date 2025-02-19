@@ -69,7 +69,8 @@ export class SecretaryScheduleComponent implements OnInit{
     const dialogRef = this.dialog.open(CreateAppointmentModalComponent, {
       height: '90%',
       width: '90%',
-      data: { previousEvents: this.scheduleService.createPreviousAppointments(this.classAppointments)},
+      data: { previousEvents: this.scheduleService.createPreviousAppointments(this.classAppointments),
+      pickedDate: this.selectedDay},
     });
 
     dialogRef.afterClosed().subscribe(result => {

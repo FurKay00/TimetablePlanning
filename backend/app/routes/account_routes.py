@@ -19,6 +19,11 @@ class AccountView(BaseModel):
     classes: List[str]
 
 
+class ModuleView(BaseModel):
+    module_id: str
+    workload: int
+    title: str
+
 @router.get("/all/")
 async def get_all_accounts(db: db_dependency):
     accounts = []
@@ -67,3 +72,25 @@ async def get_all_lecturers(db: db_dependency):
         )
         lecturers.append(lecturer)
     return {"message": "Lecturers retrieved successfully", "lecturers": lecturers}
+
+
+@router.get("/classes/")
+async def get_all_classes(db: db_dependency):
+    classes = []
+    db_classes = db.query(models.Class)
+    for class_entry in db_classes:
+        classes.append(class_entry.id)
+    return {"message": "Classes retrieved successfully", "classes": classes}
+
+
+@router.get("/modules/")
+async def get_all_modules(db: db_dependency):
+    modules = []
+    db_modules = db.query(models.Module)
+    for module_entry in db_modules:
+        module = ModuleView(
+            module_id=module_entry.id,
+            workload=module_entry.workload,
+            title=module_entry.title)
+        modules.append(module)
+    return {"message": "Modules retrieved successfully", "modules": modules}

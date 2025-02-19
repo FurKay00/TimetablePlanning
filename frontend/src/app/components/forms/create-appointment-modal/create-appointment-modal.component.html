@@ -75,7 +75,7 @@
   </div>
 
   <div class="modal-calendar">
-    <app-toolbar (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
-    <app-schedule [pickedDate]="selectedDay" [pickedView]="calendarView" [events]="previousEvents"></app-schedule>
+    <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
+    <app-schedule [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="previousEvents"></app-schedule>
   </div>
 </div>

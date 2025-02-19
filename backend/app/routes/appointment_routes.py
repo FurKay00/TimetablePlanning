@@ -57,6 +57,7 @@ class AppointmentFinal(BaseModel):
 
 class PersonalAppointmentBase(BaseModel):
     lec_id: int
+    title: str
     date: date
     start_time: time
     end_time: time
@@ -219,6 +220,7 @@ async def create_personal_appointment(appointment: PersonalAppointmentBase, db: 
 
     db_appointment = models.PersonalAppointment(
             date=appointment.date,
+            title=appointment.title,
             start_time=appointment.start_time,
             end_time=appointment.end_time,
             lec_id=appointment.lec_id

@@ -12,6 +12,12 @@ export interface ClassView {
   class_id: string;
 }
 
+export interface ModuleView {
+  module_id: string,
+  workload: number,
+  title: string,
+}
+
 export interface AppointmentView {
   id: string;
   type: string;
@@ -32,4 +38,24 @@ export interface PersonalAppointmentView{
   start_time: string;
   end_time: string;
 
+}
+
+export interface BasicAppointmentRequest{
+  type: string,
+  title: string,
+  module: string,
+  date: string,
+  start_time: string, //Format: 20:06:26.182
+  end_time: string,
+  lec_ids: number[],
+  class_ids: string[],
+  room_ids: number[]
+}
+
+export interface PersonalAppointmentRequest{
+  lec_id: number,
+  title: string,
+  date: string,
+  start_time: string,
+  end_time: string
 }
