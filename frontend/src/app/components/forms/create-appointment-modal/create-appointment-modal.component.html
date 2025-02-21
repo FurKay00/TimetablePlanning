@@ -16,55 +16,78 @@
       </button>
     </div>
 
-    <form [formGroup]="appointmentForm">
+    <form [formGroup]="appointmentForm" *ngIf="appointmentForm">
       <label>Type:</label>
       <div>
-      <select formControlName="type">
+      <select formControlName="type" (change)="refreshView()" required>
         <option>Lecture</option>
         <option>Exam</option>
         <option>Informational</option>
       </select>
       </div>
 
+      <label>Module:</label>
+      <div>
+      <select formControlName="modules" (change)="onModuleChange($event)">
+        <option [ngValue]="null">No Module</option>
+        <option *ngFor="let module of modules" [ngValue]="module">
+          {{module.title}} ({{module.module_id}})
+        </option>
+      </select>
+      </div>
+
       <label>Title:</label>
-      <input type="text" formControlName="title" />
+      <input type="text" formControlName="title" (change)="refreshView()" required/>
+      <mat-error *ngIf="appointmentForm.get('title')?.hasError('required')">
+        Title is required
+      </mat-error>
 
       <label>Date:</label>
-      <input type="date" formControlName="date" />
+      <input type="date" formControlName="date"  (change)="refreshView()" required/>
 
       <label>Start:</label>
-      <input type="time" formControlName="startTime" />
+      <input type="time" formControlName="startTime" (change)="refreshView()" required/>
 
       <label>End:</label>
-      <input type="time" formControlName="endTime" />
-
-      <label>Lecturer/s:</label>
-      <mat-form-field appearance="outline">
-        <mat-label>Select Lecturers</mat-label>
-        <mat-select formControlName="lecturers" multiple (selectionChange)="onLecturerSelection($event)">
-          <mat-option *ngFor="let lecturer of lecturers" [value]="lecturer">
-            {{ lecturer.fullname }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-
+      <input type="time" formControlName="endTime" (change)="refreshView()" required/>
 
       <label>Room/s:</label>
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="fill">
         <mat-label>Select Rooms</mat-label>
-        <mat-select formControlName="rooms" multiple (selectionChange)="onRoomSelection($event)">
+        <mat-select formControlName="rooms" multiple (selectionChange)="updateRoomsSelection($event.value)" required>
           <mat-option *ngFor="let room of rooms" [value]="room">
             {{ room.room_name }}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
+      <label>Lecturer/s:</label>
+      <mat-form-field appearance="fill">
+        <mat-label>Select Lecturers</mat-label>
+        <mat-select formControlName="lecturers" multiple (selectionChange)="updateLecturersSelection($event.value)" required>
+          <mat-option *ngFor="let lecturer of lecturers" [value]="lecturer" >
+            {{ lecturer.fullname }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+
+      <label>Class/es:</label>
+      <mat-form-field appearance="fill">
+        <mat-label>Select Class</mat-label>
+        <mat-select formControlName="classes" multiple (selectionChange)="updateClassSelection($event.value)" required>
+          <mat-option *ngFor="let class_ of classes" [value]="class_" [disabled]="class_=== this.selectedClass">
+            {{ class_ }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
       <div *ngIf="appointmentType === 'block'">
         <label>Max hours:</label>
-        <input type="number" formControlName="maxHours" />
+        <input type="number" formControlName="maxHours" required/>
 
         <label>Frequency:</label>
-        <input type="number" formControlName="frequency" />
+        <input type="number" formControlName="frequency" required/>
       </div>
 
       <div class="submit-buttons">
@@ -76,6 +99,6 @@
 
   <div class="modal-calendar">
     <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
-    <app-schedule [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="previousEvents"></app-schedule>
+    <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events" (eventMoved)="onEventMoved($event)"></app-schedule>
   </div>
 </div>

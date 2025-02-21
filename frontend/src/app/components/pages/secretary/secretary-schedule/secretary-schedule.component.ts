@@ -5,7 +5,7 @@ import {ToolbarComponent} from '../../../general/toolbar/toolbar.component';
 import {CalendarEvent, CalendarView} from 'angular-calendar';
 import {ScheduleComponent} from '../../../timetable/schedule/schedule.component';
 import {ScheduleService} from '../../../../services/schedule.service';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {
   CreateAppointmentModalComponent
 } from '../../../forms/create-appointment-modal/create-appointment-modal.component';
@@ -70,7 +70,7 @@ export class SecretaryScheduleComponent implements OnInit{
       height: '90%',
       width: '90%',
       data: { previousEvents: this.scheduleService.createPreviousAppointments(this.classAppointments),
-      pickedDate: this.selectedDay},
+      pickedDate: this.selectedDay, selectedClass: this.classId},
     });
 
     dialogRef.afterClosed().subscribe(result => {

@@ -2,7 +2,6 @@ import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Ou
 import {
   CalendarEvent,
   CalendarEventTimesChangedEvent,
-  CalendarEventTimesChangedEventType,
   CalendarModule,
   CalendarView
 } from 'angular-calendar';
@@ -20,6 +19,7 @@ import {Subject} from 'rxjs';
 export class ScheduleComponent implements OnInit, OnChanges{
   @Input() pickedView:CalendarView = CalendarView.Week;
   @Input() pickedDate: Date = new Date();
+  @Input() refresh: Subject<void> = new Subject<void>();
 
   @Output() eventMoved: EventEmitter<CalendarEvent> = new EventEmitter<CalendarEvent>();
 
@@ -47,7 +47,6 @@ export class ScheduleComponent implements OnInit, OnChanges{
       cssClass: 'custom-event-style'
     }
   ];
-  refresh: Subject<void> = new Subject<void>();
 
   addEvent(): void {
     this.events.push({
@@ -68,6 +67,8 @@ export class ScheduleComponent implements OnInit, OnChanges{
                       newStart,
                       newEnd,
                     }: CalendarEventTimesChangedEvent): void {
+    if(typeof newStart === "undefined" || typeof newEnd === "undefined")
+      return;
     event.start = newStart;
     event.end = newEnd;
     this.refresh.next();

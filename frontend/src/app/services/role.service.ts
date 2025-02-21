@@ -2,16 +2,18 @@ import { Injectable } from '@angular/core';
 import {ProfileInfo} from '../models/ProfileInfo';
 import {map} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {LecturerView, RoomView} from '../models/response_models';
+import {LecturerView, ModuleView, RoomView} from '../models/response_models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleService {
   URL: string = "http://127.0.0.1:8000/accounts/"
-  currentAccounts: ProfileInfo[] = []
-  currentLecturers: LecturerView[] = []
-  currentRooms: RoomView[] = []
+  currentAccounts: ProfileInfo[] = [];
+  currentLecturers: LecturerView[] = [];
+  currentRooms: RoomView[] = [];
+  currentClasses: string[] = [];
+  currentModules: ModuleView[] = [];
   private currentRole: string = "";
   private currentProfile: ProfileInfo = {
     id: "3", fullname: 'John Secretary', role: 'SECRETARY', imgUrl: '/images/secretary_image.png', classes: ['Class 1', 'Class 2', 'Class N'], faculty: 'Technology'
@@ -78,6 +80,26 @@ export class RoleService {
     }>(this.URL + "lecturers/")
       .pipe(
         map( response => this.currentLecturers = response.lecturers
+        ));
+  }
+
+  retrieveAllClasses(){
+    return this.http.get<{
+      message: string,
+      classes: string[]
+    }>(this.URL + "classes/")
+      .pipe(
+        map( response => this.currentClasses = response.classes
+        ));
+  }
+
+  retrieveAllModules(){
+    return this.http.get<{
+      message: string,
+      modules: ModuleView[]
+    }>(this.URL + "modules/")
+      .pipe(
+        map( response => this.currentModules = response.modules
         ));
   }
 }
