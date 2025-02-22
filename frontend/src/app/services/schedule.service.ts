@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map, Observable} from 'rxjs';
 import {CalendarEvent} from 'angular-calendar';
-import {AppointmentView, PersonalAppointmentView} from '../models/response_models';
+import {
+  AppointmentView,
+  BasicAppointmentRequest,
+  PersonalAppointmentRequest,
+  PersonalAppointmentView
+} from '../models/response_models';
 
 @Injectable({
   providedIn: 'root',
@@ -124,4 +129,6 @@ export class ScheduleService {
   createPreviousAppointments(previousAppointments:CalendarEvent[]):CalendarEvent[]{
     return previousAppointments.map(appointment => ({...appointment, color: this.previousColor}));
   }
+
+
 }

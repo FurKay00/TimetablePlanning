@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from datetime import date, time
-from typing import List
+from typing import List, Optional
 from app.main import db_dependency
 from app.models import models
 
@@ -41,7 +41,7 @@ class AccountView(BaseModel):
 class AppointmentBase(BaseModel):
     type: str
     title: str
-    module: str
+    module: Optional[str]
     date: date
     start_time: time
     end_time: time

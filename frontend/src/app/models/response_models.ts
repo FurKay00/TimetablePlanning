@@ -43,7 +43,7 @@ export interface PersonalAppointmentView{
 export interface BasicAppointmentRequest{
   type: string,
   title: string,
-  module: string,
+  module: string | null,
   date: string,
   start_time: string, //Format: 20:06:26.182
   end_time: string,
