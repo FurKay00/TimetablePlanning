@@ -1,5 +1,5 @@
 <div class="dropdown">
-  <button class="dropbtn">{{ selectedProfile ? selectedProfile.fullname : 'Select a Profile' }}</button>
+  <button class="dropbtn">{{ selectedProfile ? selectedProfile.fullname : 'No Account' }}</button>
   <div class="dropdown-content">
     <a *ngFor="let profile of profiles" (click)="onProfileSelect(profile)">
       {{ profile.fullname }} ({{ profile.role }})

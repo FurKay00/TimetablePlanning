@@ -16,6 +16,9 @@ import {MatOption, MatSelect} from '@angular/material/select';
 import {MatLabel} from '@angular/material/input';
 import {ScheduleService} from '../../../services/schedule.service';
 import {Subject} from 'rxjs';
+import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
+
+
 
 
 @Component({
@@ -34,7 +37,9 @@ import {Subject} from 'rxjs';
     MatOption,
     NgForOf,
     MatLabel,
-    MatError
+    MatError,
+    MatButtonToggleGroup,
+    MatButtonToggle
   ],
   templateUrl: './create-appointment-modal.component.html',
   styleUrl: './create-appointment-modal.component.css'
@@ -91,6 +96,7 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   private initializeForm():FormGroup {
     return this.fb.group({
+      appointment_type: ['single', [Validators.required]],
       type: ['Lecture', [Validators.required]],
       title: ['New Appointment', [Validators.required]],
       modules: [null],
@@ -105,41 +111,14 @@ export class CreateAppointmentModalComponent implements OnInit{
     });
   }
 
-  toggleAppointmentType(type: 'single' | 'block') {
-    this.appointmentType = type;
-  }
 
   previewEvent() {
-    const formData = this.appointmentForm?.value;
-
-    this.events = [
-      {
-        start: new Date(formData.date + ' ' + formData.startTime),
-        end: new Date(formData.date + ' ' + formData.endTime),
-        title: formData.title,
-        color: { primary: '#228B22', secondary: '#90EE90' },
-        meta: { location: formData.room, lecturer: formData.lecturer },
-      },
-    ];
-
-    if (this.appointmentType === 'block') {
-
-      for (let i = 1; i < formData.frequency; i++) {
-        this.events.push({
-          start: addDays(new Date(formData.date + ' ' + formData.startTime), i),
-          end: addHours(addDays(new Date(formData.date + ' ' + formData.startTime), i), formData.maxHours),
-          title: formData.title + ' (Repeated)',
-          color: { primary: '#FFD700', secondary: '#FFFACD' },
-          meta: { location: formData.room, lecturer: formData.lecturer },
-        });
-      }
-    }
   }
 
   submitEvent() {
     if (this.isFormValid()) {
       console.log('Form Submitted:', this.appointmentForm.value);
-      // Proceed with form submission logic, e.g., calling a web service
+      // TODO event submission
     } else {
       console.error('Form is invalid. Please fill in all required fields.');
     }  }
@@ -205,7 +184,12 @@ export class CreateAppointmentModalComponent implements OnInit{
       this.appointmentForm.patchValue({
         title: selectedModule.title
       });
-      this.refreshView();
+      if (this.appointmentType==="single"){
+        this.refreshView();
+      }else{
+        this.createEventsFromWorkload();
+      }
+
     }
   }
   updateLecturersSelection(selectedLecturers: any[]) {
@@ -237,24 +221,54 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   ngOnInit() {
     this.appointmentForm = this.initializeForm();
+    this.appointmentForm.get('appointment_type')?.valueChanges.subscribe((type) => {
+      this.appointmentType = type;
+      if (type === 'block') {
+        this.appointmentForm.get('modules')?.setValidators(Validators.required);
+        this.events = this.newEvents.concat(this.previousEvents);
+
+      } else {
+        this.events = [this.newEvent].concat(this.previousEvents);
+        this.appointmentForm.patchValue({modules: null});
+        this.appointmentForm.get('modules')?.clearValidators();
+      }
+      this.appointmentForm.get('modules')?.updateValueAndValidity();
+    });
+
+    this.appointmentForm.get('frequency')?.valueChanges.subscribe(() => {
+      if (this.appointmentType=== 'block') {
+        this.createEventsFromWorkload();
+      }
+    });
+
+    this.appointmentForm.get('maxHours')?.valueChanges.subscribe(() => {
+      if (this.appointmentForm.get('appointment_type')?.value === 'block') {
+        this.createEventsFromWorkload();
+      }
+    });
   }
 
   refreshView() {
     const formData = this.appointmentForm?.value;
-    this.events.forEach(event => {
-      if(this.newEvent.id === event.id){
-        event.title= formData.title;
-        event.start = new Date(`${formData.date}T${formData.startTime}:00`);
-        event.end = new Date(`${formData.date}T${formData.endTime}:00`);
-        event.color = this.scheduleService.getAppointmentColor(formData.type.toUpperCase())
-        event.meta = {
+    if(this.appointmentType === "single"){
+      this.events.forEach(event => {
+        if(this.newEvent.id === event.id){
+          event.title= formData.title;
+          event.start = new Date(`${formData.date}T${formData.startTime}:00`);
+          event.end = new Date(`${formData.date}T${formData.endTime}:00`);
+          event.color = this.scheduleService.getAppointmentColor(formData.type.toUpperCase())
+          event.meta = {
             location: this.selectedRooms.map((room:any) => room.room_name).join('\n'),
             lecturer: this.selectedLecturers.map((lec:any) => lec.fullname).join('\n')
+          }
         }
-      }
-    });
-    this.events = [this.newEvent].concat(this.previousEvents);
-    this.refresh.next();
+      });
+      this.events = [this.newEvent].concat(this.previousEvents);
+      this.refresh.next();
+    }else{
+      this.createEventsFromWorkload();
+    }
+
   }
 
 
@@ -267,6 +281,66 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   isFormValid(): boolean {
     this.appointmentForm.markAllAsTouched();
+
     return this.appointmentForm.valid;
   }
+
+  createEventsFromWorkload() {
+    if(!this.isFormValid()) return;
+
+    const formData = this.appointmentForm.value;
+    const workload = formData.modules?.workload || 0;
+    const frequency = formData.frequency;
+    const maxHours = formData.maxHours;
+    const startTime = formData.startTime;
+    const date = new Date(formData.date);
+
+    let remainingHours = workload;
+    let sessionCount = 0;
+    this.newEvents = [];
+    this.events = this.newEvents.concat(this.previousEvents);
+    let dayOffset = 0;
+    let currentFrequency = 0;
+
+    while (remainingHours > 0) {
+      sessionCount++;
+      currentFrequency++;
+      let sessionHours = Math.min(remainingHours, maxHours);
+
+      const start = new Date(date);
+      start.setDate(start.getDate() + dayOffset);
+      start.setHours(Number(startTime.split(':')[0]));
+      start.setMinutes(Number(startTime.split(':')[1]));
+
+      const end = new Date(start);
+      end.setHours(end.getHours() + sessionHours);
+
+      const event = {
+        id: `T${sessionCount}`,
+        start: start,
+        end: end,
+        title: formData.title,
+        draggable: true,
+        color: { primary: '#62D2DC', secondary: '#62D2DC' },
+        meta: {
+          location: formData.rooms.map((room:any) => room.room_name).join('\n'),
+          lecturer: formData.lecturers.map((lec:any) => lec.fullname).join('\n')
+        },
+        cssClass: 'custom-event-style'
+      };
+      this.newEvents.push(event);
+      remainingHours -= sessionHours;
+
+      if (currentFrequency === frequency) {
+        dayOffset += (7 - (dayOffset % 7));
+        currentFrequency = 0;
+      } else {
+        dayOffset++;
+      }
+    }
+
+    this.events = this.previousEvents.concat(this.newEvents);
+    this.refresh.next();
+  }
+
 }

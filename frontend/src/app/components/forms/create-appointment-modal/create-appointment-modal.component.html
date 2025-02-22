@@ -7,13 +7,11 @@
       </button>
     </div>
 
-    <div class="toggle-buttons">
-      <button [class.active]="appointmentType === 'single'" (click)="toggleAppointmentType('single')">
-        Single appointment
-      </button>
-      <button [class.active]="appointmentType === 'block'" (click)="toggleAppointmentType('block')">
-        Block appointment
-      </button>
+    <div [formGroup]="appointmentForm" class="toggle-buttons">
+      <mat-button-toggle-group formControlName="appointment_type">
+        <mat-button-toggle value="single">Single appointment</mat-button-toggle>
+        <mat-button-toggle value="block">Block appointment</mat-button-toggle>
+      </mat-button-toggle-group>
     </div>
 
     <form [formGroup]="appointmentForm" *ngIf="appointmentForm">
@@ -27,13 +25,16 @@
       </div>
 
       <label>Module:</label>
-      <div>
+      <div >
       <select formControlName="modules" (change)="onModuleChange($event)">
         <option [ngValue]="null">No Module</option>
         <option *ngFor="let module of modules" [ngValue]="module">
           {{module.title}} ({{module.module_id}})
         </option>
       </select>
+        <mat-error *ngIf="appointmentForm.get('modules')?.hasError('required')">
+          Module is required
+        </mat-error>
       </div>
 
       <label>Title:</label>
@@ -84,10 +85,10 @@
 
       <div *ngIf="appointmentType === 'block'">
         <label>Max hours:</label>
-        <input type="number" formControlName="maxHours" required/>
+        <input type="number" formControlName="maxHours" (change)="createEventsFromWorkload()" required/>
 
         <label>Frequency:</label>
-        <input type="number" formControlName="frequency" required/>
+        <input type="number" formControlName="frequency" (change)="createEventsFromWorkload()" required/>
       </div>
 
       <div class="submit-buttons">
