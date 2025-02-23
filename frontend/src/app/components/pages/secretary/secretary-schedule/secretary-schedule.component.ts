@@ -9,6 +9,9 @@ import {MatDialog} from '@angular/material/dialog';
 import {
   CreateAppointmentModalComponent
 } from '../../../forms/create-appointment-modal/create-appointment-modal.component';
+import {
+  UpdateAppointmentModalComponent
+} from '../../../forms/update-appointment-modal/update-appointment-modal.component';
 
 @Component({
   selector: 'app-secretary-schedule',
@@ -79,7 +82,7 @@ export class SecretaryScheduleComponent implements OnInit{
   }
 
   OpenUpdateAppointmentModal(): void {
-    const dialogRef = this.dialog.open(CreateAppointmentModalComponent, {
+    const dialogRef = this.dialog.open(UpdateAppointmentModalComponent, {
       height: '90%',
       width: '90%',
       data: { previousEvents: this.scheduleService.createPreviousAppointments(this.classAppointments),

@@ -52,6 +52,19 @@ export interface BasicAppointmentRequest{
   room_ids: number[]
 }
 
+export interface BasicAppointmentPostRequest{
+  id: number,
+  type: string,
+  title: string,
+  module: string | null,
+  date: string,
+  start_time: string, //Format: 20:06:26.182
+  end_time: string,
+  lec_ids: number[],
+  class_ids: string[],
+  room_ids: number[]
+}
+
 export interface PersonalAppointmentRequest{
   lec_id: number,
   title: string,

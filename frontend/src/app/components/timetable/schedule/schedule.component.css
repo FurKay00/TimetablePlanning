@@ -16,6 +16,11 @@ mwl-calendar-week-view {
   white-space: collapse;
 }
 
+.selected-event {
+  border: 2px solid #ff0000;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
 .custom-event strong {
   display: flex;
   font-size: 16px;

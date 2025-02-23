@@ -3,7 +3,7 @@ import {
   CalendarEvent,
   CalendarEventTimesChangedEvent,
   CalendarModule,
-  CalendarView
+  CalendarView, CalendarWeekViewAllDayEventRow
 } from 'angular-calendar';
 import {addDays, addHours, subDays} from 'date-fns';
 import {CommonModule} from '@angular/common';
@@ -22,6 +22,9 @@ export class ScheduleComponent implements OnInit, OnChanges{
   @Input() refresh: Subject<void> = new Subject<void>();
 
   @Output() eventMoved: EventEmitter<CalendarEvent> = new EventEmitter<CalendarEvent>();
+  @Output() eventClicked: EventEmitter<CalendarEvent> = new EventEmitter<CalendarEvent>();
+
+  selectedEvent: CalendarEvent | null = null;
 
   view: CalendarView = CalendarView.Week;
   viewDate: Date = new Date();
@@ -48,19 +51,6 @@ export class ScheduleComponent implements OnInit, OnChanges{
     }
   ];
 
-  addEvent(): void {
-    this.events.push({
-      start: new Date(),
-      end: addDays(new Date(), 1),
-      title: 'New Course Added',
-      color: { primary: '#FF9800', secondary: '#FF9800' },
-      meta: { location: 'Building C - Room 120', lecturer: 'Jane Doe' },
-      cssClass: 'custom-event-style'
-    });
-
-    // 🔹 Trigger UI refresh
-    this.refresh.next();
-  }
 
   eventTimesChanged({
                       event,
@@ -73,6 +63,21 @@ export class ScheduleComponent implements OnInit, OnChanges{
     event.end = newEnd;
     this.refresh.next();
     this.eventMoved.emit(event);
+  }
+
+  onEventClicked(clickedEvent: CalendarEvent){
+    console.log(clickedEvent)
+    if(this.selectedEvent === clickedEvent){
+      this.selectedEvent = null;
+      return;
+    }
+    this.selectedEvent = clickedEvent;
+    this.eventClicked.emit(clickedEvent);
+    this.refresh.next();
+  }
+
+  isSelected(event:CalendarEvent){
+    return this.selectedEvent && this.selectedEvent.id === event.id;
   }
 
   constructor(private cdr: ChangeDetectorRef) {

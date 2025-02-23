@@ -1,17 +1,10 @@
 <div class="modal-container">
   <div class="modal-form">
     <div class="modal-header">
-      <h2>New Appointment/s</h2>
+      <h2>Update Appointments</h2>
       <button mat-icon-button class="close-btn" (click)="closeDialog()">
         <mat-icon>close</mat-icon>
       </button>
-    </div>
-
-    <div [formGroup]="appointmentForm" class="toggle-buttons">
-      <mat-button-toggle-group formControlName="appointment_type">
-        <mat-button-toggle value="single">Single appointment</mat-button-toggle>
-        <mat-button-toggle value="block">Block appointment</mat-button-toggle>
-      </mat-button-toggle-group>
     </div>
 
     <form [formGroup]="appointmentForm" *ngIf="appointmentForm">
@@ -32,7 +25,7 @@
           {{module.title}} ({{module.module_id}})
         </option>
       </select>
-        <mat-error *ngIf="appointmentForm.get('modules')?.hasError('required') && appointmentType==='block'">
+        <mat-error *ngIf="appointmentForm.get('modules')?.hasError('required')">
           Module is required
         </mat-error>
       </div>
@@ -83,33 +76,17 @@
         </mat-select>
       </mat-form-field>
 
-      <div *ngIf="appointmentType === 'block'">
-        <label>Max hours:</label>
-        <input type="number" formControlName="maxHours" (change)="createEventsFromWorkload()" required/>
-
-        <label>Weekdays:</label>
-        <mat-form-field appearance="fill">
-          <mat-label>Select Weekdays</mat-label>
-          <mat-select formControlName="weekdays" multiple (selectionChange)="updateWeekdaysSelection($event.value)" required>
-            <mat-option value="1">Monday</mat-option>
-            <mat-option value="2">Tuesday</mat-option>
-            <mat-option value="3">Wednesday</mat-option>
-            <mat-option value="4">Thursday</mat-option>
-            <mat-option value="5">Friday</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-      </div>
 
       <div class="submit-buttons">
         <button type="button" (click)="previewEvent()">Preview</button>
-        <button type="submit" (click)="submitEvent()">Submit</button>
+        <button type="reset" (click)="deleteEvent()">Delete</button>
+        <button type="submit" (click)="updateEvent()">Update</button>
       </div>
     </form>
   </div>
 
   <div class="modal-calendar">
     <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
-    <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events" (eventMoved)="onEventMoved($event)"></app-schedule>
+    <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events" (eventMoved)="onEventMoved($event)" (eventClicked)="onEventClicked($event)"></app-schedule>
   </div>
 </div>

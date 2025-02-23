@@ -10,6 +10,7 @@
     [eventTitleTemplate]="weekEventTemplate"
     [excludeDays]="excludeDays"
     [hourSegments]="4"
+    (eventClicked)="onEventClicked($event.event)"
     (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-week-view>
 
@@ -22,13 +23,15 @@
     [dayEndHour]="23"
     [hourSegments]="4"
     [eventTitleTemplate]="weekEventTemplate"
+    (eventClicked)="onEventClicked($event.event)"
     (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-day-view>
 
   <ng-template #weekEventTemplate let-event="event">
     <div class="custom-event"
          [style.background-color]="event.color.primary"
-         [ngStyle]="{ 'background-color': event.color?.primary }">
+         [ngStyle]="{ 'background-color': event.color?.primary }"
+         [ngClass]="{'selected-event': isSelected(event)}">
       <strong>{{ event.title }} <br>{{event.start | date: "shortTime"}}-{{event.end | date: "shortTime"}}</strong>
       <br>
       <small>{{ event.meta.location }}</small>

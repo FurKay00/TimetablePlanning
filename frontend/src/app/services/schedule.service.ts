@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
+import {catchError, map, Observable} from 'rxjs';
 import {CalendarEvent} from 'angular-calendar';
 import {
-  AppointmentView,
+  AppointmentView, BasicAppointmentPostRequest,
   BasicAppointmentRequest,
   PersonalAppointmentRequest,
   PersonalAppointmentView
 } from '../models/response_models';
+import {formatDate} from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -79,6 +80,30 @@ export class ScheduleService {
       );
   }
 
+  createNewAppointment(appointment:BasicAppointmentPostRequest):Observable<BasicAppointmentPostRequest>{
+    return this.http.post<BasicAppointmentPostRequest>(this.URL + "basic/", appointment)
+      .pipe()
+  }
+
+  createNewAppointments(appointments:BasicAppointmentPostRequest[]):Observable<BasicAppointmentPostRequest[]>{
+    return this.http.post<BasicAppointmentPostRequest[]>(this.URL + "basic/bulk", appointments)
+      .pipe()
+  }
+
+  createNewPersonalAppointment(appointment: PersonalAppointmentView):Observable<PersonalAppointmentView>{
+    return this.http.post<PersonalAppointmentView>(this.URL + "personal/", appointment).pipe()
+  }
+
+  updateAppointments(appointments:BasicAppointmentPostRequest[]):Observable<BasicAppointmentPostRequest[]>{
+    return this.http.put<BasicAppointmentPostRequest[]>(this.URL + "basic/", appointments)
+      .pipe()
+  }
+
+  updatePersonalAppointments(appointments:PersonalAppointmentView[]):Observable<PersonalAppointmentView[]>{
+    return this.http.put<PersonalAppointmentView[]>(this.URL + "personal/", appointments)
+      .pipe()
+  }
+
   private mapAppointmentToEvent(appointment: AppointmentView): any {
     return {
       id: appointment.id,
@@ -88,11 +113,33 @@ export class ScheduleService {
       draggable: false,
       color: this.getAppointmentColor(appointment.type),
       meta: {
+        typeRaw: this.toTitleCase(appointment.type),
+        type: appointment.type,
+        module_id: appointment.module,
+        locationRaw: appointment.rooms,
+        lecturerRaw: appointment.lecturers,
+        classesRaw: appointment.classes,
         location: appointment.rooms.map(room => `${room.room_name}`).join('\n'),
-        lecturer: appointment.lecturers.map(lec => lec.fullname).join('\n')
+        lecturer: appointment.lecturers.map(lec => lec.fullname).join('\n'),
+        classes: appointment.classes.map(class_ => class_.class_id).join('\n')
       },
       cssClass: 'custom-event-style'
     };
+  }
+
+  mapEventToAppointment(event:CalendarEvent):BasicAppointmentPostRequest{
+    return {
+      id: event.id as number,
+      type: event.meta.type,
+      title: event.title,
+      module: event.meta.module_id,
+      date: formatDate(event.start, "YYYY-MM-dd", "EN-US"),
+      start_time: formatDate(event.start, "hh:mm:", "EN-US") + ":00.000Z",
+      end_time: formatDate(event.end as Date, "hh:mm:", "EN-US") + ":00.000Z",
+      lec_ids: event.meta.lecturerRaw.map((lecturer:any)=> lecturer.lec_id ),
+      class_ids: event.meta.classes,
+      room_ids: event.meta.locationRaw.map((location:any)=> location.id)
+    }
   }
 
   private mapPersonalAppointmentToEvent(personalAppointment:PersonalAppointmentView, pseudonomized:boolean):any{
@@ -130,5 +177,10 @@ export class ScheduleService {
     return previousAppointments.map(appointment => ({...appointment, color: this.previousColor}));
   }
 
+  toTitleCase(str: any) {
+    return str.toLowerCase().split(' ').map((word: any) => {
+      return (word.charAt(0).toUpperCase() + word.slice(1));
+    }).join(' ');
+  }
 
 }

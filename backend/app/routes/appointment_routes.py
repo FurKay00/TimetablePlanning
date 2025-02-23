@@ -2,6 +2,9 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from datetime import date, time
 from typing import List, Optional
+
+from sqlalchemy import delete
+
 from app.main import db_dependency
 from app.models import models
 
@@ -244,6 +247,91 @@ async def create_multiple_personal_appointments(appointments: List[PersonalAppoi
         appointments_result.append(db_appointment["appointment"])
 
     return {"message": "Appointments created successfully", "appointments": appointments_result}
+
+
+@router.put("/basic/")
+async def update_basic_appointments(appointments: List[AppointmentBase], db: db_dependency):
+    if not appointments:
+        raise HTTPException(status_code=400, detail="No appointments provided")
+    updated_appointments = []
+    for updated_appointment in appointments:
+        appointment = db.query(models.Appointment).filter(models.Appointment.id == updated_appointment.id).first()
+        if not appointment:
+            raise HTTPException(status_code=404, detail=f"Appointment with ID {updated_appointment.id} not found.")
+        appointment.title = updated_appointment.title
+        appointment.type = updated_appointment.type
+        appointment.module = updated_appointment.module
+        appointment.date = updated_appointment.date
+        appointment.start_time = updated_appointment.start_time
+        appointment.end_time = updated_appointment.end_time
+
+        db.execute(delete(models.App2Lec).where(models.App2Lec.app_id == appointment.id))
+        db.execute(delete(models.App2Room).where(models.App2Room.app_id == appointment.id))
+        db.execute(delete(models.App2Class).where(models.App2Class.app_id == appointment.id))
+        for lec_id in updated_appointment.lec_ids:
+            new_relation = models.App2Lec(app_id=appointment.id, lec_id=lec_id)
+            db.add(new_relation)
+
+        for class_id in updated_appointment.class_ids:
+            new_relation = models.App2Class(app_id=appointment.id, class_id=class_id)
+            db.add(new_relation)
+
+        for room_id in updated_appointment.room_ids:
+            new_relation = models.App2Room(app_id=appointment.id, room_id=room_id)
+            db.add(new_relation)
+        updated_appointments.append(appointment)
+
+    db.commit()
+
+    return {"message": "Appointments updated successfully", "appointments": updated_appointments}
+
+
+@router.put("/personal/")
+async def update_personal_appointments(appointments: List[PersonalAppointmentView], db: db_dependency):
+    if not appointments:
+        raise HTTPException(status_code=400, detail="No appointments provided")
+    updated_appointments = []
+    for updated_appointment in appointments:
+        appointment = (db.query(models.PersonalAppointment).
+                       filter(models.PersonalAppointment.id == updated_appointment.id).first())
+        if not appointment:
+            raise HTTPException(status_code=404, detail=f"Appointment with ID {updated_appointment.id} not found.")
+        appointment.title = updated_appointment.title
+        appointment.date = updated_appointment.date
+        appointment.start_time = updated_appointment.start_time
+        appointment.end_time = updated_appointment.end_time
+        updated_appointments.append(appointment)
+
+    db.commit()
+
+    return {"message": "Personal Appointments updated successfully", "appointments": updated_appointments}
+
+
+@router.delete("/basic/{appointment_id}", status_code=204)
+async def delete_basic_appointment(appointment_id: int, db: db_dependency):
+    appointment = db.query(models.Appointment).filter(models.Appointment.id == appointment_id)
+
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    db.execute(delete(models.App2Lec).where(models.App2Lec.app_id == appointment.id))
+    db.execute(delete(models.App2Room).where(models.App2Room.app_id == appointment.id))
+    db.execute(delete(models.App2Class).where(models.App2Class.app_id == appointment.id))
+    db.delete(appointment)
+    db.commit()
+
+    return {"message": "Appointment deleted successfully"}
+
+
+@router.delete("/personal/{appointment_id}", status_code=204)
+async def delete_personal_appointment(appointment_id: int, db: db_dependency):
+    appointment = db.query(models.PersonalAppointment).filter(models.PersonalAppointment.id == appointment_id)
+
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    db.delete(appointment)
+    db.commit()
+
+    return {"message": "Appointment deleted successfully"}
 
 
 @router.get("/appointment_lecturers/{appointment_id}")

@@ -1,0 +1,122 @@
+.modal-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: #fcfcfc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-form {
+  width: 24%;
+  background: #fcfcfc;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 5px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.modal-calendar {
+  width: 86%;
+  margin-left: 10px;
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.toggle-buttons button {
+  flex: 1;
+  padding: 10px;
+  background: #e0e0e0;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.toggle-buttons button.active {
+  background: #34c3a3;
+  border: 1px solid #00796b;
+  color: white;
+  font-weight: bold;
+}
+
+form label {
+  width: 100%;
+  display: block;
+  margin-top: 10px;
+}
+
+form input, form select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px;
+  width: 100px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="submit"] {
+  background: #34c3a3;
+  color: white;
+}
+
+
+button[type="reset"] {
+  background: #d30e0e;
+  color: white;
+}
+
+.submit-buttons{
+  margin-top: 15px;
+  align-items: flex-end;
+}
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 20px;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+mat-form-field {
+  width: 100%;
+  display: block;
+}
+
+
+.mat-select-panel {
+  background: white !important;
+  color: black !important;
+}
+
+
+mat-form-field.mat-focused .mat-form-field-outline {
+  color: #34c3a3 !important;
+  border-color: #34c3a3 !important;
+}
+
+mat-form-field.mat-focused .mat-form-field-label {
+  color: #34c3a3 !important;
+}

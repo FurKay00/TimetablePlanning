@@ -62,8 +62,9 @@
 .distance-checkbox {
   margin-left: 15px;
 }
+
 .filter-button mat-icon {
-  color: #555;
+  color: #070707;
 }
 
 .checkbox-label input[type="checkbox"] {

@@ -4,7 +4,7 @@ import {CalendarEvent, CalendarView, CalendarWeekModule} from 'angular-calendar'
 import {ScheduleComponent} from '../../timetable/schedule/schedule.component';
 import {formatDate, NgForOf, NgIf} from '@angular/common';
 import {ToolbarComponent} from '../../general/toolbar/toolbar.component';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {RoleService} from '../../../services/role.service';
@@ -16,6 +16,7 @@ import {MatLabel} from '@angular/material/input';
 import {ScheduleService} from '../../../services/schedule.service';
 import {Subject} from 'rxjs';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
+import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-create-appointment-modal',
@@ -73,6 +74,7 @@ export class CreateAppointmentModalComponent implements OnInit{
               private roleService: RoleService,
               private roomService: RoomService,
               private scheduleService: ScheduleService,
+              private dialog:MatDialog
               ) {
     this.previousEvents = data.previousEvents;
     this.pickedDate = data.pickedDate;
@@ -112,41 +114,23 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   submitEvent() {
     if (this.isFormValid()) {
-      if(this.appointmentType === 'single'){
-        let newAppointment: BasicAppointmentRequest = {
-          class_ids: [...this.selectedClasses],
-          date: this.appointmentForm.get("date")?.value,
-          end_time:  this.appointmentForm.get("endTime")?.value + ":00.000Z",
-          lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
-          module: this.selectedModule?.module_id || null,
-          room_ids: this.selectedRooms.map(room => room.room_id),
-          start_time: this.appointmentForm.get("startTime")?.value + ":00.000Z",
-          title: this.appointmentForm.get("title")?.value,
-          type: this.appointmentForm.get("type")?.value.toUpperCase()
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        width: '400px',
+        data: {
+          title: 'Confirm data',
+          message: 'Are you sure you want to submit this appointment?'
         }
+      });
 
-      }else{
-        let newAppointments:BasicAppointmentRequest[] = [];
-        this.newEvents.forEach((event)=>{
-          const date = event.start.toISOString().split('T')[0];
-          const startTime = event.start.toTimeString().slice(0,5);
-          const endTime = event.end?.toTimeString().slice(0,5);
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          console.log('User confirmed');
+          this.submitNewEvent();
+        } else {
+          console.log('User canceled');
+        }
+      });
 
-          const newAppointment:BasicAppointmentRequest = {
-            class_ids: [...this.selectedClasses],
-            date: date,
-            end_time:  endTime + ":00.000Z",
-            lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
-            module: this.selectedModule?.module_id,
-            room_ids: this.selectedRooms.map(room => room.room_id),
-            start_time: startTime + ":00.000Z",
-            title: this.appointmentForm.get("title")?.value,
-            type: this.appointmentForm.get("type")?.value.toUpperCase()
-          }
-          newAppointments.push(newAppointment);
-        });
-        console.log(newAppointments)
-      }
 
     } else {
       console.error('Form is invalid. Please fill in all required fields.');
@@ -397,5 +381,42 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.refresh.next();
   }
 
+  submitNewEvent(){
 
+    if(this.appointmentType === 'single'){
+      let newAppointment: BasicAppointmentRequest = {
+        class_ids: [...this.selectedClasses],
+        date: this.appointmentForm.get("date")?.value,
+        end_time:  this.appointmentForm.get("endTime")?.value + ":00.000Z",
+        lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
+        module: this.selectedModule?.module_id || null,
+        room_ids: this.selectedRooms.map(room => room.room_id),
+        start_time: this.appointmentForm.get("startTime")?.value + ":00.000Z",
+        title: this.appointmentForm.get("title")?.value,
+        type: this.appointmentForm.get("type")?.value.toUpperCase()
+      }
+
+    }else{
+      let newAppointments:BasicAppointmentRequest[] = [];
+      this.newEvents.forEach((event)=>{
+        const date = event.start.toISOString().split('T')[0];
+        const startTime = event.start.toTimeString().slice(0,5);
+        const endTime = event.end?.toTimeString().slice(0,5);
+
+        const newAppointment:BasicAppointmentRequest = {
+          class_ids: [...this.selectedClasses],
+          date: date,
+          end_time:  endTime + ":00.000Z",
+          lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
+          module: this.selectedModule?.module_id,
+          room_ids: this.selectedRooms.map(room => room.room_id),
+          start_time: startTime + ":00.000Z",
+          title: this.appointmentForm.get("title")?.value,
+          type: this.appointmentForm.get("type")?.value.toUpperCase()
+        }
+        newAppointments.push(newAppointment);
+      });
+      console.log(newAppointments)
+    }
+  }
 }
