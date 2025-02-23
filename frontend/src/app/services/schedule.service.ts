@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {catchError, map, Observable} from 'rxjs';
 import {CalendarEvent} from 'angular-calendar';
 import {
-  AppointmentView, BasicAppointmentPostRequest,
+  AppointmentView, BasicAppointmentPutRequest,
   BasicAppointmentRequest,
   PersonalAppointmentRequest,
   PersonalAppointmentView
@@ -80,28 +80,38 @@ export class ScheduleService {
       );
   }
 
-  createNewAppointment(appointment:BasicAppointmentPostRequest):Observable<BasicAppointmentPostRequest>{
-    return this.http.post<BasicAppointmentPostRequest>(this.URL + "basic/", appointment)
-      .pipe()
+  createNewAppointment(appointment:BasicAppointmentRequest):Observable<BasicAppointmentPutRequest>{
+    return this.http.post<{ message:string,appointment: BasicAppointmentPutRequest }>(this.URL + "basic/", appointment)
+      .pipe(map(response => response.appointment))
   }
 
-  createNewAppointments(appointments:BasicAppointmentPostRequest[]):Observable<BasicAppointmentPostRequest[]>{
-    return this.http.post<BasicAppointmentPostRequest[]>(this.URL + "basic/bulk", appointments)
-      .pipe()
+  createNewAppointments(appointments:BasicAppointmentRequest[]):Observable<BasicAppointmentPutRequest[]>{
+    return this.http.post<{ message:string, appointments: BasicAppointmentPutRequest[] }>(this.URL + "basic/bulk", appointments)
+      .pipe(map(response => response.appointments))
   }
 
   createNewPersonalAppointment(appointment: PersonalAppointmentView):Observable<PersonalAppointmentView>{
-    return this.http.post<PersonalAppointmentView>(this.URL + "personal/", appointment).pipe()
+    return this.http.post<{ message: string, appointment:PersonalAppointmentView }>(this.URL + "personal/", appointment).pipe(
+      map(response => response.appointment)
+    )
   }
 
-  updateAppointments(appointments:BasicAppointmentPostRequest[]):Observable<BasicAppointmentPostRequest[]>{
-    return this.http.put<BasicAppointmentPostRequest[]>(this.URL + "basic/", appointments)
-      .pipe()
+  updateAppointments(appointments:BasicAppointmentPutRequest[]):Observable<BasicAppointmentPutRequest[]>{
+    return this.http.put<{ message: string, appointments: BasicAppointmentPutRequest[] }>(this.URL + "basic/", appointments)
+      .pipe( map(response => response.appointments))
   }
 
   updatePersonalAppointments(appointments:PersonalAppointmentView[]):Observable<PersonalAppointmentView[]>{
-    return this.http.put<PersonalAppointmentView[]>(this.URL + "personal/", appointments)
-      .pipe()
+    return this.http.put<{ message: string, appointments:PersonalAppointmentView[] }>(this.URL + "personal/", appointments)
+      .pipe( map(response => response.appointments))
+  }
+
+  deleteAppointment(appointment_id:number):Observable<any>{
+    return this.http.delete(this.URL +"basic/"+appointment_id).pipe();
+  }
+
+  deletePersonalAppointment(appointment_id:number):Observable<any>{
+    return this.http.delete(this.URL +"personal/"+appointment_id).pipe();
   }
 
   private mapAppointmentToEvent(appointment: AppointmentView): any {
@@ -127,7 +137,7 @@ export class ScheduleService {
     };
   }
 
-  mapEventToAppointment(event:CalendarEvent):BasicAppointmentPostRequest{
+  mapEventToAppointment(event:CalendarEvent):BasicAppointmentPutRequest{
     return {
       id: event.id as number,
       type: event.meta.type,

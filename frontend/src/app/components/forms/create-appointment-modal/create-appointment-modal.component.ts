@@ -382,20 +382,27 @@ export class CreateAppointmentModalComponent implements OnInit{
   }
 
   submitNewEvent(){
-
     if(this.appointmentType === 'single'){
       let newAppointment: BasicAppointmentRequest = {
         class_ids: [...this.selectedClasses],
         date: this.appointmentForm.get("date")?.value,
         end_time:  this.appointmentForm.get("endTime")?.value + ":00.000Z",
         lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
-        module: this.selectedModule?.module_id || null,
+        module: this.selectedModule?.module_id || "",
         room_ids: this.selectedRooms.map(room => room.room_id),
         start_time: this.appointmentForm.get("startTime")?.value + ":00.000Z",
         title: this.appointmentForm.get("title")?.value,
         type: this.appointmentForm.get("type")?.value.toUpperCase()
       }
-
+      console.log(newAppointment)
+      this.scheduleService.createNewAppointment(newAppointment).subscribe(()=> {
+        this.scheduleService.getAppointmentsByClass(this.selectedClass).subscribe(data => {
+          this.previousEvents = this.scheduleService.createPreviousAppointments(data);
+          this.newEvent = this.createInitialEvent();
+          this.events = [this.newEvent].concat(this.previousEvents);
+          this.initializeForm();
+        })
+      })
     }else{
       let newAppointments:BasicAppointmentRequest[] = [];
       this.newEvents.forEach((event)=>{
@@ -417,6 +424,14 @@ export class CreateAppointmentModalComponent implements OnInit{
         newAppointments.push(newAppointment);
       });
       console.log(newAppointments)
+      this.scheduleService.createNewAppointments(newAppointments).subscribe(()=> {
+        this.scheduleService.getAppointmentsByClass(this.selectedClass).subscribe(data => {
+          this.previousEvents = this.scheduleService.createPreviousAppointments(data);
+          this.newEvents = [];
+          this.events = this.newEvents.concat(this.previousEvents);
+          this.initializeForm();
+        })
+      })
     }
   }
 }

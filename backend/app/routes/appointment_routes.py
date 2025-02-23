@@ -78,7 +78,7 @@ class AppointmentView(BaseModel):
     id: int
     type: str
     title: str
-    module: str
+    module: Optional[str]
     date: date
     start_time: time
     end_time: time

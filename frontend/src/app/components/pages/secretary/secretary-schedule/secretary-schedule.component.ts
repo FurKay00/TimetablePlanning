@@ -40,11 +40,11 @@ export class SecretaryScheduleComponent implements OnInit{
   ngOnInit():void{
     this.route.paramMap.subscribe((params) => {
       this.classId = params.get("classId") || "";
-      this.loadLecturerSchedule();
+      this.loadClassSchedule();
     })
   }
 
-  loadLecturerSchedule() {
+  loadClassSchedule() {
     if(this.classId === "")
       return;
     this.scheduleService.getAppointmentsByClass(this.classId).subscribe(
@@ -77,7 +77,7 @@ export class SecretaryScheduleComponent implements OnInit{
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.loadLecturerSchedule();
+      this.loadClassSchedule();
     });
   }
 
@@ -90,7 +90,7 @@ export class SecretaryScheduleComponent implements OnInit{
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.loadLecturerSchedule();
+      this.loadClassSchedule();
     });
   }
 }

@@ -149,7 +149,7 @@ export class UpdateAppointmentModalComponent implements OnInit{
           date: this.appointmentForm.get("date")?.value,
           end_time:  this.appointmentForm.get("endTime")?.value + ":00.000Z",
           lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
-          module: this.selectedModule?.module_id || null,
+          module: this.selectedModule?.module_id || "",
           room_ids: this.selectedRooms.map(room => room.room_id),
           start_time: this.appointmentForm.get("startTime")?.value + ":00.000Z",
           title: this.appointmentForm.get("title")?.value,

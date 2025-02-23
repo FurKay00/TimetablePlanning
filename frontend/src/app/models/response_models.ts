@@ -52,7 +52,7 @@ export interface BasicAppointmentRequest{
   room_ids: number[]
 }
 
-export interface BasicAppointmentPostRequest{
+export interface BasicAppointmentPutRequest {
   id: number,
   type: string,
   title: string,
