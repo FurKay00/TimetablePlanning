@@ -42,9 +42,11 @@ export class ToolbarComponent {
   @Output() selectedView = new EventEmitter<CalendarView>();
   @Output() selectedLecturer = new EventEmitter<LecturerView>();
   @Output() selectedRoom = new EventEmitter<RoomView>();
-  @Output() modalOpened = new EventEmitter<void>();
+  @Output() createModalOpened = new EventEmitter<void>();
+  @Output() editModalOpened = new EventEmitter<void>();
 
-  @Input() showEditfield:boolean = false;
+  @Input() showCreateField:boolean = false;
+  @Input() showEditField:boolean = false;
   @Input() showRoomSelect:boolean = false;
   @Input() showLecturerSelect:boolean = false;
   @Input() lecturerOptions: LecturerView[] = [];
@@ -122,7 +124,11 @@ export class ToolbarComponent {
     this.selectedLecturer.emit(lecturer)
   }
 
-  triggerModalWindow(){
-    this.modalOpened.emit();
+  triggerCreateModalWindow(){
+    this.createModalOpened.emit();
+  }
+
+  triggerEditModalWindow(){
+    this.editModalOpened.emit();
   }
 }

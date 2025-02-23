@@ -11,6 +11,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   cursor: default;
 }
 
+
 .cal-week-view{
   background-color: transparent;
   border-top:  solid 0 transparent !important;

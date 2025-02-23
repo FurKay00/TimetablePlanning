@@ -38,7 +38,8 @@
     <span>Weekly</span>
   </button>
 
-  <mat-icon *ngIf="showEditfield" class="edit-icon" (click)="triggerModalWindow()">edit</mat-icon>
+  <mat-icon *ngIf="showCreateField" class="edit-icon" (click)="triggerCreateModalWindow()">playlist_add</mat-icon>
+  <mat-icon *ngIf="showEditField" class="edit-icon" (click)="triggerEditModalWindow()">edit_calendar</mat-icon>
 
   <app-lecturer-drop-down *ngIf="showLecturerSelect" [lecturers]="lecturerOptions" (lecturerSelected)="emitSelectedLecturer($event)"></app-lecturer-drop-down>
   <app-room-drop-down *ngIf="showRoomSelect" [rooms]="roomOptions" (roomSelected)="emitSelectedRoom($event)"></app-room-drop-down>
