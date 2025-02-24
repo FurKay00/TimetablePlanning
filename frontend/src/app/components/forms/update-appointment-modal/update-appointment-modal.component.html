@@ -87,6 +87,6 @@
 
   <div class="modal-calendar">
     <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
-    <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events" (eventMoved)="onEventMoved($event)" (eventClicked)="onEventClicked($event)"></app-schedule>
+    <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events" [isLoaded]="isLoaded" (eventMoved)="onEventMoved($event)" (eventClicked)="onEventClicked($event)"></app-schedule>
   </div>
 </div>

@@ -65,6 +65,7 @@ export class UpdateAppointmentModalComponent implements OnInit{
 
   changedEvents: CalendarEvent[] = [];
   refresh: Subject<void> = new Subject<void>();
+  isLoaded:boolean = true;
 
   constructor(private fb: FormBuilder,
               public dialogRef: MatDialogRef<UpdateAppointmentModalComponent>,
@@ -330,12 +331,14 @@ export class UpdateAppointmentModalComponent implements OnInit{
     const changedEvents = this.changedEvents.map(event => this.scheduleService.mapEventToAppointment(event));
     console.log(changedEvents);
     this.scheduleService.updateAppointments(changedEvents).subscribe(data => {
+      this.isLoaded = false;
       this.scheduleService.getAppointmentsByClass(this.selectedClass).subscribe(
         data => {
           this.previousEvents = this.scheduleService.createPreviousAppointments(data);
           this.events = this.previousEvents;
           this.changedEvents = [];
           this.selectedEvent = null;
+          this.isLoaded = true;
         }
       )
 

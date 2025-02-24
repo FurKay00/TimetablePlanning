@@ -66,6 +66,7 @@ export class CreateAppointmentModalComponent implements OnInit{
   newEvent: CalendarEvent;
   newEvents: CalendarEvent[] = [];
 
+  isLoaded:boolean = true;
   refresh: Subject<void> = new Subject<void>();
 
   constructor(private fb: FormBuilder,
@@ -395,12 +396,14 @@ export class CreateAppointmentModalComponent implements OnInit{
         type: this.appointmentForm.get("type")?.value.toUpperCase()
       }
       console.log(newAppointment)
+      this.isLoaded = false;
       this.scheduleService.createNewAppointment(newAppointment).subscribe(()=> {
         this.scheduleService.getAppointmentsByClass(this.selectedClass).subscribe(data => {
           this.previousEvents = this.scheduleService.createPreviousAppointments(data);
           this.newEvent = this.createInitialEvent();
           this.events = [this.newEvent].concat(this.previousEvents);
           this.initializeForm();
+          this.isLoaded = true;
         })
       })
     }else{
@@ -425,11 +428,13 @@ export class CreateAppointmentModalComponent implements OnInit{
       });
       console.log(newAppointments)
       this.scheduleService.createNewAppointments(newAppointments).subscribe(()=> {
+        this.isLoaded=false;
         this.scheduleService.getAppointmentsByClass(this.selectedClass).subscribe(data => {
           this.previousEvents = this.scheduleService.createPreviousAppointments(data);
           this.newEvents = [];
           this.events = this.newEvents.concat(this.previousEvents);
           this.initializeForm();
+          this.isLoaded = true;
         })
       })
     }
