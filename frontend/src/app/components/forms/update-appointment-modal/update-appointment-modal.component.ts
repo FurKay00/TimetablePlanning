@@ -144,19 +144,6 @@ export class UpdateAppointmentModalComponent implements OnInit{
           console.log('User canceled');
         }
       });
-        let newAppointment: BasicAppointmentRequest = {
-          class_ids: [...this.selectedClasses],
-          date: this.appointmentForm.get("date")?.value,
-          end_time:  this.appointmentForm.get("endTime")?.value + ":00.000Z",
-          lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
-          module: this.selectedModule?.module_id || "",
-          room_ids: this.selectedRooms.map(room => room.room_id),
-          start_time: this.appointmentForm.get("startTime")?.value + ":00.000Z",
-          title: this.appointmentForm.get("title")?.value,
-          type: this.appointmentForm.get("type")?.value.toUpperCase()
-        }
-
-
     } else {
       console.error('Form is invalid. Please fill in all required fields.');
     }
@@ -338,9 +325,30 @@ export class UpdateAppointmentModalComponent implements OnInit{
 
   private updateAppointments() {
 
+    const changedEvents = this.changedEvents.map(event => this.scheduleService.mapEventToAppointment(event));
+    console.log(changedEvents);
+    this.scheduleService.updateAppointments(changedEvents).subscribe(data => {
+      this.scheduleService.getAppointmentsByClass(this.selectedClass).subscribe(
+        data => {
+          this.previousEvents = this.scheduleService.createPreviousAppointments(data);
+          this.events = this.previousEvents;
+          this.changedEvents = [];
+          this.selectedEvent = null;
+        }
+      )
+
+    });
   }
 
   private deleteSelectedEvent() {
-
+    if(this.selectedEvent=== null) return;
+    const id = this.selectedEvent.id;
+    this.scheduleService.deleteAppointment(id as number).subscribe(data => {
+      this.previousEvents.filter(event => event.id !== id)
+      this.changedEvents.filter(event => event.id !== id);
+      this.events = this.previousEvents;
+      this.refreshView();
+      this.selectedEvent = null;
+    });
   }
 }

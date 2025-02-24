@@ -2,37 +2,36 @@ import { Component } from '@angular/core';
 import {ToolbarComponent} from '../../general/toolbar/toolbar.component';
 import {ScheduleComponent} from '../../timetable/schedule/schedule.component';
 import {ActivatedRoute} from '@angular/router';
-import {DateService} from '../../../services/date.service';
-import { CalendarView} from 'angular-calendar';
+import {MatCard, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle} from '@angular/material/card';
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle
+} from '@angular/material/expansion';
 
 @Component({
   selector: 'app-homepage',
   standalone: true,
   imports: [
     ToolbarComponent,
-    ScheduleComponent
+    ScheduleComponent,
+    MatCardContent,
+    MatCard,
+    MatCardHeader,
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelTitle,
+    MatExpansionPanelHeader,
+    MatCardSubtitle,
+    MatCardTitle
   ],
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.css'
 })
 export class HomepageComponent {
-  selectedWeekDays: Date[] = [];
-  selectedDay: Date = new Date();
-  calendarView = CalendarView.Week;
 
-  constructor(private route:ActivatedRoute, private dateService:DateService) {
-    this.selectedWeekDays = dateService.initializeWeekDays();
+  constructor(private route:ActivatedRoute) {
   }
 
-  onWeekDaysSelected(weekDays: Date[]):void{
-    this.selectedWeekDays = weekDays;
-  }
-
-  onDaySelected(day: Date):void{
-    this.selectedDay = day;
-  }
-
-  onViewSelected($event: CalendarView) {
-    this.calendarView = $event;
-  }
 }

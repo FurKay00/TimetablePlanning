@@ -53,6 +53,19 @@ class AppointmentBase(BaseModel):
     room_ids: List[int]
 
 
+class AppointmentPut(BaseModel):
+    id: int
+    type: str
+    title: str
+    module: Optional[str]
+    date: date
+    start_time: time
+    end_time: time
+    lec_ids: List[int]
+    class_ids: List[str]
+    room_ids: List[int]
+
+
 class AppointmentFinal(BaseModel):
     id: int
     appointment: AppointmentBase
@@ -250,7 +263,7 @@ async def create_multiple_personal_appointments(appointments: List[PersonalAppoi
 
 
 @router.put("/basic/")
-async def update_basic_appointments(appointments: List[AppointmentBase], db: db_dependency):
+async def update_basic_appointments(appointments: List[AppointmentPut], db: db_dependency):
     if not appointments:
         raise HTTPException(status_code=400, detail="No appointments provided")
     updated_appointments = []
@@ -309,10 +322,11 @@ async def update_personal_appointments(appointments: List[PersonalAppointmentVie
 
 @router.delete("/basic/{appointment_id}", status_code=204)
 async def delete_basic_appointment(appointment_id: int, db: db_dependency):
-    appointment = db.query(models.Appointment).filter(models.Appointment.id == appointment_id)
+    appointment = db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
 
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
+
     db.execute(delete(models.App2Lec).where(models.App2Lec.app_id == appointment.id))
     db.execute(delete(models.App2Room).where(models.App2Room.app_id == appointment.id))
     db.execute(delete(models.App2Class).where(models.App2Class.app_id == appointment.id))
