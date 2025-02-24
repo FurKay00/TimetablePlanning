@@ -78,7 +78,7 @@ button[type="submit"] {
 }
 
 
-button[type="reset"] {
+.reset {
   background: #d30e0e;
   color: white;
 }

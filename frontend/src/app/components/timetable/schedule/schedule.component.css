@@ -43,3 +43,14 @@ mwl-calendar-week-view {
   overflow: scroll;
 }
 
+.progress-spinner{
+  background-color: white;
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 5px;
+  overflow: scroll;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

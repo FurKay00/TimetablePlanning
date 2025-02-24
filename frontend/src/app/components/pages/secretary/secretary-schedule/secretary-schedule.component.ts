@@ -12,6 +12,7 @@ import {
 import {
   UpdateAppointmentModalComponent
 } from '../../../forms/update-appointment-modal/update-appointment-modal.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-secretary-schedule',
@@ -20,7 +21,7 @@ import {
     ToolbarComponent,
     ScheduleComponent,
     CreateAppointmentModalComponent,
-
+    MatProgressSpinner
   ],
   templateUrl: './secretary-schedule.component.html',
   styleUrl: './secretary-schedule.component.css'
@@ -32,6 +33,7 @@ export class SecretaryScheduleComponent implements OnInit{
   selectedDay: Date = new Date();
   calendarView = CalendarView.Week;
   classAppointments: CalendarEvent[] = []
+  isLoaded:boolean = false;
 
   constructor(private route:ActivatedRoute, private dateService:DateService, private scheduleService:ScheduleService, public dialog:MatDialog) {
     this.selectedWeekDays = dateService.initializeWeekDays();
@@ -45,11 +47,13 @@ export class SecretaryScheduleComponent implements OnInit{
   }
 
   loadClassSchedule() {
+    this.isLoaded = false;
     if(this.classId === "")
       return;
     this.scheduleService.getAppointmentsByClass(this.classId).subscribe(
       (data: any[]) => {
           this.classAppointments = data;
+          this.isLoaded = true;
       }
     )
   }

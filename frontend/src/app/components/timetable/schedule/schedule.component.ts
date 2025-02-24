@@ -8,18 +8,20 @@ import {
 import {addDays, addHours, subDays} from 'date-fns';
 import {CommonModule} from '@angular/common';
 import {Subject} from 'rxjs';
+import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-schedule',
   templateUrl: './schedule.component.html',
   styleUrls: ['./schedule.component.css'],
-  imports: [CommonModule, CalendarModule],
+  imports: [CommonModule, CalendarModule, MatProgressSpinnerModule],
   standalone: true
 })
 export class ScheduleComponent implements OnInit, OnChanges{
   @Input() pickedView:CalendarView = CalendarView.Week;
   @Input() pickedDate: Date = new Date();
   @Input() refresh: Subject<void> = new Subject<void>();
+  @Input() isLoaded: boolean = true;
 
   @Output() eventMoved: EventEmitter<CalendarEvent> = new EventEmitter<CalendarEvent>();
   @Output() eventClicked: EventEmitter<CalendarEvent> = new EventEmitter<CalendarEvent>();

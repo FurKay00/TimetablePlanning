@@ -108,22 +108,24 @@ export class UpdateAppointmentModalComponent implements OnInit{
 
   deleteEvent(){
     if(this.selectedEvent === null) return;
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Confirm deletion',
-        message: 'Are you sure you want to delete this appointment?'
-      }
-    });
+    if(this.isFormValid()){
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        width: '400px',
+        data: {
+          title: 'Confirm deletion',
+          message: 'Are you sure you want to delete this appointment?'
+        }
+      });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        console.log('User confirmed');
-        this.deleteSelectedEvent();
-      } else {
-        console.log('User canceled');
-      }
-    });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          console.log('User confirmed');
+          this.deleteSelectedEvent();
+        } else {
+          console.log('User canceled');
+        }
+      });
+    }
   }
 
   updateEvent() {
@@ -344,11 +346,11 @@ export class UpdateAppointmentModalComponent implements OnInit{
     if(this.selectedEvent=== null) return;
     const id = this.selectedEvent.id;
     this.scheduleService.deleteAppointment(id as number).subscribe(data => {
-      this.previousEvents.filter(event => event.id !== id)
-      this.changedEvents.filter(event => event.id !== id);
-      this.events = this.previousEvents;
-      this.refreshView();
+      this.previousEvents = this.previousEvents.filter(event => event.id !== id)
+      this.changedEvents = this.changedEvents.filter(event => event.id !== id);
+      this.events = this.events.filter(event => event.id !== id);
       this.selectedEvent = null;
+      this.refresh.next();
     });
   }
 }

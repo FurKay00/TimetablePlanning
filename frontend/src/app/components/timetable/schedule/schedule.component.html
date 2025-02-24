@@ -1,4 +1,5 @@
-<div class="schedule-container" [ngSwitch]="view">
+<div *ngIf="isLoaded" class="schedule-container" [ngSwitch]="view">
+
   <mwl-calendar-week-view
     *ngSwitchCase="CalendarView.Week"
     [viewDate]="viewDate"
@@ -41,7 +42,9 @@
   </ng-template>
 
 </div>
-
+<div *ngIf="!isLoaded" class="progress-spinner" [ngSwitch]="view">
+  <mat-progress-spinner [mode]="'indeterminate'"></mat-progress-spinner>
+</div>
 <!-- Button to add a test event
 <button (click)="addEvent()">Add Event</button>
 -->

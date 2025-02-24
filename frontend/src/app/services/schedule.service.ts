@@ -138,14 +138,15 @@ export class ScheduleService {
   }
 
   mapEventToAppointment(event:CalendarEvent):BasicAppointmentPutRequest{
+    console.log(event.end);
     return {
       id: event.id as number,
       type: event.meta.type,
       title: event.title,
       module: event.meta.module_id || null,
       date: formatDate(event.start, "YYYY-MM-dd", "EN-US"),
-      start_time: formatDate(event.start, "hh:mm", "EN-US") + ":00.000Z",
-      end_time: formatDate(event.end as Date, "hh:mm", "EN-US") + ":00.000Z",
+      start_time: formatDate(event.start, "HH:mm", "EN-US") + ":00.000Z",
+      end_time: formatDate(event.end as Date, "HH:mm", "EN-US") + ":00.000Z",
       lec_ids: event.meta.lecturerRaw.map((lecturer:any)=> lecturer.lec_id ),
       class_ids: event.meta.classesRaw,
       room_ids: event.meta.locationRaw.map((location:any)=> location.room_id)
