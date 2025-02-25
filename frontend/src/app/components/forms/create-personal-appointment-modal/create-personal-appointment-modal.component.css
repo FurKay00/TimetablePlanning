@@ -77,12 +77,6 @@ button[type="submit"] {
   color: white;
 }
 
-
-.reset {
-  background: #d30e0e;
-  color: white;
-}
-
 .submit-buttons{
   margin-top: 15px;
   display: flex;

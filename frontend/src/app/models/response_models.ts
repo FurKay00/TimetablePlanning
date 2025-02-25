@@ -37,7 +37,6 @@ export interface PersonalAppointmentView{
   date: string;
   start_time: string;
   end_time: string;
-
 }
 
 export interface BasicAppointmentRequest{
@@ -66,6 +65,7 @@ export interface BasicAppointmentPutRequest {
 }
 
 export interface PersonalAppointmentRequest{
+  id?: number,
   lec_id: number,
   title: string,
   date: string,

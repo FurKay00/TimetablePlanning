@@ -24,6 +24,7 @@ export class SchedulePerLecturerComponent {
   selectedDay: Date = new Date();
   calendarView = CalendarView.Week;
   lecturerAppointments: CalendarEvent[] = []
+  isLoaded:boolean = true;
 
   constructor(private roleService:RoleService, private scheduleService:ScheduleService) {
     roleService.retrieveAllLecturers().subscribe(data=> this.currentLecturers = data);
@@ -32,9 +33,11 @@ export class SchedulePerLecturerComponent {
   loadLecturerSchedule(lec_id: string) {
     if(lec_id === null)
       return;
+    this.isLoaded=false;
     this.scheduleService.getPartialAppointmentsByLecturer(lec_id).subscribe(
       data => {
         this.lecturerAppointments = [...data.personalAppointments, ...data.appointments];
+        this.isLoaded = true;
       }
     )
   }

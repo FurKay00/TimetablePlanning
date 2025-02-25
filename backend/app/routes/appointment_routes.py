@@ -338,10 +338,11 @@ async def delete_basic_appointment(appointment_id: int, db: db_dependency):
 
 @router.delete("/personal/{appointment_id}", status_code=204)
 async def delete_personal_appointment(appointment_id: int, db: db_dependency):
-    appointment = db.query(models.PersonalAppointment).filter(models.PersonalAppointment.id == appointment_id)
+    appointment = db.query(models.PersonalAppointment).filter(models.PersonalAppointment.id == appointment_id).first()
 
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
+
     db.delete(appointment)
     db.commit()
 

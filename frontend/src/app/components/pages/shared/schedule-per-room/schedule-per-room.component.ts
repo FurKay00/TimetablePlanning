@@ -23,6 +23,7 @@ export class SchedulePerRoomComponent {
   selectedDay: Date = new Date();
   calendarView = CalendarView.Week;
   roomAppointments: CalendarEvent[] = []
+  isLoaded:boolean = true;
 
   constructor(private roomService:RoomService, private scheduleService:ScheduleService) {
     roomService.retrieveAllRooms().subscribe(data=> this.currentRooms = data);
@@ -31,9 +32,12 @@ export class SchedulePerRoomComponent {
   loadRoomSchedule(room_id: string) {
     if(room_id === null)
       return;
+    this.isLoaded = false;
     this.scheduleService.getAppointmentsByRoom(room_id).subscribe(
+
       data => {
         this.roomAppointments = data;
+        this.isLoaded=true;
       }
     )
   }

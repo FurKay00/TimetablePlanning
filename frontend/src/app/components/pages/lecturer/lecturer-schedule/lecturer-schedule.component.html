@@ -1,2 +1,2 @@
-<app-toolbar (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
-<app-schedule [pickedDate]="selectedDay" [pickedView]="calendarView" [events]="fullAppointments"></app-schedule>
+<app-toolbar (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)" (createModalOpened)="OpenCreateAppointmentModal()" (editModalOpened)="OpenUpdateAppointmentModal()" [showCreateField]="true" [showEditField]="true"></app-toolbar>
+<app-schedule [pickedDate]="selectedDay" [pickedView]="calendarView" [events]="fullAppointments" [isLoaded]="isLoaded"></app-schedule>

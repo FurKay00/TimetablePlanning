@@ -88,6 +88,7 @@ button[type="submit"] {
   display: flex;
   justify-content: space-evenly;
 }
+
 .close-btn {
   background: none;
   border: none;

@@ -1,0 +1,36 @@
+<div class="modal-container">
+  <div class="modal-form">
+    <div class="modal-header">
+      <h2>New Appointment/s</h2>
+      <button mat-icon-button class="close-btn" (click)="closeDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="appointmentForm" *ngIf="appointmentForm">
+      <label>Title:</label>
+      <input type="text" formControlName="title" (change)="refreshView()" required/>
+      <mat-error *ngIf="appointmentForm.get('title')?.hasError('required')">
+        Title is required
+      </mat-error>
+
+      <label>Date:</label>
+      <input type="date" formControlName="date"  (change)="refreshView()" required/>
+
+      <label>Start:</label>
+      <input type="time" formControlName="startTime" (change)="refreshView()" required/>
+
+      <label>End:</label>
+      <input type="time" formControlName="endTime" (change)="refreshView()" required/>
+
+      <div class="submit-buttons">
+        <button type="submit" (click)="submitEvent()">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-calendar">
+    <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
+    <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events" [isLoaded]="isLoaded" (eventMoved)="onEventMoved($event)"></app-schedule>
+  </div>
+</div>

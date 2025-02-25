@@ -1,3 +1,4 @@
+
 .modal-container {
   display: flex;
   justify-content: space-between;
@@ -79,7 +80,10 @@ button[type="submit"] {
 
 .submit-buttons{
   margin-top: 15px;
+  display: flex;
+  justify-content: space-evenly;
 }
+
 .close-btn {
   background: none;
   border: none;

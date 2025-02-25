@@ -5,6 +5,13 @@ import {DateService} from '../../../../services/date.service';
 import {ScheduleService} from '../../../../services/schedule.service';
 import {ScheduleComponent} from '../../../timetable/schedule/schedule.component';
 import {ToolbarComponent} from '../../../general/toolbar/toolbar.component';
+import {MatDialog} from '@angular/material/dialog';
+import {
+  CreatePersonalAppointmentModalComponent
+} from '../../../forms/create-personal-appointment-modal/create-personal-appointment-modal.component';
+import {
+  UpdatePersonalAppointmentModalComponent
+} from '../../../forms/update-personal-appointment-modal/update-personal-appointment-modal.component';
 
 @Component({
   selector: 'app-lecturer-schedule',
@@ -25,8 +32,9 @@ export class LecturerScheduleComponent implements OnInit{
   lecturerAppointments: CalendarEvent[] = [];
   personalAppointments: CalendarEvent[] = [];
   fullAppointments: CalendarEvent[] = []
+  isLoaded: boolean = false;
 
-  constructor(private route:ActivatedRoute, private dateService:DateService, private scheduleService:ScheduleService) {
+  constructor(private route:ActivatedRoute, private dateService:DateService, private scheduleService:ScheduleService,  public dialog:MatDialog) {
     this.selectedWeekDays = dateService.initializeWeekDays();
   }
 
@@ -42,8 +50,10 @@ export class LecturerScheduleComponent implements OnInit{
   loadLecturerSchedule() {
     if(this.lecturerId === "")
       return;
+    this.isLoaded=false;
     this.scheduleService.getFullAppointmentsByLecturer(this.lecturerId).subscribe(
       (data) => {
+        this.isLoaded=true;
         this.lecturerAppointments = data.appointments;
         this.personalAppointments = data.personalAppointments;
         this.fullAppointments = [...this.lecturerAppointments, ...this.personalAppointments];
@@ -61,5 +71,32 @@ export class LecturerScheduleComponent implements OnInit{
 
   onViewSelected($event: CalendarView) {
     this.calendarView = $event;
+  }
+
+  OpenCreateAppointmentModal(): void {
+
+    const dialogRef = this.dialog.open(CreatePersonalAppointmentModalComponent, {
+      height: '90%',
+      width: '90%',
+      data: { previousEvents: this.scheduleService.createPreviousAppointments(this.fullAppointments),
+        pickedDate: this.selectedDay, selectedLecturer: this.lecturerId},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadLecturerSchedule();
+    });
+  }
+
+  OpenUpdateAppointmentModal(): void {
+    const dialogRef = this.dialog.open(UpdatePersonalAppointmentModalComponent, {
+      height: '90%',
+      width: '90%',
+      data: { previousEvents: this.scheduleService.createPreviousAppointments(this.fullAppointments),
+        pickedDate: this.selectedDay, selectedLecturer: this.lecturerId},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadLecturerSchedule();
+    });
   }
 }

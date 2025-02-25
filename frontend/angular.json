@@ -29,7 +29,7 @@
             "sourceMap": true,
             "styles": [
               "src/styles.css",
-              "@angular/material/prebuilt-themes/purple-green.css",
+
               "src/material_theme.scss",
               "node_modules/angular-calendar/css/angular-calendar.css"
             ],
@@ -90,7 +90,7 @@
             ],
             "styles": [
               "src/styles.css",
-              "@angular/material/prebuilt-themes/purple-green.css",
+
               "src/material_theme.scss",
               "node_modules/angular-calendar/css/angular-calendar.css"
             ],

@@ -90,8 +90,8 @@ export class ScheduleService {
       .pipe(map(response => response.appointments))
   }
 
-  createNewPersonalAppointment(appointment: PersonalAppointmentView):Observable<PersonalAppointmentView>{
-    return this.http.post<{ message: string, appointment:PersonalAppointmentView }>(this.URL + "personal/", appointment).pipe(
+  createNewPersonalAppointment(appointment: PersonalAppointmentRequest):Observable<PersonalAppointmentRequest>{
+    return this.http.post<{ message: string, appointment:PersonalAppointmentRequest }>(this.URL + "personal/", appointment).pipe(
       map(response => response.appointment)
     )
   }
@@ -123,6 +123,7 @@ export class ScheduleService {
       draggable: false,
       color: this.getAppointmentColor(appointment.type),
       meta: {
+        isLecturerAppointment:false,
         typeRaw: this.toTitleCase(appointment.type),
         type: appointment.type,
         module_id: appointment.module,
@@ -138,7 +139,6 @@ export class ScheduleService {
   }
 
   mapEventToAppointment(event:CalendarEvent):BasicAppointmentPutRequest{
-    console.log(event.end);
     return {
       id: event.id as number,
       type: event.meta.type,
@@ -153,6 +153,16 @@ export class ScheduleService {
     }
   }
 
+  mapEventToPersonalAppointment(event:CalendarEvent):PersonalAppointmentView{
+    return {
+      id: event.id as number,
+      title: event.title,
+      date: formatDate(event.start, "YYYY-MM-dd", "EN-US"),
+      start_time: formatDate(event.start, "HH:mm", "EN-US") + ":00.000Z",
+      end_time: formatDate(event.end as Date, "HH:mm", "EN-US") + ":00.000Z",
+    }
+  }
+
   private mapPersonalAppointmentToEvent(personalAppointment:PersonalAppointmentView, pseudonomized:boolean):any{
     return {
       id: personalAppointment.id,
@@ -162,6 +172,7 @@ export class ScheduleService {
       draggable: false,
       color: this.getAppointmentColor("PERSONAL"),
       meta: {
+        isLecturerAppointment:true,
         location:"",
         lecturer:""
       },
