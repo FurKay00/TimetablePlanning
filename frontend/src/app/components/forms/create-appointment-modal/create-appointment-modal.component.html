@@ -38,19 +38,19 @@
       </div>
 
       <label>Title:</label>
-      <input type="text" formControlName="title" (change)="refreshView()" required/>
+      <input class="input-fields" type="text" formControlName="title" (change)="refreshView()" required/>
       <mat-error *ngIf="appointmentForm.get('title')?.hasError('required')">
         Title is required
       </mat-error>
 
       <label>Date:</label>
-      <input type="date" formControlName="date"  (change)="refreshView()" required/>
+      <input class="input-fields" type="date" formControlName="date"  (change)="refreshView()" required/>
 
       <label>Start:</label>
-      <input type="time" formControlName="startTime" (change)="refreshView()" required/>
+      <input class="input-fields" type="time" formControlName="startTime" (change)="refreshView()" required/>
 
       <label>End:</label>
-      <input type="time" formControlName="endTime" (change)="refreshView()" required/>
+      <input class="input-fields" type="time" formControlName="endTime" (change)="refreshView()" required/>
 
       <label>Room/s:</label>
       <mat-form-field appearance="fill">

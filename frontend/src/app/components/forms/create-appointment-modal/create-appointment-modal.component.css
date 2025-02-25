@@ -117,3 +117,8 @@ mat-form-field.mat-focused .mat-form-field-outline {
 mat-form-field.mat-focused .mat-form-field-label {
   color: #34c3a3 !important;
 }
+
+.input-fields{
+  width: 95% !important;
+}
+
