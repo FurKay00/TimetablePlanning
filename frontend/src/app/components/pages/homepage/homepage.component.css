@@ -2,9 +2,23 @@ mat-card {
   margin: 16px;
 }
 mat-card-header {
-  background-color: #8fe89d;
+  background-color: #6fad78;
   border-radius: 4px 4px 0 0;
+  padding: 12px;
+}
+mat-card-subtitle{
+  color: black;
 }
 mat-expansion-panel {
   margin: 8px 0;
+}
+
+.description{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color:white;
+}
+
+.description li{
+  margin-bottom: 5px;
 }

@@ -1,25 +1,50 @@
 <!-- home-info.component.html -->
 <mat-card>
   <mat-card-header>
-    <mat-card-title>Welcome to Our Website</mat-card-title>
+    <mat-card-title>Welcome to "Timetable-Planer"!👋</mat-card-title>
     <mat-card-subtitle>A brief overview and guide</mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content>
-    <p>
-      This platform helps you do XYZ. You can manage your schedule, track various items,
-      and explore different functionalities. Below are some quick tips on how to get started:
-    </p>
 
-    <!-- Accordion -->
     <mat-accordion>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
-          <mat-panel-title> What can I do here? </mat-panel-title>
+          <mat-panel-title> What is "Timetable-Planer"? ⏲️</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="description">
+          <p >
+            This platform simulates a schedule planner within a university setup. You can view this application
+            through the eyes of three roles:
+          <ul>
+            <li>
+              Secretary:<br>
+              The secretaries oversee a bunch of classes from a faculty and plan/update their respective schedule.<br>
+            </li>
+            <li>
+              Lecturer:<br>
+              Each lecturer has access to their own schedule and may also create/update their own personal appointments
+              to indicate the students or the secretaries, that they are not available on certain times.<br>
+            </li>
+            <li>
+              Student:<br>
+              The students have access to their own schedule.<br>
+            </li>
+          </ul>
+          <p>
+            Furthermore, every role can search schedules by room or lecturer.
+          </p>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> How to select a Role?</mat-panel-title>
         </mat-expansion-panel-header>
         <p>
-          Here you can schedule tasks, explore data, and collaborate with other users.
-          Feel free to browse through the navigation on the left to see all features.
+          Use the button above the navigation bar, to select an existing account.
+          You can find the respective role behind the name in parenthesis. After selecting account,
+          the site will automatically refresh with the selected view.
         </p>
       </mat-expansion-panel>
 
@@ -33,15 +58,6 @@
         </p>
       </mat-expansion-panel>
 
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Need Help? </mat-panel-title>
-        </mat-expansion-panel-header>
-        <p>
-          Check our documentation under the Help section, or reach out to our support
-          team through the 'Contact' link in the footer.
-        </p>
-      </mat-expansion-panel>
     </mat-accordion>
   </mat-card-content>
 </mat-card>
