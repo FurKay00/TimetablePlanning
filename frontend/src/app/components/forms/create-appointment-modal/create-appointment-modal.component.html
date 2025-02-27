@@ -14,43 +14,95 @@
       </mat-button-toggle-group>
     </div>
 
+    <label>Type:</label>
     <form [formGroup]="appointmentForm" *ngIf="appointmentForm">
-      <label>Type:</label>
-      <div>
-      <select formControlName="type" (change)="refreshView()" required>
-        <option>Lecture</option>
-        <option>Exam</option>
-        <option>Informational</option>
-      </select>
-      </div>
+      <mat-form-field appearance="fill">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type" (selectionChange)="refreshView()" required>
+          <mat-option value="Lecture">Lecture</mat-option>
+          <mat-option value="Exam">Exam</mat-option>
+          <mat-option value="Informational">Informational</mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="appointmentForm.get('type')?.invalid">
+          Type is required
+        </mat-error>
+      </mat-form-field>
 
       <label>Module:</label>
-      <div >
-      <select formControlName="modules" (change)="onModuleChange($event)">
-        <option [ngValue]="null">No Module</option>
-        <option *ngFor="let module of modules" [ngValue]="module">
-          {{module.title}} ({{module.module_id}})
-        </option>
-      </select>
-        <mat-error *ngIf="appointmentForm.get('modules')?.hasError('required') && appointmentType==='block'">
+      <mat-form-field appearance="fill">
+        <mat-label>Module</mat-label>
+        <mat-select formControlName="modules" (selectionChange)="onModuleChange($event.value)">
+          <mat-option [value]="null">No Module</mat-option>
+          <mat-option *ngFor="let module of modules" [value]="module">
+            {{ module.title }} ({{ module.module_id }})
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="appointmentForm.get('modules')?.hasError('required') && appointmentType === 'block'">
           Module is required
         </mat-error>
-      </div>
+      </mat-form-field>
 
       <label>Title:</label>
-      <input class="input-fields" type="text" formControlName="title" (change)="refreshView()" required/>
-      <mat-error *ngIf="appointmentForm.get('title')?.hasError('required')">
-        Title is required
-      </mat-error>
+      <mat-form-field appearance="fill">
+        <mat-label>Title</mat-label>
+        <input matInput type="text" formControlName="title" (change)="refreshView()" required/>
+        <mat-icon matSuffix class="material-icons color_white">title</mat-icon>
+        <mat-error *ngIf="appointmentForm.get('title')?.hasError('required')">
+          Title is required
+        </mat-error>
+      </mat-form-field>
 
       <label>Date:</label>
-      <input class="input-fields" type="date" formControlName="date"  (change)="refreshView()" required/>
+      <mat-form-field>
+        <mat-label>Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          formControlName="date"
+          (dateChange)="refreshView()"
+          required
+        />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="appointmentForm.get('date')?.hasError('required')">
+          Date is required
+        </mat-error>
 
-      <label>Start:</label>
-      <input class="input-fields" type="time" formControlName="startTime" (change)="refreshView()" required/>
+      </mat-form-field>
 
-      <label>End:</label>
-      <input class="input-fields" type="time" formControlName="endTime" (change)="refreshView()" required/>
+      <label>Start time:</label>
+      <mat-form-field appearance="fill" class="input-fields">
+        <mat-label>Start time</mat-label>
+        <input
+          matInput
+          type="time"
+          formControlName="startTime"
+          (change)="refreshView()"
+          required
+        />
+        <mat-error *ngIf="appointmentForm.get('startTime')?.hasError('required')">
+          Start time is required
+        </mat-error>
+      </mat-form-field>
+
+      <ng-container *ngIf="appointmentType === 'single'">
+        <label>End time:</label>
+        <mat-form-field appearance="fill" class="input-fields">
+          <mat-label>End time</mat-label>
+          <input
+            matInput
+            type="time"
+            formControlName="endTime"
+            (change)="refreshView()"
+            required
+          />
+          <mat-error *ngIf="appointmentForm.get('endTime')?.hasError('required')">
+            End time is required
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
 
       <label>Room/s:</label>
       <mat-form-field appearance="fill">
@@ -65,8 +117,9 @@
       <label>Lecturer/s:</label>
       <mat-form-field appearance="fill">
         <mat-label>Select Lecturers</mat-label>
-        <mat-select formControlName="lecturers" multiple (selectionChange)="updateLecturersSelection($event.value)" required>
-          <mat-option *ngFor="let lecturer of lecturers" [value]="lecturer" >
+        <mat-select formControlName="lecturers" multiple (selectionChange)="updateLecturersSelection($event.value)"
+                    required>
+          <mat-option *ngFor="let lecturer of lecturers" [value]="lecturer">
             {{ lecturer.fullname }}
           </mat-option>
         </mat-select>
@@ -84,13 +137,24 @@
       </mat-form-field>
 
       <div *ngIf="appointmentType === 'block'">
+
         <label>Max hours:</label>
-        <input type="number" formControlName="maxHours" (change)="createEventsFromWorkload()" required/>
+        <mat-form-field appearance="fill">
+          <mat-label>Title</mat-label>
+          <input matInput type="number" formControlName="maxHours" (change)="createEventsFromWorkload()" required/>
+          <button mat-icon-button matSuffix (click)="incrementHours()">
+            <mat-icon>keyboard_arrow_up</mat-icon>
+          </button>
+          <button mat-icon-button matSuffix (click)="decrementHours()">
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          </button>
+        </mat-form-field>
 
         <label>Weekdays:</label>
         <mat-form-field appearance="fill">
           <mat-label>Select Weekdays</mat-label>
-          <mat-select formControlName="weekdays" multiple (selectionChange)="updateWeekdaysSelection($event.value)" required>
+          <mat-select formControlName="weekdays" multiple (selectionChange)="updateWeekdaysSelection($event.value)"
+                      required>
             <mat-option value="1">Monday</mat-option>
             <mat-option value="2">Tuesday</mat-option>
             <mat-option value="3">Wednesday</mat-option>
@@ -109,7 +173,9 @@
   </div>
 
   <div class="modal-calendar">
-    <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)" (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
-    <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events" [isLoaded]="isLoaded" (eventMoved)="onEventMoved($event)"></app-schedule>
+    <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)"
+                 (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
+    <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events"
+                  [isLoaded]="isLoaded" (eventMoved)="onEventMoved($event)"></app-schedule>
   </div>
 </div>

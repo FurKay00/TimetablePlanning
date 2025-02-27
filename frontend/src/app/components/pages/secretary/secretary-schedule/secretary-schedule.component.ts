@@ -74,8 +74,8 @@ export class SecretaryScheduleComponent implements OnInit{
   OpenCreateAppointmentModal(): void {
 
     const dialogRef = this.dialog.open(CreateAppointmentModalComponent, {
-      height: '90%',
-      width: '90%',
+      height: '95%',
+      width: '95%',
       data: { previousEvents: this.scheduleService.createPreviousAppointments(this.classAppointments),
       pickedDate: this.selectedDay, selectedClass: this.classId},
     });
@@ -87,8 +87,8 @@ export class SecretaryScheduleComponent implements OnInit{
 
   OpenUpdateAppointmentModal(): void {
     const dialogRef = this.dialog.open(UpdateAppointmentModalComponent, {
-      height: '90%',
-      width: '90%',
+      height: '95%',
+      width: '95%',
       data: { previousEvents: this.scheduleService.createPreviousAppointments(this.classAppointments),
         pickedDate: this.selectedDay, selectedClass: this.classId},
     });

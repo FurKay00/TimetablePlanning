@@ -8,15 +8,16 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {RoleService} from '../../../services/role.service';
-import {BasicAppointmentRequest, LecturerView, ModuleView, RoomView} from '../../../models/response_models';
+import {BasicAppointmentRequest, Conflict, LecturerView, ModuleView, RoomView} from '../../../models/response_models';
 import {RoomService} from '../../../services/room.service';
-import {MatError, MatFormField} from '@angular/material/form-field';
+import {MatError, MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {MatLabel} from '@angular/material/input';
+import {MatInput, MatLabel} from '@angular/material/input';
 import {ScheduleService} from '../../../services/schedule.service';
 import {Subject} from 'rxjs';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
+import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-create-appointment-modal',
@@ -36,7 +37,12 @@ import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-d
     MatLabel,
     MatError,
     MatButtonToggleGroup,
-    MatButtonToggle
+    MatButtonToggle,
+    MatDatepickerInput,
+    MatInput,
+    MatDatepickerToggle,
+    MatDatepicker,
+    MatSuffix
   ],
   templateUrl: './create-appointment-modal.component.html',
   styleUrl: './create-appointment-modal.component.css'
@@ -65,6 +71,8 @@ export class CreateAppointmentModalComponent implements OnInit{
   selectedClasses: string[] = [];
   newEvent: CalendarEvent;
   newEvents: CalendarEvent[] = [];
+
+  conflicts: Conflict[] = [];
 
   isLoaded:boolean = true;
   refresh: Subject<void> = new Subject<void>();
@@ -192,7 +200,7 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.roleService.retrieveAllModules().subscribe(data => this.modules = data);
   }
 
-  onModuleChange($event: Event) {
+  onModuleChange($event:Event) {
     const selectedModule: ModuleView = this.appointmentForm.get('modules')?.value;
     this.selectedModule = selectedModule;
 
@@ -325,9 +333,15 @@ export class CreateAppointmentModalComponent implements OnInit{
   }
 
   createEventsFromWorkload() {
+    const formData = this.appointmentForm.value;
+    if(formData.maxHours <= 0) {
+      this.appointmentForm.patchValue({
+        maxHours: 1
+      })
+      return;
+    }
     if(!this.isFormValid()) return;
 
-    const formData = this.appointmentForm.value;
     const workload = formData.modules?.workload || 0;
     const maxHours = formData.maxHours;
     const startTime = formData.startTime;
@@ -438,5 +452,117 @@ export class CreateAppointmentModalComponent implements OnInit{
         })
       })
     }
+  }
+
+  checkCollisions() {
+    this.conflicts = [];
+    if(!this.isFormValid()) return;
+
+    const formData = this.appointmentForm.value;
+    const selectedClasses = formData.classes.map((class_: any) => class_.class_id);
+    const selectedLecturers = formData.lecturers.map((lec: any) => lec.lec_id);
+    const selectedRooms = formData.rooms.map((room: any) => room.room_id);
+    const startTime = formData.startTime;
+    const endTime = formData.endTime;
+    const date = formData.date;
+  /*
+    this.checkClassRoomCapacity(selectedClasses, selectedRooms);
+
+
+    this.checkClassScheduleConflicts(selectedClasses, date, startTime, endTime);
+
+
+    this.checkTeacherScheduleConflicts(selectedLecturers, date, startTime, endTime);
+
+
+    this.checkRoomTransitionTiming(selectedRooms, date, startTime, endTime);
+    */
+
+
+
+  }
+
+  // TODO RoomView mit capacity
+  /*checkClassRoomCapacity(selectedClasses: string[], selectedRooms: number[]) {
+    let totalCapacity = 0;
+    selectedRooms.forEach(roomId => {
+      const room = this.rooms.find(r => r.room_id === roomId);
+      totalCapacity += room?.room_name;
+    });
+
+    selectedClasses.forEach(classId => {
+      const class_ = this.classes.find(c => c === classId);
+      if (class_.size > totalCapacity) {
+        this.conflicts.push({
+          conflict_id: 'class_capacity',
+          message: `Class size of ${class_.size} exceeds room capacity of ${totalCapacity}.`
+        });
+      }
+    });
+  }
+
+
+  checkClassScheduleConflicts(selectedClasses: string[], date: string, startTime: string, endTime: string) {
+    selectedClasses.forEach(classId => {
+      this.scheduleService.getAppointmentsByClass(classId).subscribe(classAppointments => {
+        classAppointments.forEach(appointment => {
+          if (appointment.date === date &&
+            (startTime < appointment.end_time && endTime > appointment.start_time)) {
+            this.conflicts.push({
+              conflict_id: 'class_schedule',
+              message: `Class schedule conflict with existing appointment.`,
+              conflictingAppointments: [appointment]
+            });
+          }
+        });
+      });
+    });
+  }
+
+
+  checkTeacherScheduleConflicts(selectedLecturers: number[], date: string, startTime: string, endTime: string) {
+    selectedLecturers.forEach(lecId => {
+      this.scheduleService.getFullAppointmentsByLecturer(lecId).subscribe(lecturerAppointments => {
+        lecturerAppointments.forEach(appointment => {
+          if (appointment.date === date &&
+            (startTime < appointment.end_time && endTime > appointment.start_time)) {
+            this.conflicts.push({
+              conflict_id: 'lecturer_schedule',
+              message: `Lecturer schedule conflict with existing appointment.`,
+              conflictingAppointments: [appointment]
+            });
+          }
+        });
+      });
+    });
+  }
+
+
+  checkRoomTransitionTiming(selectedRooms: number[], date: string, startTime: string, endTime: string) {
+    this.roomService.getRoomTransitionTime(selectedRooms).subscribe(transitionTime => {
+      if (transitionTime > (endTime - startTime)) {
+        this.conflicts.push({
+          conflict_id: 'room_transition',
+          message: `Insufficient time for room transition. Required: ${transitionTime} minutes.`,
+        });
+      }
+    });
+  }
+  */
+
+  incrementHours() {
+    const formData = this.appointmentForm.value;
+    const maxHours = formData.maxHours +1;
+    this.appointmentForm.patchValue({
+      maxHours: maxHours
+    })
+  }
+
+  decrementHours() {
+    const formData = this.appointmentForm.value;
+    const maxHours = Math.max(formData.maxHours - 1, 0);
+    this.appointmentForm.patchValue({
+      maxHours: maxHours
+    })
   }
 }

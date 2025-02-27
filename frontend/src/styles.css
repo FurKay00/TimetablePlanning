@@ -44,6 +44,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   border-bottom: transparent 4px solid !important;
 }
 
+/*
 .mat-form-field-outline {
   border-color: #000a08 !important;
 }
@@ -60,3 +61,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
 .mat-option:hover {
   background-color: #f0f0f0 !important;
 }
+
+
+ */

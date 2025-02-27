@@ -1,3 +1,5 @@
+import {CalendarEvent} from 'angular-calendar';
+
 export interface LecturerView {
   lec_id: number;
   fullname: string;
@@ -10,6 +12,9 @@ export interface RoomView {
 
 export interface ClassView {
   class_id: string;
+  id?:string;
+  secretary_id?:number;
+  size: number;
 }
 
 export interface ModuleView {
@@ -71,4 +76,10 @@ export interface PersonalAppointmentRequest{
   date: string,
   start_time: string,
   end_time: string
+}
+
+export interface Conflict {
+  conflict_id: string;
+  message: string;
+  conflictingAppointments?: CalendarEvent[];
 }

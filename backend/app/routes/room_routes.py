@@ -30,3 +30,11 @@ async def get_all_rooms(db: db_dependency):
         rooms.append(room)
     return {"message": "Rooms retrieved successfully", "rooms": rooms}
 
+
+@router.get("/room_models/")
+async def get_all_rooms(db: db_dependency):
+    rooms = []
+    db_rooms = db.query(models.Room)
+    for room_entry in db_rooms:
+        rooms.append(room_entry)
+    return {"message": "Rooms retrieved successfully", "rooms": rooms}
