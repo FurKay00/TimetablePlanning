@@ -11,7 +11,7 @@ import {RoleService} from '../../../services/role.service';
 import {
   BasicAppointmentRequest,
   ClassModel,
-  Conflict,
+  Conflict, ConflictCheckObjects,
   LecturerView,
   ModuleView,
   RoomView
@@ -110,7 +110,7 @@ export class CreateAppointmentModalComponent implements OnInit{
   private initializeForm():FormGroup {
     return this.fb.group({
       appointment_type: ['single', [Validators.required]],
-      type: ['Lecture', [Validators.required]],
+      type: ["LECTURE", [Validators.required]],
       title: ['New Appointment', [Validators.required]],
       modules: [null],
       date: [formatDate(this.pickedDate, "YYYY-MM-dd", "EN-US"), [Validators.required]],
@@ -125,6 +125,7 @@ export class CreateAppointmentModalComponent implements OnInit{
   }
 
   previewEvent() {
+    this.checkCollisions();
   }
 
   submitEvent() {
@@ -478,12 +479,11 @@ export class CreateAppointmentModalComponent implements OnInit{
     if(!this.isFormValid()) return;
 
     const formData = this.appointmentForm.value;
-    const selectedClasses = formData.classes.map((class_: any) => class_.class_id);
-    const selectedLecturers = formData.lecturers.map((lec: any) => lec.lec_id);
-    const selectedRooms = formData.rooms;
-    const startTime = formData.startTime;
-    const endTime = formData.endTime;
-    const date = formData.date;
+    const conflictCheckData:ConflictCheckObjects = {
+      date: formData.date, endTime: formData.endTime, selectedClasses: formData.classes, selectedLecturers: formData.lecturers, selectedRooms: formData.rooms, startTime: formData.startTime
+    }
+
+    console.log(conflictCheckData);
 
   /*
     this.checkClassRoomCapacity(selectedClasses, selectedRooms);
