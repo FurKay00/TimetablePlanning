@@ -1,12 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from datetime import date, time
+from datetime import date, time, datetime
 from typing import List, Optional
 
-from sqlalchemy import delete
+from sqlalchemy import delete, any_
 
 from app.main import db_dependency
 from app.models import models
+from app.models.models import AppointmentsFlat
 
 router = APIRouter()
 
@@ -103,6 +104,20 @@ class AppointmentView(BaseModel):
 class LecturerAppointmentsFullView(BaseModel):
     appointments: List[AppointmentView]
     personal_appointments: List[PersonalAppointmentView]
+
+
+@router.get("/all_appointments/")
+async def get_all_appointment(db: db_dependency):
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    db_appointment = db.query(models.Appointment).all()
+    appointments = []
+    for app_entry in db_appointment:
+        appointment_query = await get_basic_appointment(app_entry.id, db)
+        appointments.append(appointment_query["appointment"])
+
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return {"message": "All appointments successfully retrieved", "appointments": appointments}
 
 
 @router.get("/appointment_basic/{appointment_id}")
@@ -414,6 +429,8 @@ async def get_basic_appointments_by_lecturer(lecturer_id: int, db: db_dependency
 
 @router.get("/appointmentsByClass/{class_id}")
 async def get_basic_appointments_by_class(class_id: str, db: db_dependency):
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
     if not class_id:
         raise HTTPException(status_code=400, detail="No class_id provided")
     db_appointments = db.query(models.App2Class).filter(models.App2Class.class_id == class_id)
@@ -423,6 +440,7 @@ async def get_basic_appointments_by_class(class_id: str, db: db_dependency):
         appointment_query = await get_basic_appointment(app2class_entry.app_id, db)
         appointments.append(appointment_query["appointment"])
 
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return {"message": "Appointments retrieved successfully", "appointments": appointments}
 
 
@@ -438,3 +456,172 @@ async def get_basic_appointments_by_room(room_id: int, db: db_dependency):
         appointments.append(appointment_query["appointment"])
 
     return {"message": "Appointments retrieved successfully", "appointments": appointments}
+
+
+@router.get("/appointmentsByClassImproved/{class_id}")
+async def get_appointments_by_class_improved(class_id: str, db: db_dependency):
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    results = db.query(AppointmentsFlat).filter(class_id == any_(AppointmentsFlat.class_ids)).all()
+
+    appointment_views = []
+    for row in results:
+        appointment_views.append(
+            AppointmentView(
+                id=row.appointment_id,
+                type=row.type,
+                title=row.title,
+                module=row.module,
+                date=row.date,
+                start_time=row.start_time,
+                end_time=row.end_time,
+                lecturers=[
+                    LecturerView(lec_id=lid, fullname=name)
+                    for (lid, name) in zip(row.lecturer_ids, row.lecturer_names)
+                    if lid is not None
+                ],
+                rooms=[
+                    RoomView(room_id=rid, room_name=rname)
+                    for (rid, rname) in zip(row.room_ids, row.room_names)
+                    if rid is not None
+                ],
+                classes=[
+                    ClassView(class_id=cid)
+                    for cid in row.class_ids
+                    if cid is not None
+                ]
+            )
+        )
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return {
+        "message": "Appointments retrieved successfully",
+        "appointments": appointment_views
+    }
+
+
+@router.get("/appointmentsByRoomImproved/{class_id}")
+async def get_appointments_by_room_improved(room_id: int, db: db_dependency):
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    results = db.query(AppointmentsFlat).filter(room_id == any_(AppointmentsFlat.room_ids)).all()
+
+    appointment_views = []
+    for row in results:
+        appointment_views.append(
+            AppointmentView(
+                id=row.appointment_id,
+                type=row.type,
+                title=row.title,
+                module=row.module,
+                date=row.date,
+                start_time=row.start_time,
+                end_time=row.end_time,
+                lecturers=[
+                    LecturerView(lec_id=lid, fullname=name)
+                    for (lid, name) in zip(row.lecturer_ids, row.lecturer_names)
+                    if lid is not None
+                ],
+                rooms=[
+                    RoomView(room_id=rid, room_name=rname)
+                    for (rid, rname) in zip(row.room_ids, row.room_names)
+                    if rid is not None
+                ],
+                classes=[
+                    ClassView(class_id=cid)
+                    for cid in row.class_ids
+                    if cid is not None
+                ]
+            )
+        )
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return {
+        "message": "Appointments retrieved successfully",
+        "appointments": appointment_views
+    }
+
+
+@router.get("/appointmentsByLecturerImproved/{lec_id}")
+async def get_appointments_by_class_improved(lec_id: int, db: db_dependency):
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    results = db.query(AppointmentsFlat).filter(lec_id == any_(AppointmentsFlat.lecturer_ids)).all()
+
+    appointment_views = []
+    for row in results:
+        appointment_views.append(
+            AppointmentView(
+                id=row.appointment_id,
+                type=row.type,
+                title=row.title,
+                module=row.module,
+                date=row.date,
+                start_time=row.start_time,
+                end_time=row.end_time,
+                lecturers=[
+                    LecturerView(lec_id=lid, fullname=name)
+                    for (lid, name) in zip(row.lecturer_ids, row.lecturer_names)
+                    if lid is not None
+                ],
+                rooms=[
+                    RoomView(room_id=rid, room_name=rname)
+                    for (rid, rname) in zip(row.room_ids, row.room_names)
+                    if rid is not None
+                ],
+                classes=[
+                    ClassView(class_id=cid)
+                    for cid in row.class_ids
+                    if cid is not None
+                ]
+            )
+        )
+    db_personal_appointments = await get_personal_appointments(lec_id, db)
+    personal_appointments = db_personal_appointments["appointments"]
+
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return {
+        "message": "Appointments retrieved successfully",
+        "personalAppointments": personal_appointments,
+        "appointments": appointment_views,
+    }
+
+
+@router.get("/all_appointments_Improved/")
+async def get_all_appointments_improved(db: db_dependency):
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    results = db.query(AppointmentsFlat).all()
+
+    appointment_views = []
+    for row in results:
+        appointment_views.append(
+            AppointmentView(
+                id=row.appointment_id,
+                type=row.type,
+                title=row.title,
+                module=row.module,
+                date=row.date,
+                start_time=row.start_time,
+                end_time=row.end_time,
+                lecturers=[
+                    LecturerView(lec_id=lid, fullname=name)
+                    for (lid, name) in zip(row.lecturer_ids, row.lecturer_names)
+                    if lid is not None
+                ],
+                rooms=[
+                    RoomView(room_id=rid, room_name=rname)
+                    for (rid, rname) in zip(row.room_ids, row.room_names)
+                    if rid is not None
+                ],
+                classes=[
+                    ClassView(class_id=cid)
+                    for cid in row.class_ids
+                    if cid is not None
+                ]
+            )
+        )
+
+    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return {
+        "message": "Appointments retrieved successfully",
+        "appointments": appointment_views
+    }

@@ -1,4 +1,4 @@
-from sqlalchemy import  Column, ForeignKey, Integer, String, Date, Time
+from sqlalchemy import Column, ForeignKey, Integer, String, Date, Time, ARRAY
 from app.database import Base
 
 
@@ -74,3 +74,22 @@ class App2Room(Base):
     id = Column(Integer, primary_key=True, index=True)
     app_id = Column(Integer, ForeignKey('appointment.id'))
     room_id = Column(Integer, ForeignKey('room.id'))
+
+
+class AppointmentsFlat(Base):
+    __tablename__ = 'appointments_flat'  # name of the view
+    __table_args__ = {'extend_existing': True}
+
+    appointment_id = Column(Integer, primary_key=True)
+    type = Column(String)
+    title = Column(String)
+    module = Column(String)
+    date = Column(Date)
+    start_time = Column(Time)
+    end_time = Column(Time)
+
+    lecturer_ids = Column(ARRAY(Integer))
+    lecturer_names = Column(ARRAY(String))
+    class_ids = Column(ARRAY(String))
+    room_ids = Column(ARRAY(Integer))
+    room_names = Column(ARRAY(String))

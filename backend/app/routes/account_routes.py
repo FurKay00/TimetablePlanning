@@ -91,6 +91,7 @@ async def get_all_class_models(db: db_dependency):
         classes.append(class_entry)
     return {"message": "Classes retrieved successfully", "classes": classes}
 
+
 @router.get("/modules/")
 async def get_all_modules(db: db_dependency):
     modules = []

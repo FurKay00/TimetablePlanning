@@ -27,7 +27,7 @@ export class ScheduleService {
     return this.http.get<{
       message: string;
       appointments: AppointmentView[]
-    }>(this.URL + "appointmentsByClass/" + class_id)
+    }>(this.URL + "appointmentsByClassImproved/" + class_id)
       .pipe(
         map(response => response.appointments.map(
           appointment => this.mapAppointmentToEvent(appointment))
@@ -39,7 +39,7 @@ export class ScheduleService {
     return this.http.get<{
       message: string;
       appointments: AppointmentView[]
-    }>(this.URL + "appointmentsByRoom/" + room_id)
+    }>(this.URL + "appointmentsByRoomImproved/" + room_id)
       .pipe(
         map(response => response.appointments.map(
           appointment => this.mapAppointmentToEvent(appointment))
@@ -53,7 +53,7 @@ export class ScheduleService {
       message: string;
       appointments: AppointmentView[],
       personalAppointments: PersonalAppointmentView[]
-    }>(this.URL + "appointmentsByLecturer/" + lec_id)
+    }>(this.URL + "appointmentsByLecturerImproved/" + lec_id)
       .pipe(
         map(response => ({
             appointments: response.appointments.map(appointment => this.mapAppointmentToEvent(appointment)),
@@ -68,7 +68,7 @@ export class ScheduleService {
       message: string;
       appointments: AppointmentView[],
       personalAppointments: PersonalAppointmentView[]
-    }>(this.URL + "appointmentsByLecturer/" + lec_id)
+    }>(this.URL + "appointmentsByLecturerImproved/" + lec_id)
       .pipe(
         map(response => ({
             appointments: response.appointments.map(appointment => this.mapAppointmentToEvent(appointment)),
