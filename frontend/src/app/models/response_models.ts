@@ -17,6 +17,12 @@ export interface ClassView {
   size: number;
 }
 
+export interface ClassModel{
+  secretary_id: number;
+  id: string;
+  size: string;
+}
+
 export interface ModuleView {
   module_id: string,
   workload: number,
@@ -82,4 +88,13 @@ export interface Conflict {
   conflict_id: string;
   message: string;
   conflictingAppointments?: CalendarEvent[];
+}
+
+export interface ConflictCheckObjects{
+  selectedClasses: string[];
+  selectedLecturers: number[];
+  selectedRooms: RoomView[];
+  startTime: string;
+  endTime:string;
+  date: string;
 }

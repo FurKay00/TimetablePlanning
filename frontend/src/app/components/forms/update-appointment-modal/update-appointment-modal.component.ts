@@ -8,7 +8,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {RoleService} from '../../../services/role.service';
-import {BasicAppointmentRequest, LecturerView, ModuleView, RoomView} from '../../../models/response_models';
+import {BasicAppointmentRequest, ClassModel, LecturerView, ModuleView, RoomView} from '../../../models/response_models';
 import {RoomService} from '../../../services/room.service';
 import {MatError, MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatOption, MatSelect} from '@angular/material/select';
@@ -60,14 +60,14 @@ export class UpdateAppointmentModalComponent implements OnInit{
 
   lecturers: LecturerView[] = [];
   rooms: RoomView[] = [];
-  classes: string[] = [];
+  classes: ClassModel[] = [];
   modules: ModuleView[] = [];
 
   selectedEvent: CalendarEvent|null = null;
   selectedModule: ModuleView  = this.modules[0];
   selectedRooms: RoomView[] = [];
   selectedLecturers: LecturerView[] = [];
-  selectedClasses: string[] = [];
+  selectedClasses: ClassModel[] = [];
   selectedType: string = "LECTURE";
 
 
@@ -87,7 +87,6 @@ export class UpdateAppointmentModalComponent implements OnInit{
     this.pickedDate = data.pickedDate;
     console.log(this.pickedDate)
     this.selectedClass = data.selectedClass;
-    this.selectedClasses.push(this.selectedClass);
     this.appointmentForm = this.initializeForm();
 
     this.events = this.previousEvents;
@@ -109,7 +108,7 @@ export class UpdateAppointmentModalComponent implements OnInit{
       endTime: ['14:30', [Validators.required]],
       lecturers: new FormControl([], [Validators.required]),
       rooms: new FormControl([], [Validators.required]),
-      classes: new FormControl([this.selectedClass], [Validators.required]),
+      classes: new FormControl([], [Validators.required]),
     });
   }
 
@@ -224,7 +223,7 @@ export class UpdateAppointmentModalComponent implements OnInit{
 
     const selectedClasses = this.classes.filter((class_) =>
       $event.meta.classesRaw.some(
-        (selectedClass:any) => selectedClass.class_id === class_
+        (selectedClass:any) => selectedClass.class_id === class_.id
       )
     );
 
@@ -248,8 +247,16 @@ export class UpdateAppointmentModalComponent implements OnInit{
   }
 
   private getAllClasses() {
-    this.roleService.retrieveAllClasses().subscribe(data => this.classes = data);
+    this.roleService.retrieveAllClasses().subscribe(data => {
+      this.classes = data;
+      const selectedClass = this.classes.find(class_  => class_.id === this.selectedClass) as ClassModel;
+      this.selectedClasses.push(selectedClass);
+      this.appointmentForm.patchValue({
+        classes: [selectedClass],
+      })
+    });
   }
+
 
   private getAllLecturers() {
     this.roleService.retrieveAllLecturers().subscribe(data => this.lecturers = data);
@@ -286,11 +293,9 @@ export class UpdateAppointmentModalComponent implements OnInit{
     this.refreshView();
   }
 
-  updateClassSelection(selectedClasses: string[]) {
+  updateClassSelection(selectedClasses: any[]) {
     this.selectedClasses = selectedClasses;
-    this.appointmentForm.patchValue({
-      classes: selectedClasses
-    });
+
     this.refreshView();
   }
 
@@ -320,7 +325,7 @@ export class UpdateAppointmentModalComponent implements OnInit{
             classesRaw: formData.classes,
             location: formData.rooms.map((room:any) => `${room.room_name}`).join('\n'),
             lecturer: formData.lecturers.map((lec:any) => lec.fullname).join('\n'),
-            classes: formData.classes.map((class_:string) => class_).join('\n'),
+            classes: formData.classes.map((class_:any) => class_.id).join('\n'),
           }
           console.log(event)
         }

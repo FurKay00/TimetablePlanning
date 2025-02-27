@@ -121,8 +121,8 @@
       <mat-form-field appearance="fill">
         <mat-label>Select Class</mat-label>
         <mat-select formControlName="classes" multiple (selectionChange)="updateClassSelection($event.value)" required>
-          <mat-option *ngFor="let class_ of classes" [value]="class_" [disabled]="class_=== this.selectedClass">
-            {{ class_ }}
+          <mat-option *ngFor="let class_ of classes" [value]="class_" [disabled]="class_.id === this.selectedClass">
+            {{ class_.id }}
           </mat-option>
         </mat-select>
       </mat-form-field>

@@ -8,7 +8,14 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {RoleService} from '../../../services/role.service';
-import {BasicAppointmentRequest, Conflict, LecturerView, ModuleView, RoomView} from '../../../models/response_models';
+import {
+  BasicAppointmentRequest,
+  ClassModel,
+  Conflict,
+  LecturerView,
+  ModuleView,
+  RoomView
+} from '../../../models/response_models';
 import {RoomService} from '../../../services/room.service';
 import {MatError, MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatOption, MatSelect} from '@angular/material/select';
@@ -62,13 +69,13 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   lecturers: LecturerView[] = [];
   rooms: RoomView[] = [];
-  classes: string[] = [];
+  classes: ClassModel[] = [];
   modules: ModuleView[] = [];
 
   selectedModule: ModuleView  = this.modules[0];
   selectedRooms: RoomView[] = [];
   selectedLecturers: LecturerView[] = [];
-  selectedClasses: string[] = [];
+  selectedClasses: ClassModel[] = [];
   newEvent: CalendarEvent;
   newEvents: CalendarEvent[] = [];
 
@@ -88,16 +95,15 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.previousEvents = data.previousEvents;
     this.pickedDate = data.pickedDate;
     this.selectedClass = data.selectedClass;
-    this.selectedClasses.push(this.selectedClass);
-    this.appointmentForm = this.initializeForm();
-
-    this.newEvent = this.createInitialEvent();
-    this.events = [this.newEvent].concat(this.previousEvents);
-
     this.getAllLecturers();
     this.getAllRooms();
     this.getAllClasses();
     this.getAllModules();
+    this.appointmentForm = this.initializeForm();
+    this.newEvent = this.createInitialEvent();
+    this.events = [this.newEvent].concat(this.previousEvents);
+
+
   }
 
 
@@ -112,7 +118,7 @@ export class CreateAppointmentModalComponent implements OnInit{
       endTime: ['14:30', [Validators.required]],
       lecturers: new FormControl([], [Validators.required]),
       rooms: new FormControl([], [Validators.required]),
-      classes: new FormControl([this.selectedClass], [Validators.required]),
+      classes: new FormControl([], [Validators.required]),
       maxHours: [4, ],
       weekdays: [[],],
     });
@@ -134,8 +140,10 @@ export class CreateAppointmentModalComponent implements OnInit{
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
           console.log('User confirmed');
+
           this.submitNewEvent();
         } else {
+          console.log(this.selectedClasses)
           console.log('User canceled');
         }
       });
@@ -185,7 +193,14 @@ export class CreateAppointmentModalComponent implements OnInit{
   }
 
   private getAllClasses() {
-    this.roleService.retrieveAllClasses().subscribe(data => this.classes = data);
+    this.roleService.retrieveAllClasses().subscribe(data => {
+      this.classes = data;
+      const selectedClass = this.classes.find(class_  => class_.id === this.selectedClass) as ClassModel;
+      this.selectedClasses.push(selectedClass);
+      this.appointmentForm.patchValue({
+        classes: [selectedClass],
+      })
+    });
   }
 
   private getAllLecturers() {
@@ -234,11 +249,15 @@ export class CreateAppointmentModalComponent implements OnInit{
     }
   }
 
-  updateClassSelection(selectedClasses: string[]) {
+  updateClassSelection(selectedClasses: any[]) {
     this.selectedClasses = selectedClasses;
+    console.log(selectedClasses);
+    /*
     this.appointmentForm.patchValue({
       classes: selectedClasses
     });
+     */
+    this.refreshView();
   }
 
   createInitialEvent():CalendarEvent {
@@ -267,7 +286,7 @@ export class CreateAppointmentModalComponent implements OnInit{
         lecturers: [],
         rooms: [],
         classes: [this.selectedClass]});
-      this.selectedClasses = [this.selectedClass];
+      this.selectedClasses.push(this.classes.find(class_ => class_.id === this.selectedClass) as ClassModel);
 
       if (type === 'block') {
         this.newEvents = [];
@@ -399,7 +418,7 @@ export class CreateAppointmentModalComponent implements OnInit{
   submitNewEvent(){
     if(this.appointmentType === 'single'){
       let newAppointment: BasicAppointmentRequest = {
-        class_ids: [...this.selectedClasses],
+        class_ids: this.selectedClasses.map(class_=> class_.id),
         date: this.appointmentForm.get("date")?.value,
         end_time:  this.appointmentForm.get("endTime")?.value + ":00.000Z",
         lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
@@ -428,7 +447,7 @@ export class CreateAppointmentModalComponent implements OnInit{
         const endTime = event.end?.toTimeString().slice(0,5);
 
         const newAppointment:BasicAppointmentRequest = {
-          class_ids: [...this.selectedClasses],
+          class_ids: this.selectedClasses.map(class_=> class_.id),
           date: date,
           end_time:  endTime + ":00.000Z",
           lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
@@ -461,10 +480,11 @@ export class CreateAppointmentModalComponent implements OnInit{
     const formData = this.appointmentForm.value;
     const selectedClasses = formData.classes.map((class_: any) => class_.class_id);
     const selectedLecturers = formData.lecturers.map((lec: any) => lec.lec_id);
-    const selectedRooms = formData.rooms.map((room: any) => room.room_id);
+    const selectedRooms = formData.rooms;
     const startTime = formData.startTime;
     const endTime = formData.endTime;
     const date = formData.date;
+
   /*
     this.checkClassRoomCapacity(selectedClasses, selectedRooms);
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {ProfileInfo} from '../models/ProfileInfo';
 import {map} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {LecturerView, ModuleView, RoomView} from '../models/response_models';
+import {ClassModel, LecturerView, ModuleView, RoomView} from '../models/response_models';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class RoleService {
   currentAccounts: ProfileInfo[] = [];
   currentLecturers: LecturerView[] = [];
   currentRooms: RoomView[] = [];
-  currentClasses: string[] = [];
+  currentClasses: ClassModel[] = [];
   currentModules: ModuleView[] = [];
   private currentRole: string = "";
   private currentProfile: ProfileInfo = {
@@ -86,8 +86,8 @@ export class RoleService {
   retrieveAllClasses(){
     return this.http.get<{
       message: string,
-      classes: string[]
-    }>(this.URL + "classes/")
+      classes: ClassModel[]
+    }>(this.URL + "class_models/")
       .pipe(
         map( response => this.currentClasses = response.classes
         ));
