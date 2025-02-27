@@ -16,13 +16,14 @@ import {
   RoomView
 } from '../../../models/response_models';
 import {RoomService} from '../../../services/room.service';
-import {MatError, MatFormField} from '@angular/material/form-field';
+import {MatError, MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {MatLabel} from '@angular/material/input';
+import {MatInput, MatLabel} from '@angular/material/input';
 import {ScheduleService} from '../../../services/schedule.service';
 import {Subject} from 'rxjs';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
+import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-create-appointment-modal',
@@ -42,7 +43,12 @@ import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-d
     MatLabel,
     MatError,
     MatButtonToggleGroup,
-    MatButtonToggle
+    MatButtonToggle,
+    MatDatepicker,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatInput,
+    MatSuffix
   ],
   templateUrl: './create-personal-appointment-modal.component.html',
   styleUrl: './create-personal-appointment-modal.component.css'
@@ -161,8 +167,8 @@ export class CreatePersonalAppointmentModalComponent implements OnInit{
      const formData = this.appointmentForm?.value;
      return {
        id: "T1",
-       start: new Date(`${formData.date}T${formData.startTime}:00`),
-       end:   new Date(`${formData.date}T${formData.endTime}:00`),
+       start: new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.startTime}:00`),
+       end:   new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.endTime}:00`),
        title: formData.title,
        draggable: true,
        color: this.scheduleService.personalColor,
@@ -183,8 +189,8 @@ export class CreatePersonalAppointmentModalComponent implements OnInit{
     this.events.forEach(event => {
       if(this.newEvent.id === event.id){
         event.title= formData.title;
-        event.start = new Date(`${formData.date}T${formData.startTime}:00`);
-        event.end = new Date(`${formData.date}T${formData.endTime}:00`);
+        event.start = new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.startTime}:00`);
+        event.end = new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.endTime}:00`);
         event.color = this.scheduleService.personalColor
       }
     });
@@ -202,7 +208,7 @@ export class CreatePersonalAppointmentModalComponent implements OnInit{
 
     let newAppointment: PersonalAppointmentRequest = {
         lec_id: this.selectedLecturer as number,
-        date: this.appointmentForm.get("date")?.value,
+        date: formatDate(this.appointmentForm.get("date")?.value, "YYYY-MM-dd", "EN-US"),
         end_time:  this.appointmentForm.get("endTime")?.value + ":00.000Z",
         start_time: this.appointmentForm.get("startTime")?.value + ":00.000Z",
         title: this.appointmentForm.get("title")?.value,

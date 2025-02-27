@@ -50,20 +50,6 @@
   font-weight: bold;
 }
 
-form label {
-  width: 100%;
-  display: block;
-  margin-top: 10px;
-}
-
-form input, form select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
 button {
   padding: 10px;
   width: 100px;
@@ -120,4 +106,28 @@ mat-form-field.mat-focused .mat-form-field-outline {
 
 mat-form-field.mat-focused .mat-form-field-label {
   color: #34c3a3 !important;
+}
+.input-container{
+  display: flex;
+  align-items: center;
+  height:100%;
+  padding: 20px 0 0;
+}
+
+.mat-form_field{
+  margin: 0;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide spin buttons in Firefox (v64+) */
+input[type="number"] {
+  -moz-appearance: textfield; /* Hide arrow in older Firefox */
 }

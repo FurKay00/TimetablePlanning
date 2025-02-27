@@ -124,8 +124,8 @@ export class ScheduleService {
       color: this.getAppointmentColor(appointment.type),
       meta: {
         isLecturerAppointment:false,
-        typeRaw: this.toTitleCase(appointment.type),
-        type: appointment.type,
+        typeRaw: appointment.type,
+        type: this.toTitleCase(appointment.type),
         module_id: appointment.module,
         locationRaw: appointment.rooms,
         lecturerRaw: appointment.lecturers,
@@ -141,7 +141,7 @@ export class ScheduleService {
   mapEventToAppointment(event:CalendarEvent):BasicAppointmentPutRequest{
     return {
       id: event.id as number,
-      type: event.meta.type,
+      type: event.meta.typeRaw,
       title: event.title,
       module: event.meta.module_id || null,
       date: formatDate(event.start, "YYYY-MM-dd", "EN-US"),

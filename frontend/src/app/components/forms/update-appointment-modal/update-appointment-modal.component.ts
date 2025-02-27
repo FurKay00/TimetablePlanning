@@ -10,13 +10,14 @@ import {MatIconButton} from '@angular/material/button';
 import {RoleService} from '../../../services/role.service';
 import {BasicAppointmentRequest, LecturerView, ModuleView, RoomView} from '../../../models/response_models';
 import {RoomService} from '../../../services/room.service';
-import {MatError, MatFormField} from '@angular/material/form-field';
+import {MatError, MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {MatLabel} from '@angular/material/input';
+import {MatInput, MatLabel} from '@angular/material/input';
 import {ScheduleService} from '../../../services/schedule.service';
 import {Subject} from 'rxjs';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
+import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-update-appointment-modal',
@@ -36,7 +37,12 @@ import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-d
     MatLabel,
     MatError,
     MatButtonToggleGroup,
-    MatButtonToggle
+    MatButtonToggle,
+    MatDatepicker,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatInput,
+    MatSuffix
   ],
   templateUrl: './update-appointment-modal.component.html',
   styleUrl: './update-appointment-modal.component.css'
@@ -62,6 +68,8 @@ export class UpdateAppointmentModalComponent implements OnInit{
   selectedRooms: RoomView[] = [];
   selectedLecturers: LecturerView[] = [];
   selectedClasses: string[] = [];
+  selectedType: string = "LECTURE";
+
 
   changedEvents: CalendarEvent[] = [];
   refresh: Subject<void> = new Subject<void>();
@@ -77,6 +85,7 @@ export class UpdateAppointmentModalComponent implements OnInit{
               ) {
     this.previousEvents = data.previousEvents;
     this.pickedDate = data.pickedDate;
+    console.log(this.pickedDate)
     this.selectedClass = data.selectedClass;
     this.selectedClasses.push(this.selectedClass);
     this.appointmentForm = this.initializeForm();
@@ -178,6 +187,9 @@ export class UpdateAppointmentModalComponent implements OnInit{
     const newDate = newStart.toISOString().split('T')[0];
     const newStartTime = newStart.toTimeString().slice(0,5);
     const newEndTime = newEnd?.toTimeString().slice(0,5);
+    console.log(newDate);
+    console.log(newStartTime);
+    console.log(newEndTime);
 
     this.appointmentForm.patchValue({
       date: newDate,
@@ -217,16 +229,17 @@ export class UpdateAppointmentModalComponent implements OnInit{
     );
 
     this.appointmentForm.patchValue({
-      type: $event.meta.typeRaw,
+      type: $event.meta.type,
       title: $event.title,
       modules: selectedModule,
-      date: [formatDate($event.start, "YYYY-MM-dd", "EN-US")],
+      date: $event.start,
       startTime: [formatDate($event.start, "hh:mm", "EN-US")],
-      endTime: [formatDate($event.end as Date, "hh:mm", "EN-US")],
+      endTime: [formatDate($event.end as Date, "HH:mm", "EN-US")],
       classes: selectedClasses,
       rooms: selectedRooms,
       lecturers: selectedLecturers,
     });
+
     this.selectedEvent.draggable=true;
 
   }
@@ -260,8 +273,6 @@ export class UpdateAppointmentModalComponent implements OnInit{
       });
 
       this.refreshView();
-
-
     }
   }
 
@@ -280,6 +291,7 @@ export class UpdateAppointmentModalComponent implements OnInit{
     this.appointmentForm.patchValue({
       classes: selectedClasses
     });
+    this.refreshView();
   }
 
   ngOnInit() {
@@ -290,17 +302,18 @@ export class UpdateAppointmentModalComponent implements OnInit{
     const formData = this.appointmentForm?.value;
     if(this.selectedEvent === null) return;
 
+
     const eventIndex = this.changedEvents.findIndex(event => event.id === this.selectedEvent?.id);
 
     this.events.forEach(event => {
         if (this.selectedEvent?.id === event.id) {
           event.title = formData.title;
-          event.start = new Date(`${formData.date}T${formData.startTime}:00`);
-          event.end = new Date(`${formData.date}T${formData.endTime}:00`);
+          event.start = new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.startTime}:00`);
+          event.end = new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.endTime}:00`);
           event.color = this.scheduleService.getAppointmentColor(formData.type.toUpperCase())
           event.meta = {
-            typeRaw: this.scheduleService.toTitleCase(formData.type),
-            type: formData.type,
+            typeRaw: formData.type,
+            type: this.scheduleService.toTitleCase(formData.type),
             module_id: formData.module,
             locationRaw: formData.rooms,
             lecturerRaw: formData.lecturers,
@@ -309,6 +322,7 @@ export class UpdateAppointmentModalComponent implements OnInit{
             lecturer: formData.lecturers.map((lec:any) => lec.fullname).join('\n'),
             classes: formData.classes.map((class_:string) => class_).join('\n'),
           }
+          console.log(event)
         }
     });
     if (eventIndex !== -1) {

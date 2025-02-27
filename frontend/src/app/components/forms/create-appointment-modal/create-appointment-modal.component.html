@@ -14,14 +14,14 @@
       </mat-button-toggle-group>
     </div>
 
-    <label>Type:</label>
     <form [formGroup]="appointmentForm" *ngIf="appointmentForm">
+      <label>Type:</label>
       <mat-form-field appearance="fill">
         <mat-label>Type</mat-label>
         <mat-select formControlName="type" (selectionChange)="refreshView()" required>
-          <mat-option value="Lecture">Lecture</mat-option>
-          <mat-option value="Exam">Exam</mat-option>
-          <mat-option value="Informational">Informational</mat-option>
+          <mat-option value="LECTURE">Lecture</mat-option>
+          <mat-option value="EXAM">Exam</mat-option>
+          <mat-option value="INFORMATIONAL">Informational</mat-option>
         </mat-select>
 
         <mat-error *ngIf="appointmentForm.get('type')?.invalid">
@@ -81,6 +81,7 @@
           (change)="refreshView()"
           required
         />
+        <mat-icon matSuffix class="material-icons color_white">timer</mat-icon>
         <mat-error *ngIf="appointmentForm.get('startTime')?.hasError('required')">
           Start time is required
         </mat-error>
@@ -97,6 +98,7 @@
             (change)="refreshView()"
             required
           />
+          <mat-icon matSuffix class="material-icons color_white">timer</mat-icon>
           <mat-error *ngIf="appointmentForm.get('endTime')?.hasError('required')">
             End time is required
           </mat-error>

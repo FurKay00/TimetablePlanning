@@ -61,6 +61,7 @@ export class ScheduleComponent implements OnInit, OnChanges{
                     }: CalendarEventTimesChangedEvent): void {
     if(typeof newStart === "undefined" || typeof newEnd === "undefined")
       return;
+
     event.start = newStart;
     event.end = newEnd;
     this.refresh.next();

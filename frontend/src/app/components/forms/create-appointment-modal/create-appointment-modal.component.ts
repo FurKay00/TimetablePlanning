@@ -309,8 +309,8 @@ export class CreateAppointmentModalComponent implements OnInit{
       this.events.forEach(event => {
         if(this.newEvent.id === event.id){
           event.title= formData.title;
-          event.start = new Date(`${formData.date}T${formData.startTime}:00`);
-          event.end = new Date(`${formData.date}T${formData.endTime}:00`);
+          event.start = new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.startTime}:00`);
+          event.end = new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.endTime}:00`);
           event.color = this.scheduleService.getAppointmentColor(formData.type.toUpperCase())
           event.meta = {
             location: this.selectedRooms.map((room:any) => room.room_name).join('\n'),
@@ -556,6 +556,7 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.appointmentForm.patchValue({
       maxHours: maxHours
     })
+    this.createEventsFromWorkload();
   }
 
   decrementHours() {
@@ -564,5 +565,6 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.appointmentForm.patchValue({
       maxHours: maxHours
     })
+    this.createEventsFromWorkload();
   }
 }

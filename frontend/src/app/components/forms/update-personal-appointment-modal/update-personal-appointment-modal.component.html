@@ -9,19 +9,63 @@
 
     <form [formGroup]="appointmentForm" *ngIf="appointmentForm">
       <label>Title:</label>
-      <input type="text" formControlName="title" (change)="refreshView()" required/>
-      <mat-error *ngIf="appointmentForm.get('title')?.hasError('required')">
-        Title is required
-      </mat-error>
+      <mat-form-field appearance="fill">
+        <mat-label>Title</mat-label>
+        <input matInput type="text" formControlName="title" (change)="refreshView()" required/>
+        <mat-icon matSuffix class="material-icons color_white">title</mat-icon>
+        <mat-error *ngIf="appointmentForm.get('title')?.hasError('required')">
+          Title is required
+        </mat-error>
+      </mat-form-field>
 
       <label>Date:</label>
-      <input type="date" formControlName="date"  (change)="refreshView()" required/>
+      <mat-form-field>
+        <mat-label>Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          formControlName="date"
+          (dateChange)="refreshView()"
+          required
+        />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="appointmentForm.get('date')?.hasError('required')">
+          Date is required
+        </mat-error>
+      </mat-form-field>
 
-      <label>Start:</label>
-      <input type="time" formControlName="startTime" (change)="refreshView()" required/>
+      <label>Start time:</label>
+      <mat-form-field appearance="fill" class="input-fields">
+        <mat-label>Start time</mat-label>
+        <input
+          matInput
+          type="time"
+          formControlName="startTime"
+          (change)="refreshView()"
+          required
+        />
+        <mat-icon matSuffix class="material-icons color_white">timer</mat-icon>
+        <mat-error *ngIf="appointmentForm.get('startTime')?.hasError('required')">
+          Start time is required
+        </mat-error>
+      </mat-form-field>
 
-      <label>End:</label>
-      <input type="time" formControlName="endTime" (change)="refreshView()" required/>
+      <mat-form-field appearance="fill" class="input-fields">
+        <mat-label>End time</mat-label>
+        <input
+          matInput
+          type="time"
+          formControlName="endTime"
+          (change)="refreshView()"
+          required
+        />
+        <mat-icon matSuffix class="material-icons color_white">timer</mat-icon>
+        <mat-error *ngIf="appointmentForm.get('endTime')?.hasError('required')">
+          End time is required
+        </mat-error>
+      </mat-form-field>
+
 
       <div class="submit-buttons">
         <button class="reset" (click)="deleteEvent()">Delete</button>
