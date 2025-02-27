@@ -100,7 +100,7 @@ export class UpdateAppointmentModalComponent implements OnInit{
 
   private initializeForm():FormGroup {
     return this.fb.group({
-      type: ['Lecture', [Validators.required]],
+      type: ['LECTURE', [Validators.required]],
       title: ['New Appointment', [Validators.required]],
       modules: [null],
       date: [formatDate(this.pickedDate, "YYYY-MM-dd", "EN-US"), [Validators.required]],
