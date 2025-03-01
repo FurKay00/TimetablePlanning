@@ -173,12 +173,12 @@
         <label>Conflict/s:</label>
         <mat-form-field appearance="fill">
           <mat-label>Select Conflict</mat-label>
-          <mat-select (selectionChange)="selectConflict($event.value)"
-                      required>
+          <mat-select (selectionChange)="selectConflict($event.value)">
             <mat-option *ngFor="let conflict of conflicts" [value]="conflict">
               {{ conflict.message }}
             </mat-option>
           </mat-select>
+          <mat-icon matSuffix style="color:#F19E39">assignment_late</mat-icon>
         </mat-form-field>
       </div>
 
