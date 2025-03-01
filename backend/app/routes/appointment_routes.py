@@ -499,7 +499,7 @@ async def get_appointments_by_class_improved(class_id: str, db: db_dependency):
     }
 
 
-@router.get("/appointmentsByRoomImproved/{class_id}")
+@router.get("/appointmentsByRoomImproved/{room_id}")
 async def get_appointments_by_room_improved(room_id: int, db: db_dependency):
     datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 

@@ -29,7 +29,7 @@ import {MatError, MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatInput, MatLabel} from '@angular/material/input';
 import {ScheduleService} from '../../../services/schedule.service';
-import {Subject} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
@@ -489,63 +489,20 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.conflicts = [];
     if(!this.isFormValid()) return;
 
-    const formData = this.appointmentForm.value;
     const conflictCheckData:ConflictCheckObjects = {
       newEvent:this.newEvent, newEvents: this.newEvents, selectedClasses: this.selectedClasses, selectedLecturers: this.selectedLecturers, selectedRooms: this.selectedRooms
     }
-    const classConflicts = this.integrityService.checkClassScheduleConflicts(this.appointmentType, conflictCheckData);
 
-    console.log("Class conflicts:");
-    console.log(classConflicts);
-  /*
-    this.checkClassScheduleConflicts(selectedClasses, date, startTime, endTime);
-
-
-    this.checkTeacherScheduleConflicts(selectedLecturers, date, startTime, endTime);
-
-
-    this.checkRoomTransitionTiming(selectedRooms, date, startTime, endTime);
-    */
-
-
-
-  }
-
-  // TODO RoomView mit capacity
-  /*
-
-
-
-
-  checkTeacherScheduleConflicts(selectedLecturers: number[], date: string, startTime: string, endTime: string) {
-    selectedLecturers.forEach(lecId => {
-      this.scheduleService.getFullAppointmentsByLecturer(lecId).subscribe(lecturerAppointments => {
-        lecturerAppointments.forEach(appointment => {
-          if (appointment.date === date &&
-            (startTime < appointment.end_time && endTime > appointment.start_time)) {
-            this.conflicts.push({
-              conflict_id: 'lecturer_schedule',
-              message: `Lecturer schedule conflict with existing appointment.`,
-              conflictingAppointments: [appointment]
-            });
-          }
-        });
-      });
+    forkJoin({
+      classConflicts: this.integrityService.checkClassScheduleConflicts(this.appointmentType, conflictCheckData),
+      lecturerConflicts: this.integrityService.checkLecturerScheduleConflicts(this.appointmentType, conflictCheckData),
+      roomConflicts: this.integrityService.checkRoomScheduleConflicts(this.appointmentType, conflictCheckData),
+    }).subscribe(({classConflicts, lecturerConflicts, roomConflicts})=> {
+      this.conflicts = [...classConflicts, ...lecturerConflicts, ...roomConflicts];
+      console.log("Conflicts found:", this.conflicts);
     });
-  }
 
-
-  checkRoomTransitionTiming(selectedRooms: number[], date: string, startTime: string, endTime: string) {
-    this.roomService.getRoomTransitionTime(selectedRooms).subscribe(transitionTime => {
-      if (transitionTime > (endTime - startTime)) {
-        this.conflicts.push({
-          conflict_id: 'room_transition',
-          message: `Insufficient time for room transition. Required: ${transitionTime} minutes.`,
-        });
-      }
-    });
   }
-  */
 
   incrementHours() {
     const formData = this.appointmentForm.value;
@@ -566,4 +523,7 @@ export class CreateAppointmentModalComponent implements OnInit{
   }
 
 
+  selectConflict(value: any) {
+
+  }
 }

@@ -169,6 +169,18 @@
         </mat-form-field>
       </div>
 
+      <div *ngIf="conflicts.length > 0">
+        <label>Conflict/s:</label>
+        <mat-form-field appearance="fill">
+          <mat-label>Select Conflict</mat-label>
+          <mat-select (selectionChange)="selectConflict($event.value)"
+                      required>
+            <mat-option *ngFor="let conflict of conflicts" [value]="conflict">
+              {{ conflict.message }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
       <div class="submit-buttons">
         <button type="button" (click)="previewEvent()">Preview</button>

@@ -97,6 +97,7 @@ export interface Conflict {
   message: string;
   type: "LECTURER" | "CLASS" | "ROOM";
   conflictingAppointments?: CalendarEvent[];
+  conflictCausingAppointment?: CalendarEvent;
 }
 
 export interface ConflictCheckObjects{

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
+import {map, Observable, of} from 'rxjs';
 import {CalendarEvent} from 'angular-calendar';
 import {
   AppointmentView,
@@ -39,7 +39,7 @@ export class IntegrityService {
     }
   }
 
-  checkClassScheduleConflicts(mode:"single"|"block", conflictObjects:ConflictCheckObjects): Conflict[]{
+  checkClassScheduleConflicts(mode:"single"|"block", conflictObjects:ConflictCheckObjects): Observable<Conflict[]>{
     let conflicts: Conflict[] = [];
     let appointmentsToCheck: CalendarEvent[] = [];
 
@@ -50,12 +50,11 @@ export class IntegrityService {
     }else{
       appointmentsToCheck = conflictObjects.newEvents || [];
     }
-    console.log(appointmentsToCheck);
-    console.log(conflictObjects.selectedClasses);
+
 
     conflictObjects.selectedClasses.forEach(class_ => {
       this.scheduleService.getAppointmentsByClass(class_.id).subscribe((existingAppointments:CalendarEvent[]) => {
-        console.log(existingAppointments);
+
         appointmentsToCheck.forEach(newEvent => {
           existingAppointments.forEach(existing => {
             if (!newEvent.start || !newEvent.end || !existing.start || !existing.end) {
@@ -69,7 +68,47 @@ export class IntegrityService {
                 type: "CLASS",
                 conflict_id: class_.id,
                 message: `Schedule conflict with Class ${class_.id}`,
-                conflictingAppointments: [existing]
+                conflictingAppointments: [existing],
+                conflictCausingAppointment: newEvent,
+              });
+            }
+          });
+        })
+      })
+    })
+    return of(conflicts);
+  }
+
+  checkLecturerScheduleConflicts(mode:"single"|"block", conflictObjects:ConflictCheckObjects): Observable<Conflict[]>{
+    let conflicts: Conflict[] = [];
+    let appointmentsToCheck: CalendarEvent[] = [];
+
+    if(mode==="single"){
+      if (conflictObjects.newEvent){
+        appointmentsToCheck.push(conflictObjects.newEvent);
+      }
+    }else{
+      appointmentsToCheck = conflictObjects.newEvents || [];
+    }
+
+    conflictObjects.selectedLecturers.forEach(lecturer => {
+      this.scheduleService.getFullAppointmentsByLecturer(lecturer.lec_id+"").subscribe((data) => {
+        const existingAppointments = [...data.appointments, ...data.personalAppointments];
+        appointmentsToCheck.forEach(newEvent => {
+          existingAppointments.forEach(existing => {
+            if (!newEvent.start || !newEvent.end || !existing.start || !existing.end) {
+              console.warn("Skipping event due to missing start or end time", newEvent, existing);
+              return;
+            }
+            if (newEvent.start.toDateString() === new Date(existing.start).toDateString() &&
+              newEvent.start < existing.end  && newEvent.end > existing.start) {
+              console.log("Ayooo")
+              conflicts.push({
+                type: "LECTURER",
+                conflict_id: lecturer.lec_id,
+                message: `Schedule conflict with Teacher ${lecturer.fullname}`,
+                conflictingAppointments: [existing],
+                conflictCausingAppointment: newEvent,
               });
             }
           });
@@ -79,8 +118,47 @@ export class IntegrityService {
 
     })
 
-    return conflicts;
+    return of(conflicts);
   }
 
+  checkRoomScheduleConflicts(mode:"single"|"block", conflictObjects:ConflictCheckObjects): Observable<Conflict[]>{
+    let conflicts: Conflict[] = [];
+    let appointmentsToCheck: CalendarEvent[] = [];
 
+    if(mode==="single"){
+      if (conflictObjects.newEvent){
+        appointmentsToCheck.push(conflictObjects.newEvent);
+      }
+    }else{
+      appointmentsToCheck = conflictObjects.newEvents || [];
+    }
+
+    conflictObjects.selectedRooms.forEach(room => {
+      this.scheduleService.getAppointmentsByRoom(room.room_id+"").subscribe((existingAppointments) => {
+        appointmentsToCheck.forEach(newEvent => {
+          existingAppointments.forEach(existing => {
+            if (!newEvent.start || !newEvent.end || !existing.start || !existing.end) {
+              console.warn("Skipping event due to missing start or end time", newEvent, existing);
+              return;
+            }
+            if (newEvent.start.toDateString() === new Date(existing.start).toDateString() &&
+              newEvent.start < existing.end  && newEvent.end > existing.start) {
+              console.log("Ayooo")
+              conflicts.push({
+                type: "ROOM",
+                conflict_id: room.room_id,
+                message: `Schedule conflict with room ${room.room_name}`,
+                conflictingAppointments: [existing],
+                conflictCausingAppointment: newEvent,
+              });
+            }
+          });
+
+        })
+      })
+
+    })
+
+    return of(conflicts);
+  }
 }
