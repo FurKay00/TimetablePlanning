@@ -491,15 +491,13 @@ export class CreateAppointmentModalComponent implements OnInit{
 
     const formData = this.appointmentForm.value;
     const conflictCheckData:ConflictCheckObjects = {
-      date: formData.date, endTime: formData.endTime, selectedClasses: formData.classes, selectedLecturers: formData.lecturers, selectedRooms: formData.rooms, startTime: formData.startTime
+      newEvent:this.newEvent, newEvents: this.newEvents, selectedClasses: this.selectedClasses, selectedLecturers: this.selectedLecturers, selectedRooms: this.selectedRooms
     }
+    const classConflicts = this.integrityService.checkClassScheduleConflicts(this.appointmentType, conflictCheckData);
 
-    console.log(conflictCheckData);
-
+    console.log("Class conflicts:");
+    console.log(classConflicts);
   /*
-    this.checkClassRoomCapacity(selectedClasses, selectedRooms);
-
-
     this.checkClassScheduleConflicts(selectedClasses, date, startTime, endTime);
 
 
@@ -514,41 +512,9 @@ export class CreateAppointmentModalComponent implements OnInit{
   }
 
   // TODO RoomView mit capacity
-  /*checkClassRoomCapacity(selectedClasses: string[], selectedRooms: number[]) {
-    let totalCapacity = 0;
-    selectedRooms.forEach(roomId => {
-      const room = this.rooms.find(r => r.room_id === roomId);
-      totalCapacity += room?.room_name;
-    });
-
-    selectedClasses.forEach(classId => {
-      const class_ = this.classes.find(c => c === classId);
-      if (class_.size > totalCapacity) {
-        this.conflicts.push({
-          conflict_id: 'class_capacity',
-          message: `Class size of ${class_.size} exceeds room capacity of ${totalCapacity}.`
-        });
-      }
-    });
-  }
+  /*
 
 
-  checkClassScheduleConflicts(selectedClasses: string[], date: string, startTime: string, endTime: string) {
-    selectedClasses.forEach(classId => {
-      this.scheduleService.getAppointmentsByClass(classId).subscribe(classAppointments => {
-        classAppointments.forEach(appointment => {
-          if (appointment.date === date &&
-            (startTime < appointment.end_time && endTime > appointment.start_time)) {
-            this.conflicts.push({
-              conflict_id: 'class_schedule',
-              message: `Class schedule conflict with existing appointment.`,
-              conflictingAppointments: [appointment]
-            });
-          }
-        });
-      });
-    });
-  }
 
 
   checkTeacherScheduleConflicts(selectedLecturers: number[], date: string, startTime: string, endTime: string) {

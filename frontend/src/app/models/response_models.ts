@@ -93,16 +93,16 @@ export interface PersonalAppointmentRequest{
 }
 
 export interface Conflict {
-  conflict_id: string;
+  conflict_id: string|number;
   message: string;
+  type: "LECTURER" | "CLASS" | "ROOM";
   conflictingAppointments?: CalendarEvent[];
 }
 
 export interface ConflictCheckObjects{
-  selectedClasses: string[];
-  selectedLecturers: number[];
+  newEvent?: CalendarEvent;
+  newEvents?:CalendarEvent[];
+  selectedClasses: ClassModel[];
+  selectedLecturers: LecturerView[];
   selectedRooms: RoomView[];
-  startTime: string;
-  endTime:string;
-  date: string;
 }
