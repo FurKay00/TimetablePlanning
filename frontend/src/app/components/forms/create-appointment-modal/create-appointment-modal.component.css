@@ -1,11 +1,51 @@
+.mat-tab-group {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.mat-tab-body {
+  flex-grow: 1;
+  display: flex;
+}
+
+.mat-tab-label {
+  color: #ffffff !important; /* White text for contrast */
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.mat-tab-label-active {
+  color: #4CAF50 !important; /* Green for active tab */
+  border-bottom: 3px solid #4CAF50 !important; /* Green underline */
+}
+
+.mat-tab-label:hover {
+  background: rgba(76, 175, 80, 0.1); /* Light green hover */
+  color: #4CAF50;
+}
+
+.mat-tab-header {
+  background-color: #2C3E50; /* Dark background for contrast */
+  border-radius: 5px;
+  padding: 5px 0;
+}
+
+.mat-ink-bar {
+  background: #4CAF50 !important; /* Green ink bar */
+}
+
 
 .modal-container {
   display: flex;
   justify-content: space-between;
+  flex-direction: row;
   padding: 20px;
   background: #fcfcfc;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  gap: 10px;
 }
 
 .modal-form {
@@ -13,6 +53,8 @@
   background: #fcfcfc;
   padding: 20px;
   border-radius: 10px;
+  max-width: 400px; /* Prevent it from being too large */
+  flex-shrink: 0;
 }
 
 .modal-header {
@@ -25,8 +67,11 @@
 }
 
 .modal-calendar {
-  width: 86%;
-  margin-left: 10px;
+  width: 100%;
+  margin-top: 15px;
+  padding: 10px;
+  flex-grow: 1;
+  overflow: scroll;
 }
 
 .toggle-buttons {

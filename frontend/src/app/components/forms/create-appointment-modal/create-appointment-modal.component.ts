@@ -35,6 +35,8 @@ import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-d
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 import {IntegrityService} from '../../../services/integrity.service';
 import {MatTooltip} from '@angular/material/tooltip';
+import {MatTab, MatTabGroup} from '@angular/material/tabs';
+import {ConflictViewComponent} from '../../timetable/conflict-view/conflict-view.component';
 
 @Component({
   selector: 'app-create-appointment-modal',
@@ -60,7 +62,10 @@ import {MatTooltip} from '@angular/material/tooltip';
     MatDatepickerToggle,
     MatDatepicker,
     MatSuffix,
-    MatTooltip
+    MatTooltip,
+    MatTabGroup,
+    MatTab,
+    ConflictViewComponent
   ],
   templateUrl: './create-appointment-modal.component.html',
   styleUrl: './create-appointment-modal.component.css'
@@ -89,8 +94,12 @@ export class CreateAppointmentModalComponent implements OnInit{
   newEvent: CalendarEvent;
   newEvents: CalendarEvent[] = [];
 
+  selecetedTabIndex:number = 0;
   capacityConflict:{message:string, isAllowed:boolean} = {message:"", isAllowed:true};
   conflicts: Conflict[] = [];
+  classConflicts: Conflict[] = [];
+  roomConflicts: Conflict[] = [];
+  lecturerConflicts: Conflict[] = [];
 
   isLoaded:boolean = true;
   refresh: Subject<void> = new Subject<void>();
@@ -500,6 +509,9 @@ export class CreateAppointmentModalComponent implements OnInit{
     }).subscribe(({classConflicts, lecturerConflicts, roomConflicts})=> {
       this.conflicts = [...classConflicts, ...lecturerConflicts, ...roomConflicts];
       console.log("Conflicts found:", this.conflicts);
+      this.classConflicts = this.conflicts.filter(conflict => conflict.type === "CLASS");
+      this.roomConflicts = this.conflicts.filter(conflict => conflict.type === "ROOM");
+      this.lecturerConflicts = this.conflicts.filter(conflict => conflict.type === "LECTURER");
     });
 
   }

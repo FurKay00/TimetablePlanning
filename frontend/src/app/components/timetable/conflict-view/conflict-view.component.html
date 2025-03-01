@@ -1,0 +1,10 @@
+<div *ngIf="conflictData.length > 0">
+  <h3>Conflicting Appointments</h3>
+  <ul>
+    <li *ngFor="let conflict of conflictData">
+      <strong>{{ conflict.message }}</strong>
+      <ul>
+      </ul>
+    </li>
+  </ul>
+</div>

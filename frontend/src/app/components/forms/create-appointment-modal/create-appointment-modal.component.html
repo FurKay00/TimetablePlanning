@@ -189,10 +189,28 @@
     </form>
   </div>
 
-  <div class="modal-calendar">
-    <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)"
-                 (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
-    <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events"
-                  [isLoaded]="isLoaded" (eventMoved)="onEventMoved($event)"></app-schedule>
-  </div>
+  <mat-tab-group [(selectedIndex)]="selecetedTabIndex" class="custom-tab-group">
+    <mat-tab label="Calendar">
+      <div class="modal-calendar">
+        <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)"
+                     (selectedDay)="onDaySelected($event)" (selectedView)="onViewSelected($event)"></app-toolbar>
+        <app-schedule [refresh]="refresh" [pickedDate]="pickedDate" [pickedView]="calendarView" [events]="events"
+                      [isLoaded]="isLoaded" (eventMoved)="onEventMoved($event)"></app-schedule>
+      </div>
+    </mat-tab>
+
+    <mat-tab *ngIf="classConflicts.length > 0" label="Class Conflicts">
+      <app-conflict-view [conflictData]="classConflicts"></app-conflict-view>
+    </mat-tab>
+
+
+    <mat-tab *ngIf="roomConflicts.length > 0" label="Room Conflicts">
+      <app-conflict-view [conflictData]="roomConflicts"></app-conflict-view>
+    </mat-tab>
+
+
+    <mat-tab *ngIf="lecturerConflicts.length > 0" label="Lecturer Conflicts">
+      <app-conflict-view [conflictData]="lecturerConflicts"></app-conflict-view>
+    </mat-tab>
+  </mat-tab-group>
 </div>
