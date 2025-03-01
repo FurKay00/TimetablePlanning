@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {map} from 'rxjs';
-import {RoomView} from '../models/response_models';
+import {map, Observable} from 'rxjs';
+import {RoomModel, RoomView} from '../models/response_models';
 
 @Injectable({
   providedIn: 'root'
@@ -10,17 +10,24 @@ export class RoomService {
   URL: string = "http://127.0.0.1:8000/rooms/";
   currentRooms: RoomView[] = [];
 
+
   constructor(private http: HttpClient) { }
 
-  retrieveAllRooms() {
-    return this.http.get<{
-      message: string;
-      rooms: RoomView[]
-    }>(this.URL + "all_rooms/")
+  retrieveAllRooms():Observable<RoomView[]> {
+    return this.http.get<
+      RoomModel[]
+    >(this.URL)
       .pipe(
-        map(response => this.currentRooms=response.rooms
+        map(response => response.map(room => this.mapToRoomView(room))
         )
       );
   }
 
+  mapToRoomView(room:RoomModel):RoomView{
+    return {
+      room_id: room.id,
+      room_name: room.building + " " + room.room,
+      capacity: room.capacity
+    }
+  };
 }

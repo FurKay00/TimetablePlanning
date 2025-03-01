@@ -28,7 +28,6 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 })
 export class SecretaryScheduleComponent implements OnInit{
   classId: string = "";
-  screen: string = "";
   selectedWeekDays: Date[] = [];
   selectedDay: Date = new Date();
   calendarView = CalendarView.Week;
@@ -80,7 +79,7 @@ export class SecretaryScheduleComponent implements OnInit{
       pickedDate: this.selectedDay, selectedClass: this.classId},
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
       this.loadClassSchedule();
     });
   }
@@ -93,7 +92,7 @@ export class SecretaryScheduleComponent implements OnInit{
         pickedDate: this.selectedDay, selectedClass: this.classId},
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
       this.loadClassSchedule();
     });
   }

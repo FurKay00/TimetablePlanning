@@ -1,5 +1,13 @@
 import { Component,  Inject, Input, OnInit,} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  NgForm,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import {CalendarEvent, CalendarView, CalendarWeekModule} from 'angular-calendar';
 import {ScheduleComponent} from '../../timetable/schedule/schedule.component';
 import {formatDate, NgForOf, NgIf} from '@angular/common';
@@ -25,6 +33,8 @@ import {Subject} from 'rxjs';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
+import {IntegrityService} from '../../../services/integrity.service';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-create-appointment-modal',
@@ -49,7 +59,8 @@ import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/m
     MatInput,
     MatDatepickerToggle,
     MatDatepicker,
-    MatSuffix
+    MatSuffix,
+    MatTooltip
   ],
   templateUrl: './create-appointment-modal.component.html',
   styleUrl: './create-appointment-modal.component.css'
@@ -66,7 +77,6 @@ export class CreateAppointmentModalComponent implements OnInit{
   calendarView = CalendarView.Week;
   selectedWeekDays: Date[] = [];
 
-
   lecturers: LecturerView[] = [];
   rooms: RoomView[] = [];
   classes: ClassModel[] = [];
@@ -79,6 +89,7 @@ export class CreateAppointmentModalComponent implements OnInit{
   newEvent: CalendarEvent;
   newEvents: CalendarEvent[] = [];
 
+  capacityConflict:{message:string, isAllowed:boolean} = {message:"", isAllowed:true};
   conflicts: Conflict[] = [];
 
   isLoaded:boolean = true;
@@ -90,6 +101,7 @@ export class CreateAppointmentModalComponent implements OnInit{
               private roleService: RoleService,
               private roomService: RoomService,
               private scheduleService: ScheduleService,
+              private integrityService: IntegrityService,
               private dialog:MatDialog
               ) {
     this.previousEvents = data.previousEvents;
@@ -240,6 +252,8 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   updateRoomsSelection(selectedRooms: any[]) {
     this.selectedRooms = selectedRooms;
+    this.capacityConflict = this.integrityService.checkCapacityOfSelectedClasses(this.selectedRooms, this.selectedClasses);
+
     this.refreshView();
   }
 
@@ -253,11 +267,8 @@ export class CreateAppointmentModalComponent implements OnInit{
   updateClassSelection(selectedClasses: any[]) {
     this.selectedClasses = selectedClasses;
     console.log(selectedClasses);
-    /*
-    this.appointmentForm.patchValue({
-      classes: selectedClasses
-    });
-     */
+    this.capacityConflict = this.integrityService.checkCapacityOfSelectedClasses(this.selectedRooms, this.selectedClasses)
+
     this.refreshView();
   }
 
@@ -587,4 +598,6 @@ export class CreateAppointmentModalComponent implements OnInit{
     })
     this.createEventsFromWorkload();
   }
+
+
 }

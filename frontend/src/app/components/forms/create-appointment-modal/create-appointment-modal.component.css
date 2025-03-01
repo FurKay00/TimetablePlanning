@@ -132,7 +132,13 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-/* Hide spin buttons in Firefox (v64+) */
 input[type="number"] {
-  -moz-appearance: textfield; /* Hide arrow in older Firefox */
+  -moz-appearance: textfield;
+}
+
+.custom-error-label {
+  display: block;
+  margin: 4px 14px 0;
+  font-size: 0.75rem;
+  color: #f44336;
 }

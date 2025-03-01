@@ -8,6 +8,14 @@ export interface LecturerView {
 export interface RoomView {
   room_id: number;
   room_name: string;
+  capacity: number;
+}
+
+export interface RoomModel{
+  building: string,
+  room: string,
+  id: number,
+  capacity: number,
 }
 
 export interface ClassView {
@@ -20,7 +28,7 @@ export interface ClassView {
 export interface ClassModel{
   secretary_id: number;
   id: string;
-  size: string;
+  size: number;
 }
 
 export interface ModuleView {
