@@ -199,12 +199,12 @@
       </div>
     </mat-tab>
 
-    <mat-tab *ngIf="lecturerConflicts.length > 0" label="Class Conflicts">
+    <mat-tab *ngIf="classConflicts.length > 0" label="Class Conflicts">
       <app-conflict-view [conflictData]="classConflicts"></app-conflict-view>
     </mat-tab>
 
 
-    <mat-tab *ngIf="lecturerConflicts.length > 0" label="Room Conflicts">
+    <mat-tab *ngIf="roomConflicts.length > 0" label="Room Conflicts">
       <app-conflict-view [conflictData]="roomConflicts"></app-conflict-view>
     </mat-tab>
 

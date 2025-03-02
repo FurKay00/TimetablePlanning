@@ -576,7 +576,25 @@ export class CreateAppointmentModalComponent implements OnInit{
   }
 
 
-  selectConflict(value: any) {
+  selectConflict(value: Conflict) {
+    const availableTabs = ["CALENDAR"];
 
+    if (this.classConflicts.length > 0) {
+      availableTabs.push("CLASS");
+    }
+    if (this.roomConflicts.length > 0) {
+      availableTabs.push("ROOM");
+    }
+    if (this.lecturerConflicts.length > 0) {
+      availableTabs.push("LECTURER");
+    }
+
+    // Find the index dynamically in the available tabs
+    const tabIndex = availableTabs.indexOf(value.type);
+    if (tabIndex !== -1) {
+      this.selecetedTabIndex = tabIndex;
+    } else {
+      console.warn("Conflict tab not available:", value.type);
+    }
   }
 }
