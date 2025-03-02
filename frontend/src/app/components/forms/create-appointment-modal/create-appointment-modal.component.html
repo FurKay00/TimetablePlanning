@@ -200,11 +200,14 @@
     </mat-tab>
 
     <mat-tab *ngIf="classConflicts.length > 0" label="Class Conflicts">
-      <app-conflict-view [conflictData]="classConflicts"></app-conflict-view>
+      <div class="modal-calendar">
+        <app-conflict-view [conflictData]="classConflicts"></app-conflict-view>
+      </div>
     </mat-tab>
 
 
     <mat-tab *ngIf="roomConflicts.length > 0" label="Room Conflicts">
+
       <app-conflict-view [conflictData]="roomConflicts"></app-conflict-view>
     </mat-tab>
 

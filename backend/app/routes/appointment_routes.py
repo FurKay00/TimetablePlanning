@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from datetime import date, time, datetime
 from typing import List, Optional
 
-from sqlalchemy import delete, any_
+from sqlalchemy import delete, any_, and_
 
 from app.main import db_dependency
 from app.models import models
@@ -171,6 +171,35 @@ async def get_personal_appointments(lec_id: int, db: db_dependency):
     return {"message": "Personal Appointments retrieved successfully", "appointments": personal_appointments}
 
 
+@router.get("/appointments_personal/{lec_id}/{start_date}/{end_date}")
+async def get_personal_appointments(lec_id: int, start_date: str, end_date: str, db: db_dependency):
+    if lec_id is None:
+        raise HTTPException(status_code=400, detail="No lec_id provided")
+
+    start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+    end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+
+    db_appointments = db.query(models.PersonalAppointment).filter(
+        and_(
+            lec_id == any_(models.PersonalAppointment.lec_id),
+            models.Appointment.date >= start_dt.date(),
+            models.Appointment.date <= end_dt.date()
+        )
+    ).all()
+    personal_appointments = []
+    for appointment in db_appointments:
+        personal_appointment = PersonalAppointmentView(
+            id=appointment.id,
+            title=appointment.title,
+            date=appointment.date,
+            start_time=appointment.start_time,
+            end_time=appointment.end_time
+        )
+        personal_appointments.append(personal_appointment)
+
+    return {"message": "Personal Appointments retrieved successfully", "appointments": personal_appointments}
+
+
 @router.post("/basic/")
 async def create_basic_appointment(appointment: AppointmentBase, db: db_dependency):
     if not appointment:
@@ -250,12 +279,12 @@ async def create_personal_appointment(appointment: PersonalAppointmentBase, db: 
         raise HTTPException(status_code=400, detail="No appointment provided")
 
     db_appointment = models.PersonalAppointment(
-            date=appointment.date,
-            title=appointment.title,
-            start_time=appointment.start_time,
-            end_time=appointment.end_time,
-            lec_id=appointment.lec_id
-        )
+        date=appointment.date,
+        title=appointment.title,
+        start_time=appointment.start_time,
+        end_time=appointment.end_time,
+        lec_id=appointment.lec_id
+    )
     db.add(db_appointment)
     db.commit()
     db.refresh(db_appointment)
@@ -541,7 +570,7 @@ async def get_appointments_by_room_improved(room_id: int, db: db_dependency):
 
 
 @router.get("/appointmentsByLecturerImproved/{lec_id}")
-async def get_appointments_by_class_improved(lec_id: int, db: db_dependency):
+async def get_appointments_by_lecturer_improved(lec_id: int, db: db_dependency):
     datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     results = db.query(AppointmentsFlat).filter(lec_id == any_(AppointmentsFlat.lecturer_ids)).all()
@@ -625,3 +654,162 @@ async def get_all_appointments_improved(db: db_dependency):
         "message": "Appointments retrieved successfully",
         "appointments": appointment_views
     }
+
+
+@router.get("/appointmentsByRoomImproved/{room_id}/{start_date}/{end_date}")
+async def get_appointments_by_room_improved(room_id: int, start_date: str, end_date: str, db: db_dependency):
+    try:
+        start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+        end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+
+        results = db.query(models.AppointmentsFlat).filter(
+            and_(
+                room_id == any_(models.AppointmentsFlat.room_ids),
+                models.AppointmentsFlat.date >= start_dt.date(),
+                models.AppointmentsFlat.date <= end_dt.date()
+            )
+        ).all()
+
+        appointment_views = []
+        for row in results:
+            appointment_views.append(
+                AppointmentView(
+                    id=row.appointment_id,
+                    type=row.type,
+                    title=row.title,
+                    module=row.module,
+                    date=row.date,
+                    start_time=row.start_time,
+                    end_time=row.end_time,
+                    lecturers=[
+                        LecturerView(lec_id=lid, fullname=name)
+                        for (lid, name) in zip(row.lecturer_ids, row.lecturer_names)
+                        if lid is not None
+                    ],
+                    rooms=[
+                        RoomView(room_id=rid, room_name=rname)
+                        for (rid, rname) in zip(row.room_ids, row.room_names)
+                        if rid is not None
+                    ],
+                    classes=[
+                        ClassView(class_id=cid)
+                        for cid in row.class_ids
+                        if cid is not None
+                    ]
+                )
+            )
+
+        return {
+            "message": "Appointments retrieved successfully",
+            "appointments": appointment_views
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/appointmentsByClassImproved/{class_id}/{start_date}/{end_date}")
+async def get_appointments_by_class_improved(class_id: str, start_date: str, end_date: str, db: db_dependency):
+    try:
+        start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+        end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+
+        results = db.query(models.AppointmentsFlat).filter(
+            and_(
+                class_id == any_(models.AppointmentsFlat.class_ids),
+                models.AppointmentsFlat.date >= start_dt.date(),
+                models.AppointmentsFlat.date <= end_dt.date()
+            )
+        ).all()
+
+        appointment_views = []
+        for row in results:
+            appointment_views.append(
+                AppointmentView(
+                    id=row.appointment_id,
+                    type=row.type,
+                    title=row.title,
+                    module=row.module,
+                    date=row.date,
+                    start_time=row.start_time,
+                    end_time=row.end_time,
+                    lecturers=[
+                        LecturerView(lec_id=lid, fullname=name)
+                        for (lid, name) in zip(row.lecturer_ids, row.lecturer_names)
+                        if lid is not None
+                    ],
+                    rooms=[
+                        RoomView(room_id=rid, room_name=rname)
+                        for (rid, rname) in zip(row.room_ids, row.room_names)
+                        if rid is not None
+                    ],
+                    classes=[
+                        ClassView(class_id=cid)
+                        for cid in row.class_ids
+                        if cid is not None
+                    ]
+                )
+            )
+
+        return {
+            "message": "Appointments retrieved successfully",
+            "appointments": appointment_views
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/appointmentsByLecturerImproved/{lec_id}/{start_date}/{end_date}")
+async def get_appointments_by_lecturer_improved(lec_id: int, start_date: str, end_date: str, db: db_dependency):
+    try:
+        start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+        end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+
+        results = db.query(models.AppointmentsFlat).filter(
+            and_(
+                lec_id == any_(models.AppointmentsFlat.lecturer_ids),
+                models.AppointmentsFlat.date >= start_dt.date(),
+                models.AppointmentsFlat.date <= end_dt.date()
+            )
+        ).all()
+
+        appointment_views = []
+        for row in results:
+            appointment_views.append(
+                AppointmentView(
+                    id=row.appointment_id,
+                    type=row.type,
+                    title=row.title,
+                    module=row.module,
+                    date=row.date,
+                    start_time=row.start_time,
+                    end_time=row.end_time,
+                    lecturers=[
+                        LecturerView(lec_id=lid, fullname=name)
+                        for (lid, name) in zip(row.lecturer_ids, row.lecturer_names)
+                        if lid is not None
+                    ],
+                    rooms=[
+                        RoomView(room_id=rid, room_name=rname)
+                        for (rid, rname) in zip(row.room_ids, row.room_names)
+                        if rid is not None
+                    ],
+                    classes=[
+                        ClassView(class_id=cid)
+                        for cid in row.class_ids
+                        if cid is not None
+                    ]
+                )
+            )
+        db_personal_appointments = await get_personal_appointments(lec_id, db)
+        personal_appointments = db_personal_appointments["appointments"]
+
+        return {
+            "message": "Appointments retrieved successfully",
+            "personalAppointments": personal_appointments,
+            "appointments": appointment_views,
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
