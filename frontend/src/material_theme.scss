@@ -1,6 +1,9 @@
+@use '@angular/material' as mat;
+
 /* Updated green primary theme (originally purple). */
 .material-icons.color_green { color: #00FF00; }
 .material-icons.color_white { color: #FFFFFF; }
+
 
 .mat-ripple {
   overflow: hidden;
@@ -1195,12 +1198,12 @@ html {
   --mdc-tab-indicator-active-indicator-color: #4caf50; /* replaced #7b1fa2 */
   --mat-tab-header-disabled-ripple-color: rgba(255, 255, 255, 0.5);
   --mat-tab-header-pagination-icon-color: white;
-  --mat-tab-header-inactive-label-text-color: rgba(255, 255, 255, 0.6);
+  --mat-tab-header-inactive-label-text-color: rgba(108, 108, 108, 0.6);
   --mat-tab-header-active-label-text-color: #4caf50; /* replaced #7b1fa2 */
   --mat-tab-header-active-ripple-color: #4caf50;
   --mat-tab-header-inactive-ripple-color: #4caf50;
-  --mat-tab-header-inactive-focus-label-text-color: rgba(255, 255, 255, 0.6);
-  --mat-tab-header-inactive-hover-label-text-color: rgba(255, 255, 255, 0.6);
+  --mat-tab-header-inactive-focus-label-text-color: rgba(108, 108, 108, 0.6);
+  --mat-tab-header-inactive-hover-label-text-color: rgba(108, 108, 108, 0.6);
   --mat-tab-header-active-focus-label-text-color: #4caf50;
   --mat-tab-header-active-hover-label-text-color: #4caf50;
   --mat-tab-header-active-focus-indicator-color: #4caf50;
@@ -1211,12 +1214,12 @@ html {
   --mdc-tab-indicator-active-indicator-color: #69f0ae;
   --mat-tab-header-disabled-ripple-color: rgba(255, 255, 255, 0.5);
   --mat-tab-header-pagination-icon-color: white;
-  --mat-tab-header-inactive-label-text-color: rgba(255, 255, 255, 0.6);
+  --mat-tab-header-inactive-label-text-color: rgba(0, 0, 0, 0.6);
   --mat-tab-header-active-label-text-color: #69f0ae;
   --mat-tab-header-active-ripple-color: #69f0ae;
   --mat-tab-header-inactive-ripple-color: #69f0ae;
-  --mat-tab-header-inactive-focus-label-text-color: rgba(255, 255, 255, 0.6);
-  --mat-tab-header-inactive-hover-label-text-color: rgba(255, 255, 255, 0.6);
+  --mat-tab-header-inactive-focus-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-header-inactive-hover-label-text-color: rgba(0, 0, 0, 0.6);
   --mat-tab-header-active-focus-label-text-color: #69f0ae;
   --mat-tab-header-active-hover-label-text-color: #69f0ae;
   --mat-tab-header-active-focus-indicator-color: #69f0ae;
@@ -2155,4 +2158,11 @@ html {
   font: 400 34px/40px Roboto, sans-serif;
   letter-spacing: .0073529412em;
   margin: 0 0 64px;
+}
+
+
+:root {
+  @include mat.tabs-overrides((
+    inactive-label-text-color: #000000FF
+  ));
 }

@@ -96,10 +96,51 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   selecetedTabIndex:number = 0;
   capacityConflict:{message:string, isAllowed:boolean} = {message:"", isAllowed:true};
-  conflicts: Conflict[] = [];
-  classConflicts: Conflict[] = [];
-  roomConflicts: Conflict[] = [];
-  lecturerConflicts: Conflict[] = [];
+
+  conflicts: Conflict[] = [{
+    message: "Class Conflict",
+    conflict_id: "TINF22B6",
+    conflictingAppointments: [],
+    type: "CLASS"
+  },
+    {
+      message: "Room Conflict",
+      conflict_id: 0,
+      conflictingAppointments: [],
+      type: "ROOM"
+    },
+    {
+      message: "Lecturer Conflict",
+      conflict_id: 5,
+      conflictingAppointments: [],
+      type: "LECTURER"
+    }
+  ];
+
+  classConflicts: Conflict[] = [
+    {
+      message: "Class Conflict",
+      conflict_id: "TINF22B6",
+      conflictingAppointments: [],
+      type: "CLASS"
+    }
+  ];
+  roomConflicts: Conflict[] = [
+    {
+      message: "Room Conflict",
+      conflict_id: 0,
+      conflictingAppointments: [],
+      type: "ROOM"
+    }
+  ];
+  lecturerConflicts: Conflict[] = [
+    {
+      message: "Lecturer Conflict",
+      conflict_id: 5,
+      conflictingAppointments: [],
+      type: "LECTURER"
+    }
+  ];
 
   isLoaded:boolean = true;
   refresh: Subject<void> = new Subject<void>();

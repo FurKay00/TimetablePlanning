@@ -189,7 +189,7 @@
     </form>
   </div>
 
-  <mat-tab-group [(selectedIndex)]="selecetedTabIndex" class="custom-tab-group">
+  <mat-tab-group mat-stretch-tabs="false" [(selectedIndex)]="selecetedTabIndex" class="custom-tab-group" mat-align-tabs="start">
     <mat-tab label="Calendar">
       <div class="modal-calendar">
         <app-toolbar [currentDate]="pickedDate" (weekDaysSelected)="onWeekDaysSelected($event)"
@@ -199,17 +199,17 @@
       </div>
     </mat-tab>
 
-    <mat-tab *ngIf="classConflicts.length > 0" label="Class Conflicts">
+    <mat-tab *ngIf="lecturerConflicts.length > 0" label="Class Conflicts">
       <app-conflict-view [conflictData]="classConflicts"></app-conflict-view>
     </mat-tab>
 
 
-    <mat-tab *ngIf="roomConflicts.length > 0" label="Room Conflicts">
+    <mat-tab *ngIf="lecturerConflicts.length > 0" label="Room Conflicts">
       <app-conflict-view [conflictData]="roomConflicts"></app-conflict-view>
     </mat-tab>
 
 
-    <mat-tab *ngIf="lecturerConflicts.length > 0" label="Lecturer Conflicts">
+    <mat-tab *ngIf="lecturerConflicts.length > 0"  label="Lecturer Conflicts">
       <app-conflict-view [conflictData]="lecturerConflicts"></app-conflict-view>
     </mat-tab>
   </mat-tab-group>
