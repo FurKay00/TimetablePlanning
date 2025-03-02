@@ -24,6 +24,7 @@ class ModuleView(BaseModel):
     workload: int
     title: str
 
+
 @router.get("/all/")
 async def get_all_accounts(db: db_dependency):
     accounts = []
@@ -90,6 +91,13 @@ async def get_all_class_models(db: db_dependency):
     for class_entry in db_classes:
         classes.append(class_entry)
     return {"message": "Classes retrieved successfully", "classes": classes}
+
+
+@router.get("/class_models/{class_id}")
+async def get_class_by_id(class_id: str, db: db_dependency):
+    db_class = db.query(models.Class).filter(models.Class.id == class_id).first()
+
+    return {"message": "Class retrieved successfully", "class": db_class}
 
 
 @router.get("/modules/")

@@ -73,7 +73,7 @@ import {ConflictViewComponent} from '../../timetable/conflict-view/conflict-view
 export class CreateAppointmentModalComponent implements OnInit{
   @Input() previousEvents: CalendarEvent[] = [];
   @Input() pickedDate: Date = new Date();
-  @Input() selectedClass: string = '';
+  @Input() selectedClass: ClassModel;
 
   appointmentForm: FormGroup;
   appointmentType: 'single' | 'block' = 'single';
@@ -157,6 +157,9 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.previousEvents = data.previousEvents;
     this.pickedDate = data.pickedDate;
     this.selectedClass = data.selectedClass;
+    this.selectedClasses = [this.selectedClass];
+    this.appointmentType = "single";
+
     this.getAllLecturers();
     this.getAllRooms();
     this.getAllClasses();
@@ -180,7 +183,7 @@ export class CreateAppointmentModalComponent implements OnInit{
       endTime: ['14:30', [Validators.required]],
       lecturers: new FormControl([], [Validators.required]),
       rooms: new FormControl([], [Validators.required]),
-      classes: new FormControl([], [Validators.required]),
+      classes: new FormControl([...this.selectedClasses], [Validators.required]),
       maxHours: [4, ],
       weekdays: [[],],
     });
@@ -258,7 +261,7 @@ export class CreateAppointmentModalComponent implements OnInit{
   private getAllClasses() {
     this.roleService.retrieveAllClasses().subscribe(data => {
       this.classes = data;
-      const selectedClass = this.classes.find(class_  => class_.id === this.selectedClass) as ClassModel;
+      const selectedClass = this.classes.find(class_  => class_.id === this.selectedClass.id) as ClassModel;
       this.selectedClasses.push(selectedClass);
       this.appointmentForm.patchValue({
         classes: [selectedClass],
@@ -344,11 +347,21 @@ export class CreateAppointmentModalComponent implements OnInit{
 
     this.appointmentForm.get('appointment_type')?.valueChanges.subscribe((type) => {
       this.appointmentType = type;
+      this.selectedClasses=[]
+      this.selectedRooms=[]
+      this.selectedLecturers=[]
+      this.appointmentForm.setValue({
+        classes: [this.selectedClass]
+      });
+
+
       this.appointmentForm.patchValue({modules: null,
         lecturers: [],
         rooms: [],
-        classes: [this.selectedClass]});
-      this.selectedClasses.push(this.classes.find(class_ => class_.id === this.selectedClass) as ClassModel);
+      });
+      console.log(this.selectedClasses)
+      this.appointmentForm.get('classes')?.setValue([this.selectedClass]);
+      console.log(this.appointmentForm.get("classes")?.value);
 
       if (type === 'block') {
         this.newEvents = [];
@@ -360,15 +373,10 @@ export class CreateAppointmentModalComponent implements OnInit{
 
       } else {
         this.events = [this.newEvent].concat(this.previousEvents);
-        //this.appointmentForm.patchValue({modules: null});
         this.appointmentForm.get('modules')?.clearValidators();
         this.appointmentForm.get('maxHours')?.clearValidators();
         this.appointmentForm.get('weekdays')?.clearValidators();
       }
-      /*
-      this.appointmentForm.get('modules')?.updateValueAndValidity();
-      this.appointmentForm.get('maxHours')?.updateValueAndValidity();
-      this.appointmentForm.get('weekdays')?.updateValueAndValidity();*/
     });
 
     this.appointmentForm.get('weekdays')?.valueChanges.subscribe(() => {
@@ -493,7 +501,7 @@ export class CreateAppointmentModalComponent implements OnInit{
       console.log(newAppointment)
       this.isLoaded = false;
       this.scheduleService.createNewAppointment(newAppointment).subscribe(()=> {
-        this.scheduleService.getAppointmentsByClass(this.selectedClass).subscribe(data => {
+        this.scheduleService.getAppointmentsByClass(this.selectedClass.id).subscribe(data => {
           this.previousEvents = this.scheduleService.createPreviousAppointments(data);
           this.newEvent = this.createInitialEvent();
           this.events = [this.newEvent].concat(this.previousEvents);
@@ -524,7 +532,7 @@ export class CreateAppointmentModalComponent implements OnInit{
       console.log(newAppointments)
       this.scheduleService.createNewAppointments(newAppointments).subscribe(()=> {
         this.isLoaded=false;
-        this.scheduleService.getAppointmentsByClass(this.selectedClass).subscribe(data => {
+        this.scheduleService.getAppointmentsByClass(this.selectedClass.id).subscribe(data => {
           this.previousEvents = this.scheduleService.createPreviousAppointments(data);
           this.newEvents = [];
           this.events = this.newEvents.concat(this.previousEvents);
@@ -553,6 +561,22 @@ export class CreateAppointmentModalComponent implements OnInit{
       this.classConflicts = this.conflicts.filter(conflict => conflict.type === "CLASS");
       this.roomConflicts = this.conflicts.filter(conflict => conflict.type === "ROOM");
       this.lecturerConflicts = this.conflicts.filter(conflict => conflict.type === "LECTURER");
+      this.conflicts.forEach(conflict => {
+        if(conflict.conflictingAppointments){
+         conflict.conflictingAppointments.forEach(appointment => {
+           if (this.appointmentType === "single"){
+             this.newEvent.color = this.scheduleService.conflictColor;
+             this.refresh.next();
+           }else{
+             let matchingEvent = this.newEvents.find(event => event.id = appointment.id);
+             if (matchingEvent){
+               matchingEvent.color = this.scheduleService.conflictColor;
+               this.refresh.next();
+             }
+           }
+         })
+        }
+      })
     });
 
   }

@@ -13,6 +13,8 @@ import {
   UpdateAppointmentModalComponent
 } from '../../../forms/update-appointment-modal/update-appointment-modal.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {ClassModel} from '../../../../models/response_models';
+import {RoleService} from '../../../../services/role.service';
 
 @Component({
   selector: 'app-secretary-schedule',
@@ -28,13 +30,14 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 })
 export class SecretaryScheduleComponent implements OnInit{
   classId: string = "";
+  classModel: ClassModel | undefined;
   selectedWeekDays: Date[] = [];
   selectedDay: Date = new Date();
   calendarView = CalendarView.Week;
   classAppointments: CalendarEvent[] = []
   isLoaded:boolean = false;
 
-  constructor(private route:ActivatedRoute, private dateService:DateService, private scheduleService:ScheduleService, public dialog:MatDialog) {
+  constructor(private route:ActivatedRoute, private dateService:DateService, private scheduleService:ScheduleService, private roleService: RoleService, public dialog:MatDialog) {
     this.selectedWeekDays = dateService.initializeWeekDays();
   }
 
@@ -49,6 +52,7 @@ export class SecretaryScheduleComponent implements OnInit{
     this.isLoaded = false;
     if(this.classId === "")
       return;
+    this.roleService.retrieveClassById(this.classId).subscribe((data) => this.classModel = data.class)
     this.scheduleService.getAppointmentsByClass(this.classId).subscribe(
       (data: any[]) => {
           this.classAppointments = data;
@@ -76,7 +80,7 @@ export class SecretaryScheduleComponent implements OnInit{
       height: '98%',
       width: '98%',
       data: { previousEvents: this.scheduleService.createPreviousAppointments(this.classAppointments),
-      pickedDate: this.selectedDay, selectedClass: this.classId},
+      pickedDate: this.selectedDay, selectedClass: this.classModel},
     });
 
     dialogRef.afterClosed().subscribe(() => {
@@ -89,7 +93,7 @@ export class SecretaryScheduleComponent implements OnInit{
       height: '95%',
       width: '95%',
       data: { previousEvents: this.scheduleService.createPreviousAppointments(this.classAppointments),
-        pickedDate: this.selectedDay, selectedClass: this.classId},
+        pickedDate: this.selectedDay, selectedClass: this.classModel},
     });
 
     dialogRef.afterClosed().subscribe(() => {

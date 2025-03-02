@@ -93,6 +93,13 @@ export class RoleService {
         ));
   }
 
+  retrieveClassById(classId: string){
+    return this.http.get<{
+      message: string,
+      class: ClassModel
+    }>(this.URL+ "class_models/" + classId);
+  }
+
   retrieveAllModules(){
     return this.http.get<{
       message: string,
