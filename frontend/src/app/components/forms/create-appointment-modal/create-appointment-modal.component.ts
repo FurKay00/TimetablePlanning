@@ -158,7 +158,6 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.pickedDate = data.pickedDate;
     this.selectedClass = data.selectedClass;
     this.selectedClasses = [this.selectedClass];
-    this.appointmentType = "single";
 
     this.getAllLecturers();
     this.getAllRooms();
@@ -344,26 +343,28 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   ngOnInit() {
     this.appointmentForm = this.initializeForm();
+    this.appointmentForm.get('appointment_type')?.valueChanges.subscribe((appointment_type) => {
 
-    this.appointmentForm.get('appointment_type')?.valueChanges.subscribe((type) => {
-      this.appointmentType = type;
-      this.selectedClasses=[]
+      this.appointmentType = appointment_type;
+      this.selectedClasses=[this.selectedClass]
       this.selectedRooms=[]
       this.selectedLecturers=[]
-      this.appointmentForm.setValue({
-        classes: [this.selectedClass]
-      });
 
-
-      this.appointmentForm.patchValue({modules: null,
+      this.appointmentForm.patchValue({
+        type:"LECTURE",
+        modules:null,
+        title: 'New Appointment',
+        date: formatDate(this.pickedDate, "YYYY-MM-dd", "EN-US"),
+        startTime: '12:00',
+        endTime: '14:30',
+        classes: [this.selectedClass],
         lecturers: [],
-        rooms: [],
+        rooms:[],
+        maxHours: 4,
+        weekdays: []
       });
-      console.log(this.selectedClasses)
-      this.appointmentForm.get('classes')?.setValue([this.selectedClass]);
-      console.log(this.appointmentForm.get("classes")?.value);
 
-      if (type === 'block') {
+      if (appointment_type === 'block') {
         this.newEvents = [];
         this.appointmentForm.get('modules')?.setValidators(Validators.required);
         this.appointmentForm.get('maxHours')?.setValidators(Validators.required);

@@ -31,10 +31,7 @@
 }
 
 .custom-tab-group {
-  width: 100%;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  width: 72.4%;
 }
 
 .custom-tab-group .mat-tab-label {
@@ -53,6 +50,9 @@
   width: 100%;
 }
 
+.mat-mdc-tab-body{
+  height: 800px !important;
+}
 
 .modal-container {
   display: flex;

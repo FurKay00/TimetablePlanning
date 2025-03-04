@@ -1209,6 +1209,11 @@ html {
   --mat-tab-header-active-focus-indicator-color: #4caf50;
   --mat-tab-header-active-hover-indicator-color: #4caf50;
 }
+
+
+.mat-mdc-tab-body-wrapper{
+  display: contents;
+}
 .mat-mdc-tab-group.mat-accent,
 .mat-mdc-tab-nav-bar.mat-accent {
   --mdc-tab-indicator-active-indicator-color: #69f0ae;

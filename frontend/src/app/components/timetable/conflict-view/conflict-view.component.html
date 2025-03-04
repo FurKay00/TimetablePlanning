@@ -3,10 +3,13 @@
   <ul>
     <li *ngFor="let conflict of conflictData">
       <strong>{{ conflict.message }}</strong>
-      <ul>
-      </ul>
+      <strong>{{ conflict.conflictingAppointments }}</strong>
+      <strong>{{ conflict.conflictCausingAppointment }}</strong>
+      <strong>{{ conflict.conflict_id }}</strong>
+      <strong>{{ conflict.message }}</strong>
     </li>
   </ul>
+  <app-gantt>
+  </app-gantt>
+  aeawe
 </div>
-<app-gantt>
-</app-gantt>
