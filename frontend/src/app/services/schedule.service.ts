@@ -21,6 +21,7 @@ export class ScheduleService {
   personalColor = {primary: '#2C81E7FF', secondary: '#2C81E7FF'}
   previousColor = {primary: '#7E7F86FF', secondary: '#7E7F86FF'}
   conflictColor = {primary: '#f3a61a', secondary: '#f3a61a'}
+  acceptableColor = {primary: '#06be40', secondary: '#06be40'}
 
   constructor(private http: HttpClient) {
   }

@@ -1,6 +1,6 @@
 
-<ngx-gantt #gantt [items]="ganttItems" [groups]="groupItems" [viewType]="GanttViewType.hour" [viewOptions]="viewOptions" >
-  <ngx-gantt-table>
+<ngx-gantt #gantt [items]="ganttItems" [viewType]="GanttViewType.hour" [viewOptions]="viewOptions">
+  <ngx-gantt-table [draggable]="true" >
     <ngx-gantt-column [name]="ganttTitle" width="200px">
       <ng-template #cell let-item="item"> {{ item.title }} </ng-template>
     </ngx-gantt-column>

@@ -39,6 +39,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {ConflictViewComponent} from '../../timetable/conflict-view/conflict-view.component';
 import {GanttDate, GanttGroup, GanttItem} from '@worktile/gantt';
+import {subWeeks} from 'date-fns';
 
 @Component({
   selector: 'app-create-appointment-modal',
@@ -98,7 +99,7 @@ export class CreateAppointmentModalComponent implements OnInit {
 
   selecetedTabIndex: number = 0;
   capacityConflict: { message: string, isAllowed: boolean } = {message: "", isAllowed: true};
-  ganttStartDate:number =  Date.now()/1000;
+  ganttStartDate: number = Date.now() / 1000;
 
   conflicts: Conflict[] = [{
     message: "Class Conflict",
@@ -167,8 +168,8 @@ export class CreateAppointmentModalComponent implements OnInit {
   ganttLecturerGroups: GanttGroup[] = [];
 
   ganttClassTasks: GanttItem[] = [];
-  ganttRoomTasks:GanttItem[] = [];
-  ganttLecturerTasks:GanttItem[] = [];
+  ganttRoomTasks: GanttItem[] = [];
+  ganttLecturerTasks: GanttItem[] = [];
 
   isLoaded: boolean = true;
   refresh: Subject<void> = new Subject<void>();
@@ -181,7 +182,7 @@ export class CreateAppointmentModalComponent implements OnInit {
               private scheduleService: ScheduleService,
               private integrityService: IntegrityService,
               private dialog: MatDialog,
-              private changeDetectorRef:ChangeDetectorRef,
+              private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.previousEvents = data.previousEvents;
     this.pickedDate = data.pickedDate;
@@ -595,8 +596,17 @@ export class CreateAppointmentModalComponent implements OnInit {
       this.classConflicts = this.conflicts.filter(conflict => conflict.type === "CLASS");
       this.roomConflicts = this.conflicts.filter(conflict => conflict.type === "ROOM");
       this.lecturerConflicts = this.conflicts.filter(conflict => conflict.type === "LECTURER");
-      if(this.conflicts.length!== 0){
+      if (this.conflicts.length !== 0) {
         this.fillGanttChart();
+      } else {
+        if (this.appointmentType === "single") {
+          this.newEvent.color = this.scheduleService.acceptableColor;
+          this.refresh.next();
+        } else {
+          this.newEvents.forEach(event => event.color = this.scheduleService.acceptableColor);
+          this.refresh.next();
+
+        }
       }
       this.conflicts.forEach(conflict => {
         if (conflict.conflictingAppointments) {
@@ -663,8 +673,8 @@ export class CreateAppointmentModalComponent implements OnInit {
     let start_date: string;
     let end_date: string;
     if (this.appointmentType === "single") {
-      start_date = formatDate(this.newEvent.start, "YYYY-MM-dd", "EN-US");
-      end_date = start_date;
+      start_date = formatDate(subWeeks(this.newEvent.start, 3), "YYYY-MM-dd", "EN-US");
+      end_date = formatDate(this.newEvent.start, "YYYY-MM-dd", "EN-US");
     } else {
       start_date = formatDate(this.newEvents[0].start, "YYYY-MM-dd", "EN-US");
       end_date = formatDate(this.newEvents[this.newEvents.length - 1].end as Date, "YYYY-MM-dd", "EN-US");
@@ -680,29 +690,38 @@ export class CreateAppointmentModalComponent implements OnInit {
     const uniqueLecturerConflictIds = [...this.selectedLecturers.map(lecturer => lecturer.lec_id)];
 
     const roomServiceCalls = uniqueRoomConflictIds.map(conflict_id =>
-      this.scheduleService.getAppointmentsByRoom(conflict_id +"", start_date, end_date)
-        .pipe(map(response => ({ conflict_id, appointments: response })))
+      this.scheduleService.getAppointmentsByRoom(conflict_id + "", start_date, end_date)
+        .pipe(map(response => ({conflict_id, appointments: response})))
     );
 
     const classServiceCalls = uniqueClassConflictIds.map(conflict_id =>
       this.scheduleService.getAppointmentsByClass(conflict_id, start_date, end_date)
-        .pipe(map(response => ({ conflict_id, appointments: response })))
+        .pipe(map(response => ({conflict_id, appointments: response})))
     );
 
     const lecturerServiceCalls = uniqueLecturerConflictIds.map(conflict_id =>
-      this.scheduleService.getFullAppointmentsByLecturer(conflict_id+"", start_date,end_date).pipe(map(response => ({
+      this.scheduleService.getFullAppointmentsByLecturer(conflict_id + "", start_date, end_date).pipe(map(response => ({
         conflict_id,
         appointments: [...response.appointments, ...response.personalAppointments]
       })))
     );
-    this.ganttClassGroups = [...this.selectedClasses.map(cls => ({ id: cls.id, title: cls.id, expanded:false}))]
-    this.ganttRoomGroups = [...this.selectedRooms.map(room => ({ id: room.room_id.toString(), title: room.room_name, expanded:false }))]
-    this.ganttLecturerGroups = [...this.selectedLecturers.map(lec => ({ id: lec.lec_id.toString(), title: lec.fullname, expanded:false}))]
+    this.ganttClassGroups = [...this.selectedClasses.map(cls => ({id: cls.id, title: cls.id, expanded: false}))]
+    this.ganttRoomGroups = [...this.selectedRooms.map(room => ({
+      id: room.room_id.toString(),
+      title: room.room_name,
+    }))]
+    this.ganttLecturerGroups = [...this.selectedLecturers.map(lec => ({
+      id: lec.lec_id.toString(),
+      title: lec.fullname,
+    }))]
 
 
     forkJoin(roomServiceCalls).subscribe({
       next: responses => {
-        responses.forEach(({ conflict_id, appointments }) => this.mapRoomAppointmentsToGantt(appointments, conflict_id.toString()))
+        responses.forEach(({
+                             conflict_id,
+                             appointments
+                           }) => this.mapRoomAppointmentsToGantt(appointments, conflict_id.toString()))
 
         this.ganttRoomTasks = [...this.ganttRoomTasks];
         this.changeDetectorRef.detectChanges()
@@ -710,7 +729,7 @@ export class CreateAppointmentModalComponent implements OnInit {
     })
     forkJoin(classServiceCalls).subscribe({
       next: responses => {
-        responses.forEach(({ conflict_id, appointments }) => this.mapClassAppointmentsToGantt(appointments, conflict_id));
+        responses.forEach(({conflict_id, appointments}) => this.mapClassAppointmentsToGantt(appointments, conflict_id));
 
         this.ganttClassTasks = [...this.ganttClassTasks];
         this.changeDetectorRef.detectChanges()
@@ -719,7 +738,10 @@ export class CreateAppointmentModalComponent implements OnInit {
     })
     forkJoin(lecturerServiceCalls).subscribe({
       next: responses => {
-        responses.forEach(({ conflict_id, appointments }) => this.mapLecturerAppointmentsToGantt(appointments, conflict_id.toString()));
+        responses.forEach(({
+                             conflict_id,
+                             appointments
+                           }) => this.mapLecturerAppointmentsToGantt(appointments, conflict_id.toString()));
 
         this.ganttLecturerTasks = [...this.ganttLecturerTasks];
         this.changeDetectorRef.detectChanges()
@@ -727,41 +749,54 @@ export class CreateAppointmentModalComponent implements OnInit {
     })
   }
 
-  mapClassAppointmentsToGantt(events: CalendarEvent[], groupId:string) {
-    events.forEach(event => {
-      this.ganttClassTasks.push({
-        id: event.id+"",
+  mapClassAppointmentsToGantt(events: CalendarEvent[], groupId: string) {
+    const childItems = events.map((event): GanttItem => {
+      return {
+        id: String(event.id),
         title: event.title,
         start: event.start.getTime() / 1000,
         end: (event.end as Date).getTime() / 1000,
+        color: this.scheduleService.previousColor.primary,
+        draggable: true,
         itemDraggable: true,
-        group_id: groupId
-      });
-
+      };
     });
+
+    const earliestStart = Math.min(...childItems.map(i => i.start as number));
+    const latestEnd = Math.max(...childItems.map(i => i.end as number));
+
+    const parentItem: GanttItem = {
+      id: groupId,
+      title: groupId,
+      children: childItems,
+      color: this.scheduleService.previousColor.primary
+    };
+
+    this.ganttClassTasks.push(parentItem);
   }
 
-  mapRoomAppointmentsToGantt(events: CalendarEvent[], groupId:string) {
+  mapRoomAppointmentsToGantt(events: CalendarEvent[], groupId: string) {
     events.forEach(event => {
       this.ganttRoomTasks.push({
-        id: event.id+"",
+        id: event.id + "",
         title: event.title,
-        start: event.start.getTime()/ 1000,
-        end: (event.end as Date).getTime()/ 1000,
-        itemDraggable: true,
+        start: event.start.getTime() / 1000,
+        end: (event.end as Date).getTime() / 1000,
+
+        color: this.scheduleService.previousColor.primary,
         group_id: groupId
       });
     });
   }
 
-  mapLecturerAppointmentsToGantt(events: CalendarEvent[], groupId:string) {
+  mapLecturerAppointmentsToGantt(events: CalendarEvent[], groupId: string) {
     events.forEach(event => {
       this.ganttLecturerTasks.push({
-        id: event.id+"",
+        id: event.id + "",
         title: event.title,
-        start: event.start.getTime()/ 1000,
-        end: (event.end as Date).getTime()/ 1000,
-        itemDraggable: true,
+        start: event.start.getTime() / 1000,
+        end: (event.end as Date).getTime() / 1000,
+        color: this.scheduleService.previousColor.primary,
         group_id: groupId
       });
     });

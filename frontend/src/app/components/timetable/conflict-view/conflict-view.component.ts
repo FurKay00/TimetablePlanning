@@ -18,7 +18,7 @@ import {CalendarEvent} from 'angular-calendar';
 })
 export class ConflictViewComponent implements OnInit{
   @Input() conflictData: CalendarEvent[] = [];
-  @Input() conflictType : "CLASS" | "LECTURE" | "ROOM" = "CLASS";
+  @Input() conflictType : "Classes" | "Lecturers" | "Rooms" = "Classes";
   @Input() groupItems:GanttGroup[] = [];
   @Input() ganttItems:GanttItem[] = [];
 
