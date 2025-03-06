@@ -2,3 +2,8 @@
   pointer-events: none;
   background-color: #d3d3d3; /* Gray out fixed tasks */
 }
+
+ngx-gantt{
+  height: 1000px;
+  display: block;
+}

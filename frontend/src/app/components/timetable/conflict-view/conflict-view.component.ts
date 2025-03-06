@@ -1,7 +1,9 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
-import {Conflict} from '../../../models/response_models';
+import {AppointmentView, Conflict} from '../../../models/response_models';
 import {GanttComponent} from '../gantt/gantt.component';
+import {GanttGroup, GanttItem} from '@worktile/gantt';
+import {CalendarEvent} from 'angular-calendar';
 
 @Component({
   selector: 'app-conflict-view',
@@ -14,6 +16,13 @@ import {GanttComponent} from '../gantt/gantt.component';
   templateUrl: './conflict-view.component.html',
   styleUrl: './conflict-view.component.css'
 })
-export class ConflictViewComponent {
-  @Input() conflictData: Conflict[] = [];
+export class ConflictViewComponent implements OnInit{
+  @Input() conflictData: CalendarEvent[] = [];
+  @Input() conflictType : "CLASS" | "LECTURE" | "ROOM" = "CLASS";
+  @Input() groupItems:GanttGroup[] = [];
+  @Input() ganttItems:GanttItem[] = [];
+
+  ngOnInit() {
+  }
 }
+

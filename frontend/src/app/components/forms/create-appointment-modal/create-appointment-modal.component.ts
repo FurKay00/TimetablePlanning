@@ -1,4 +1,4 @@
-import { Component,  Inject, Input, OnInit,} from '@angular/core';
+import {ChangeDetectorRef, Component, Inject, Input, OnInit,} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -17,6 +17,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {RoleService} from '../../../services/role.service';
 import {
+  AppointmentView,
   BasicAppointmentRequest,
   ClassModel,
   Conflict, ConflictCheckObjects,
@@ -29,7 +30,7 @@ import {MatError, MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatInput, MatLabel} from '@angular/material/input';
 import {ScheduleService} from '../../../services/schedule.service';
-import {forkJoin, Subject} from 'rxjs';
+import {forkJoin, map, Subject} from 'rxjs';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
@@ -37,6 +38,7 @@ import {IntegrityService} from '../../../services/integrity.service';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {ConflictViewComponent} from '../../timetable/conflict-view/conflict-view.component';
+import {GanttDate, GanttGroup, GanttItem} from '@worktile/gantt';
 
 @Component({
   selector: 'app-create-appointment-modal',
@@ -70,7 +72,7 @@ import {ConflictViewComponent} from '../../timetable/conflict-view/conflict-view
   templateUrl: './create-appointment-modal.component.html',
   styleUrl: './create-appointment-modal.component.css'
 })
-export class CreateAppointmentModalComponent implements OnInit{
+export class CreateAppointmentModalComponent implements OnInit {
   @Input() previousEvents: CalendarEvent[] = [];
   @Input() pickedDate: Date = new Date();
   @Input() selectedClass: ClassModel;
@@ -87,15 +89,16 @@ export class CreateAppointmentModalComponent implements OnInit{
   classes: ClassModel[] = [];
   modules: ModuleView[] = [];
 
-  selectedModule: ModuleView  = this.modules[0];
+  selectedModule: ModuleView = this.modules[0];
   selectedRooms: RoomView[] = [];
   selectedLecturers: LecturerView[] = [];
   selectedClasses: ClassModel[] = [];
   newEvent: CalendarEvent;
   newEvents: CalendarEvent[] = [];
 
-  selecetedTabIndex:number = 0;
-  capacityConflict:{message:string, isAllowed:boolean} = {message:"", isAllowed:true};
+  selecetedTabIndex: number = 0;
+  capacityConflict: { message: string, isAllowed: boolean } = {message: "", isAllowed: true};
+  ganttStartDate:number =  Date.now()/1000;
 
   conflicts: Conflict[] = [{
     message: "Class Conflict",
@@ -103,6 +106,18 @@ export class CreateAppointmentModalComponent implements OnInit{
     conflictingAppointments: [],
     type: "CLASS"
   },
+    {
+      message: "Class Conflict",
+      conflict_id: "TINF22B5",
+      conflictingAppointments: [],
+      type: "CLASS"
+    },
+    {
+      message: "Class Conflict",
+      conflict_id: "TINF22B5",
+      conflictingAppointments: [],
+      type: "CLASS"
+    },
     {
       message: "Room Conflict",
       conflict_id: 0,
@@ -142,18 +157,32 @@ export class CreateAppointmentModalComponent implements OnInit{
     }
   ];
 
-  isLoaded:boolean = true;
+
+  classConflictAppointments: CalendarEvent[] = [];
+  roomConflictAppointments: CalendarEvent[] = [];
+  lecturerConflictAppointments: CalendarEvent[] = [];
+
+  ganttClassGroups: GanttGroup[] = [];
+  ganttRoomGroups: GanttGroup[] = [];
+  ganttLecturerGroups: GanttGroup[] = [];
+
+  ganttClassTasks: GanttItem[] = [];
+  ganttRoomTasks:GanttItem[] = [];
+  ganttLecturerTasks:GanttItem[] = [];
+
+  isLoaded: boolean = true;
   refresh: Subject<void> = new Subject<void>();
 
   constructor(private fb: FormBuilder,
               public dialogRef: MatDialogRef<CreateAppointmentModalComponent>,
-              @Inject(MAT_DIALOG_DATA) public  data: any,
+              @Inject(MAT_DIALOG_DATA) public data: any,
               private roleService: RoleService,
               private roomService: RoomService,
               private scheduleService: ScheduleService,
               private integrityService: IntegrityService,
-              private dialog:MatDialog
-              ) {
+              private dialog: MatDialog,
+              private changeDetectorRef:ChangeDetectorRef,
+  ) {
     this.previousEvents = data.previousEvents;
     this.pickedDate = data.pickedDate;
     this.selectedClass = data.selectedClass;
@@ -171,7 +200,7 @@ export class CreateAppointmentModalComponent implements OnInit{
   }
 
 
-  private initializeForm():FormGroup {
+  private initializeForm(): FormGroup {
     return this.fb.group({
       appointment_type: ['single', [Validators.required]],
       type: ["LECTURE", [Validators.required]],
@@ -183,7 +212,7 @@ export class CreateAppointmentModalComponent implements OnInit{
       lecturers: new FormControl([], [Validators.required]),
       rooms: new FormControl([], [Validators.required]),
       classes: new FormControl([...this.selectedClasses], [Validators.required]),
-      maxHours: [4, ],
+      maxHours: [4,],
       weekdays: [[],],
     });
   }
@@ -219,11 +248,11 @@ export class CreateAppointmentModalComponent implements OnInit{
     }
   }
 
-  onWeekDaysSelected(weekDays: Date[]):void{
+  onWeekDaysSelected(weekDays: Date[]): void {
     this.selectedWeekDays = weekDays;
   }
 
-  onDaySelected(day: Date):void{
+  onDaySelected(day: Date): void {
     this.pickedDate = day;
   }
 
@@ -231,20 +260,20 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.calendarView = $event;
   }
 
-  onEventMoved($event: CalendarEvent){
+  onEventMoved($event: CalendarEvent) {
     const newStart = $event.start;
     const newEnd = $event.end;
 
     this.previousEvents.forEach(event => {
-      if($event.id === event.id){
+      if ($event.id === event.id) {
         event.start = newStart;
         event.end = newEnd;
       }
     });
 
     const newDate = newStart.toISOString().split('T')[0];
-    const newStartTime = newStart.toTimeString().slice(0,5);
-    const newEndTime = newEnd?.toTimeString().slice(0,5);
+    const newStartTime = newStart.toTimeString().slice(0, 5);
+    const newEndTime = newEnd?.toTimeString().slice(0, 5);
 
     this.appointmentForm.patchValue({
       date: newDate,
@@ -253,14 +282,14 @@ export class CreateAppointmentModalComponent implements OnInit{
     });
   }
 
-  closeDialog():void{
+  closeDialog(): void {
     this.dialogRef.close();
   }
 
   private getAllClasses() {
     this.roleService.retrieveAllClasses().subscribe(data => {
       this.classes = data;
-      const selectedClass = this.classes.find(class_  => class_.id === this.selectedClass.id) as ClassModel;
+      const selectedClass = this.classes.find(class_ => class_.id === this.selectedClass.id) as ClassModel;
       this.selectedClasses.push(selectedClass);
       this.appointmentForm.patchValue({
         classes: [selectedClass],
@@ -272,7 +301,7 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.roleService.retrieveAllLecturers().subscribe(data => this.lecturers = data);
   }
 
-  private getAllRooms(){
+  private getAllRooms() {
     this.roomService.retrieveAllRooms().subscribe(data => this.rooms = data);
   }
 
@@ -280,7 +309,7 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.roleService.retrieveAllModules().subscribe(data => this.modules = data);
   }
 
-  onModuleChange($event:Event) {
+  onModuleChange($event: Event) {
     const selectedModule: ModuleView = this.appointmentForm.get('modules')?.value;
     this.selectedModule = selectedModule;
 
@@ -288,9 +317,9 @@ export class CreateAppointmentModalComponent implements OnInit{
       this.appointmentForm.patchValue({
         title: selectedModule.title
       });
-      if (this.appointmentType==="single"){
+      if (this.appointmentType === "single") {
         this.refreshView();
-      }else{
+      } else {
         this.createEventsFromWorkload();
       }
 
@@ -311,7 +340,7 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   updateWeekdaysSelection(selectedWeekdays: any) {
     this.appointmentForm.get('weekdays')?.setValue([...selectedWeekdays]);
-    if(this.appointmentType === "block"){
+    if (this.appointmentType === "block") {
       this.createEventsFromWorkload();
     }
   }
@@ -324,21 +353,21 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.refreshView();
   }
 
-  createInitialEvent():CalendarEvent {
-     const formData = this.appointmentForm?.value;
-     return {
-       id: "T1",
-       start: new Date(`${formData.date}T${formData.startTime}:00`),
-       end:   new Date(`${formData.date}T${formData.endTime}:00`),
-       title: formData.title,
-       draggable: true,
-       color: { primary: '#62D2DC', secondary: '#62D2DC' },
-       meta: {
-         location: formData.rooms.map((room:any) => room.room_name).join('\n'),
-         lecturer: formData.lecturers.map((lec:any) => lec.fullname).join('\n'),
-       },
-       cssClass: 'custom-event-style'
-     };
+  createInitialEvent(): CalendarEvent {
+    const formData = this.appointmentForm?.value;
+    return {
+      id: "T1",
+      start: new Date(`${formData.date}T${formData.startTime}:00`),
+      end: new Date(`${formData.date}T${formData.endTime}:00`),
+      title: formData.title,
+      draggable: true,
+      color: {primary: '#62D2DC', secondary: '#62D2DC'},
+      meta: {
+        location: formData.rooms.map((room: any) => room.room_name).join('\n'),
+        lecturer: formData.lecturers.map((lec: any) => lec.fullname).join('\n'),
+      },
+      cssClass: 'custom-event-style'
+    };
   }
 
   ngOnInit() {
@@ -346,20 +375,20 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.appointmentForm.get('appointment_type')?.valueChanges.subscribe((appointment_type) => {
 
       this.appointmentType = appointment_type;
-      this.selectedClasses=[this.selectedClass]
-      this.selectedRooms=[]
-      this.selectedLecturers=[]
+      this.selectedClasses = [this.selectedClass]
+      this.selectedRooms = []
+      this.selectedLecturers = []
 
       this.appointmentForm.patchValue({
-        type:"LECTURE",
-        modules:null,
+        type: "LECTURE",
+        modules: null,
         title: 'New Appointment',
         date: formatDate(this.pickedDate, "YYYY-MM-dd", "EN-US"),
         startTime: '12:00',
         endTime: '14:30',
         classes: [this.selectedClass],
         lecturers: [],
-        rooms:[],
+        rooms: [],
         maxHours: 4,
         weekdays: []
       });
@@ -395,22 +424,22 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   refreshView() {
     const formData = this.appointmentForm?.value;
-    if(this.appointmentType === "single"){
+    if (this.appointmentType === "single") {
       this.events.forEach(event => {
-        if(this.newEvent.id === event.id){
-          event.title= formData.title;
+        if (this.newEvent.id === event.id) {
+          event.title = formData.title;
           event.start = new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.startTime}:00`);
           event.end = new Date(`${formatDate(formData.date, "YYYY-MM-dd", "EN-US")}T${formData.endTime}:00`);
           event.color = this.scheduleService.getAppointmentColor(formData.type.toUpperCase())
           event.meta = {
-            location: this.selectedRooms.map((room:any) => room.room_name).join('\n'),
-            lecturer: this.selectedLecturers.map((lec:any) => lec.fullname).join('\n'),
+            location: this.selectedRooms.map((room: any) => room.room_name).join('\n'),
+            lecturer: this.selectedLecturers.map((lec: any) => lec.fullname).join('\n'),
           }
         }
       });
       this.events = [this.newEvent].concat(this.previousEvents);
       this.refresh.next();
-    }else{
+    } else {
       this.createEventsFromWorkload();
     }
 
@@ -424,13 +453,13 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   createEventsFromWorkload() {
     const formData = this.appointmentForm.value;
-    if(formData.maxHours <= 0) {
+    if (formData.maxHours <= 0) {
       this.appointmentForm.patchValue({
         maxHours: 1
       })
       return;
     }
-    if(!this.isFormValid()) return;
+    if (!this.isFormValid()) return;
 
     const workload = formData.modules?.workload || 0;
     const maxHours = formData.maxHours;
@@ -438,7 +467,7 @@ export class CreateAppointmentModalComponent implements OnInit{
     const date = new Date(formData.date);
     const weekdays = formData.weekdays.sort();
 
-    let weekOffset=0;
+    let weekOffset = 0;
     let remainingHours = workload;
     let sessionCount = 0;
     this.newEvents = [];
@@ -447,7 +476,7 @@ export class CreateAppointmentModalComponent implements OnInit{
 
 
     while (remainingHours > 0) {
-      for(let i = 0; i < weekdays.length; i++){
+      for (let i = 0; i < weekdays.length; i++) {
         sessionCount++;
         let sessionHours = Math.min(remainingHours, maxHours);
 
@@ -486,12 +515,12 @@ export class CreateAppointmentModalComponent implements OnInit{
     this.refresh.next();
   }
 
-  submitNewEvent(){
-    if(this.appointmentType === 'single'){
+  submitNewEvent() {
+    if (this.appointmentType === 'single') {
       let newAppointment: BasicAppointmentRequest = {
-        class_ids: this.selectedClasses.map(class_=> class_.id),
+        class_ids: this.selectedClasses.map(class_ => class_.id),
         date: this.appointmentForm.get("date")?.value,
-        end_time:  this.appointmentForm.get("endTime")?.value + ":00.000Z",
+        end_time: this.appointmentForm.get("endTime")?.value + ":00.000Z",
         lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
         module: this.selectedModule?.module_id || "",
         room_ids: this.selectedRooms.map(room => room.room_id),
@@ -501,7 +530,7 @@ export class CreateAppointmentModalComponent implements OnInit{
       }
       console.log(newAppointment)
       this.isLoaded = false;
-      this.scheduleService.createNewAppointment(newAppointment).subscribe(()=> {
+      this.scheduleService.createNewAppointment(newAppointment).subscribe(() => {
         this.scheduleService.getAppointmentsByClass(this.selectedClass.id).subscribe(data => {
           this.previousEvents = this.scheduleService.createPreviousAppointments(data);
           this.newEvent = this.createInitialEvent();
@@ -510,17 +539,17 @@ export class CreateAppointmentModalComponent implements OnInit{
           this.isLoaded = true;
         })
       })
-    }else{
-      let newAppointments:BasicAppointmentRequest[] = [];
-      this.newEvents.forEach((event)=>{
+    } else {
+      let newAppointments: BasicAppointmentRequest[] = [];
+      this.newEvents.forEach((event) => {
         const date = event.start.toISOString().split('T')[0];
-        const startTime = event.start.toTimeString().slice(0,5);
-        const endTime = event.end?.toTimeString().slice(0,5);
+        const startTime = event.start.toTimeString().slice(0, 5);
+        const endTime = event.end?.toTimeString().slice(0, 5);
 
-        const newAppointment:BasicAppointmentRequest = {
-          class_ids: this.selectedClasses.map(class_=> class_.id),
+        const newAppointment: BasicAppointmentRequest = {
+          class_ids: this.selectedClasses.map(class_ => class_.id),
           date: date,
-          end_time:  endTime + ":00.000Z",
+          end_time: endTime + ":00.000Z",
           lec_ids: this.selectedLecturers.map(lecturer => lecturer.lec_id),
           module: this.selectedModule?.module_id,
           room_ids: this.selectedRooms.map(room => room.room_id),
@@ -531,8 +560,8 @@ export class CreateAppointmentModalComponent implements OnInit{
         newAppointments.push(newAppointment);
       });
       console.log(newAppointments)
-      this.scheduleService.createNewAppointments(newAppointments).subscribe(()=> {
-        this.isLoaded=false;
+      this.scheduleService.createNewAppointments(newAppointments).subscribe(() => {
+        this.isLoaded = false;
         this.scheduleService.getAppointmentsByClass(this.selectedClass.id).subscribe(data => {
           this.previousEvents = this.scheduleService.createPreviousAppointments(data);
           this.newEvents = [];
@@ -546,36 +575,43 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   checkCollisions() {
     this.conflicts = [];
-    if(!this.isFormValid()) return;
+    if (!this.isFormValid()) return;
 
-    const conflictCheckData:ConflictCheckObjects = {
-      newEvent:this.newEvent, newEvents: this.newEvents, selectedClasses: this.selectedClasses, selectedLecturers: this.selectedLecturers, selectedRooms: this.selectedRooms
+    const conflictCheckData: ConflictCheckObjects = {
+      newEvent: this.newEvent,
+      newEvents: this.newEvents,
+      selectedClasses: this.selectedClasses,
+      selectedLecturers: this.selectedLecturers,
+      selectedRooms: this.selectedRooms
     }
 
     forkJoin({
       classConflicts: this.integrityService.checkClassScheduleConflicts(this.appointmentType, conflictCheckData),
       lecturerConflicts: this.integrityService.checkLecturerScheduleConflicts(this.appointmentType, conflictCheckData),
       roomConflicts: this.integrityService.checkRoomScheduleConflicts(this.appointmentType, conflictCheckData),
-    }).subscribe(({classConflicts, lecturerConflicts, roomConflicts})=> {
+    }).subscribe(({classConflicts, lecturerConflicts, roomConflicts}) => {
       this.conflicts = [...classConflicts, ...lecturerConflicts, ...roomConflicts];
       console.log("Conflicts found:", this.conflicts);
       this.classConflicts = this.conflicts.filter(conflict => conflict.type === "CLASS");
       this.roomConflicts = this.conflicts.filter(conflict => conflict.type === "ROOM");
       this.lecturerConflicts = this.conflicts.filter(conflict => conflict.type === "LECTURER");
+      if(this.conflicts.length!== 0){
+        this.fillGanttChart();
+      }
       this.conflicts.forEach(conflict => {
-        if(conflict.conflictingAppointments){
-         conflict.conflictingAppointments.forEach(appointment => {
-           if (this.appointmentType === "single"){
-             this.newEvent.color = this.scheduleService.conflictColor;
-             this.refresh.next();
-           }else{
-             let matchingEvent = this.newEvents.find(event => event.id = appointment.id);
-             if (matchingEvent){
-               matchingEvent.color = this.scheduleService.conflictColor;
-               this.refresh.next();
-             }
-           }
-         })
+        if (conflict.conflictingAppointments) {
+          conflict.conflictingAppointments.forEach(appointment => {
+            if (this.appointmentType === "single") {
+              this.newEvent.color = this.scheduleService.conflictColor;
+              this.refresh.next();
+            } else {
+              let matchingEvent = this.newEvents.find(event => event.id = appointment.id);
+              if (matchingEvent) {
+                matchingEvent.color = this.scheduleService.conflictColor;
+                this.refresh.next();
+              }
+            }
+          })
         }
       })
     });
@@ -584,7 +620,7 @@ export class CreateAppointmentModalComponent implements OnInit{
 
   incrementHours() {
     const formData = this.appointmentForm.value;
-    const maxHours = formData.maxHours +1;
+    const maxHours = formData.maxHours + 1;
     this.appointmentForm.patchValue({
       maxHours: maxHours
     })
@@ -622,4 +658,113 @@ export class CreateAppointmentModalComponent implements OnInit{
       console.warn("Conflict tab not available:", value.type);
     }
   }
+
+  private fillGanttChart() {
+    let start_date: string;
+    let end_date: string;
+    if (this.appointmentType === "single") {
+      start_date = formatDate(this.newEvent.start, "YYYY-MM-dd", "EN-US");
+      end_date = start_date;
+    } else {
+      start_date = formatDate(this.newEvents[0].start, "YYYY-MM-dd", "EN-US");
+      end_date = formatDate(this.newEvents[this.newEvents.length - 1].end as Date, "YYYY-MM-dd", "EN-US");
+    }
+    this.ganttStartDate = new Date(start_date).getTime();
+    /*
+    const uniqueRoomConflictIds = [...new Set(this.roomConflicts.map(conflict => conflict.conflict_id))];
+    const uniqueClassConflictIds = [...new Set(this.classConflicts.map(conflict => conflict.conflict_id))];
+    const uniqueLecturerConflictIds = [...new Set(this.lecturerConflicts.map(conflict => conflict.conflict_id))];
+    */
+    const uniqueRoomConflictIds = [...this.selectedRooms.map(room => room.room_id)];
+    const uniqueClassConflictIds = [...this.selectedClasses.map(class_ => class_.id)];
+    const uniqueLecturerConflictIds = [...this.selectedLecturers.map(lecturer => lecturer.lec_id)];
+
+    const roomServiceCalls = uniqueRoomConflictIds.map(conflict_id =>
+      this.scheduleService.getAppointmentsByRoom(conflict_id +"", start_date, end_date)
+        .pipe(map(response => ({ conflict_id, appointments: response })))
+    );
+
+    const classServiceCalls = uniqueClassConflictIds.map(conflict_id =>
+      this.scheduleService.getAppointmentsByClass(conflict_id, start_date, end_date)
+        .pipe(map(response => ({ conflict_id, appointments: response })))
+    );
+
+    const lecturerServiceCalls = uniqueLecturerConflictIds.map(conflict_id =>
+      this.scheduleService.getFullAppointmentsByLecturer(conflict_id+"", start_date,end_date).pipe(map(response => ({
+        conflict_id,
+        appointments: [...response.appointments, ...response.personalAppointments]
+      })))
+    );
+    this.ganttClassGroups = [...this.selectedClasses.map(cls => ({ id: cls.id, title: cls.id, expanded:false}))]
+    this.ganttRoomGroups = [...this.selectedRooms.map(room => ({ id: room.room_id.toString(), title: room.room_name, expanded:false }))]
+    this.ganttLecturerGroups = [...this.selectedLecturers.map(lec => ({ id: lec.lec_id.toString(), title: lec.fullname, expanded:false}))]
+
+
+    forkJoin(roomServiceCalls).subscribe({
+      next: responses => {
+        responses.forEach(({ conflict_id, appointments }) => this.mapRoomAppointmentsToGantt(appointments, conflict_id.toString()))
+
+        this.ganttRoomTasks = [...this.ganttRoomTasks];
+        this.changeDetectorRef.detectChanges()
+      },
+    })
+    forkJoin(classServiceCalls).subscribe({
+      next: responses => {
+        responses.forEach(({ conflict_id, appointments }) => this.mapClassAppointmentsToGantt(appointments, conflict_id));
+
+        this.ganttClassTasks = [...this.ganttClassTasks];
+        this.changeDetectorRef.detectChanges()
+
+      }
+    })
+    forkJoin(lecturerServiceCalls).subscribe({
+      next: responses => {
+        responses.forEach(({ conflict_id, appointments }) => this.mapLecturerAppointmentsToGantt(appointments, conflict_id.toString()));
+
+        this.ganttLecturerTasks = [...this.ganttLecturerTasks];
+        this.changeDetectorRef.detectChanges()
+      }
+    })
+  }
+
+  mapClassAppointmentsToGantt(events: CalendarEvent[], groupId:string) {
+    events.forEach(event => {
+      this.ganttClassTasks.push({
+        id: event.id+"",
+        title: event.title,
+        start: event.start.getTime() / 1000,
+        end: (event.end as Date).getTime() / 1000,
+        itemDraggable: true,
+        group_id: groupId
+      });
+
+    });
+  }
+
+  mapRoomAppointmentsToGantt(events: CalendarEvent[], groupId:string) {
+    events.forEach(event => {
+      this.ganttRoomTasks.push({
+        id: event.id+"",
+        title: event.title,
+        start: event.start.getTime()/ 1000,
+        end: (event.end as Date).getTime()/ 1000,
+        itemDraggable: true,
+        group_id: groupId
+      });
+    });
+  }
+
+  mapLecturerAppointmentsToGantt(events: CalendarEvent[], groupId:string) {
+    events.forEach(event => {
+      this.ganttLecturerTasks.push({
+        id: event.id+"",
+        title: event.title,
+        start: event.start.getTime()/ 1000,
+        end: (event.end as Date).getTime()/ 1000,
+        itemDraggable: true,
+        group_id: groupId
+      });
+    });
+  }
+
 }

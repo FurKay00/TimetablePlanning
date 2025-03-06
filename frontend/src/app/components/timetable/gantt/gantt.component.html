@@ -1,7 +1,11 @@
-<ngx-gantt #gantt [items]="items">
+
+<ngx-gantt #gantt [items]="ganttItems" [groups]="groupItems" [viewType]="GanttViewType.hour" [viewOptions]="viewOptions" >
   <ngx-gantt-table>
-    <ngx-gantt-column name="Title" width="200px">
+    <ngx-gantt-column [name]="ganttTitle" width="200px">
       <ng-template #cell let-item="item"> {{ item.title }} </ng-template>
     </ngx-gantt-column>
   </ngx-gantt-table>
 </ngx-gantt>
+{{groupItems.at(0)?.title}} {{groupItems.at(0)?.id}}
+{{ganttItems.at(0)?.title}} {{ganttItems.at(0)?.start}} {{ganttItems.at(0)?.group_id}}
+{{ganttItems.at(1)?.title}} {{ganttItems.at(1)?.start}} {{ganttItems.at(1)?.group_id}}

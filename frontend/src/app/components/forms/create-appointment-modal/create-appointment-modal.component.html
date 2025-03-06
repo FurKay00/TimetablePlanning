@@ -200,20 +200,19 @@
     </mat-tab>
 
     <mat-tab *ngIf="classConflicts.length > 0" label="Class Conflicts">
-      <div class="modal-calendar">
-        <app-conflict-view [conflictData]="classConflicts"></app-conflict-view>
-      </div>
+        <app-conflict-view [conflictData]="classConflictAppointments" [ganttItems]="ganttClassTasks" [groupItems]="ganttClassGroups" conflictType="CLASS"></app-conflict-view>
+
     </mat-tab>
 
 
     <mat-tab *ngIf="roomConflicts.length > 0" label="Room Conflicts">
 
-      <app-conflict-view [conflictData]="roomConflicts"></app-conflict-view>
+      <app-conflict-view [conflictData]="roomConflictAppointments" [ganttItems]="ganttRoomTasks" [groupItems]="ganttRoomGroups"  conflictType="ROOM"></app-conflict-view>
     </mat-tab>
 
 
     <mat-tab *ngIf="lecturerConflicts.length > 0"  label="Lecturer Conflicts">
-      <app-conflict-view [conflictData]="lecturerConflicts"></app-conflict-view>
+      <app-conflict-view [conflictData]="lecturerConflictAppointments" [ganttItems]="ganttLecturerTasks" [groupItems]="ganttLecturerGroups" conflictType="LECTURE"></app-conflict-view>
     </mat-tab>
   </mat-tab-group>
 </div>

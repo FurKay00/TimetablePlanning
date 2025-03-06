@@ -25,11 +25,16 @@ export class ScheduleService {
   constructor(private http: HttpClient) {
   }
 
-  getAppointmentsByClass(class_id: string): Observable<CalendarEvent[]> {
+  getAppointmentsByClass(class_id: string, start_date?:string, end_date?:string): Observable<CalendarEvent[]> {
+    let date_string = "";
+    if (typeof start_date !== "undefined" && typeof end_date !== "undefined"){
+      date_string = "/"+start_date+"/"+end_date;
+    }
+    console.log(date_string)
     return this.http.get<{
       message: string;
       appointments: AppointmentView[]
-    }>(this.URL + "appointmentsByClassImproved/" + class_id)
+    }>(this.URL + "appointmentsByClassImproved/" + class_id + date_string)
       .pipe(
         map(response => response.appointments.map(
           appointment => this.mapAppointmentToEvent(appointment))
@@ -37,11 +42,16 @@ export class ScheduleService {
       );
   }
 
-  getAppointmentsByRoom(room_id: string): Observable<CalendarEvent[]> {
+  getAppointmentsByRoom(room_id: string,start_date?:string, end_date?:string): Observable<CalendarEvent[]> {
+    let date_string = "";
+    if (typeof start_date !== "undefined" && typeof end_date !== "undefined"){
+      date_string = "/"+start_date+"/"+end_date;
+    }
+
     return this.http.get<{
       message: string;
       appointments: AppointmentView[]
-    }>(this.URL + "appointmentsByRoomImproved/" + room_id)
+    }>(this.URL + "appointmentsByRoomImproved/" + room_id + date_string)
       .pipe(
         map(response => response.appointments.map(
           appointment => this.mapAppointmentToEvent(appointment))
@@ -50,12 +60,17 @@ export class ScheduleService {
   }
 
   // This method is used, when the lecturer wants to retrieve their own full schedule
-  getFullAppointmentsByLecturer(lec_id: string):Observable<{appointments:CalendarEvent[], personalAppointments:CalendarEvent[]}> {
+  getFullAppointmentsByLecturer(lec_id: string,start_date?:string, end_date?:string):Observable<{appointments:CalendarEvent[], personalAppointments:CalendarEvent[]}> {
+    let date_string = "";
+    if (typeof start_date !== "undefined" && typeof end_date !== "undefined"){
+      date_string = "/"+start_date+"/"+end_date;
+    }
+
     return this.http.get<{
       message: string;
       appointments: AppointmentView[],
       personalAppointments: PersonalAppointmentView[]
-    }>(this.URL + "appointmentsByLecturerImproved/" + lec_id)
+    }>(this.URL + "appointmentsByLecturerImproved/" + lec_id + date_string)
       .pipe(
         map(response => ({
             appointments: response.appointments.map(appointment => this.mapAppointmentToEvent(appointment)),

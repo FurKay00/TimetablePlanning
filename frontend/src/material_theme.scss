@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use "@worktile/gantt/styles/index.scss";
 
 /* Updated green primary theme (originally purple). */
 .material-icons.color_green { color: #00FF00; }

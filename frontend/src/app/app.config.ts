@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
     ,{provide: GANTT_GLOBAL_CONFIG,
     useValue:{
       dateFormat: {
-        day:'MM/dd', // please add it
+        day:'MM/dd/yyyy', // please add it
         week: 'w',
         month: 'M',
         quarter: 'QQQ',

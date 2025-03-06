@@ -172,7 +172,7 @@ async def get_personal_appointments(lec_id: int, db: db_dependency):
 
 
 @router.get("/appointments_personal/{lec_id}/{start_date}/{end_date}")
-async def get_personal_appointments(lec_id: int, start_date: str, end_date: str, db: db_dependency):
+async def get_personal_appointments_timeframe(lec_id: int, start_date: str, end_date: str, db: db_dependency):
     if lec_id is None:
         raise HTTPException(status_code=400, detail="No lec_id provided")
 
@@ -180,12 +180,11 @@ async def get_personal_appointments(lec_id: int, start_date: str, end_date: str,
     end_dt = datetime.strptime(end_date, "%Y-%m-%d")
 
     db_appointments = db.query(models.PersonalAppointment).filter(
-        and_(
-            lec_id == any_(models.PersonalAppointment.lec_id),
-            models.Appointment.date >= start_dt.date(),
-            models.Appointment.date <= end_dt.date()
+            models.PersonalAppointment.lec_id == lec_id,
+            models.PersonalAppointment.date >= start_dt.date(),
+            models.PersonalAppointment.date <= end_dt.date()
         )
-    ).all()
+
     personal_appointments = []
     for appointment in db_appointments:
         personal_appointment = PersonalAppointmentView(
@@ -657,7 +656,7 @@ async def get_all_appointments_improved(db: db_dependency):
 
 
 @router.get("/appointmentsByRoomImproved/{room_id}/{start_date}/{end_date}")
-async def get_appointments_by_room_improved(room_id: int, start_date: str, end_date: str, db: db_dependency):
+async def get_appointments_by_room_improved_timeframe(room_id: int, start_date: str, end_date: str, db: db_dependency):
     try:
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
         end_dt = datetime.strptime(end_date, "%Y-%m-%d")
@@ -709,7 +708,7 @@ async def get_appointments_by_room_improved(room_id: int, start_date: str, end_d
 
 
 @router.get("/appointmentsByClassImproved/{class_id}/{start_date}/{end_date}")
-async def get_appointments_by_class_improved(class_id: str, start_date: str, end_date: str, db: db_dependency):
+async def get_appointments_by_class_improved_timeframe(class_id: str, start_date: str, end_date: str, db: db_dependency):
     try:
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
         end_dt = datetime.strptime(end_date, "%Y-%m-%d")
@@ -761,7 +760,7 @@ async def get_appointments_by_class_improved(class_id: str, start_date: str, end
 
 
 @router.get("/appointmentsByLecturerImproved/{lec_id}/{start_date}/{end_date}")
-async def get_appointments_by_lecturer_improved(lec_id: int, start_date: str, end_date: str, db: db_dependency):
+async def get_appointments_by_lecturer_improved_timeframe(lec_id: int, start_date: str, end_date: str, db: db_dependency):
     try:
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
         end_dt = datetime.strptime(end_date, "%Y-%m-%d")
@@ -802,7 +801,7 @@ async def get_appointments_by_lecturer_improved(lec_id: int, start_date: str, en
                     ]
                 )
             )
-        db_personal_appointments = await get_personal_appointments(lec_id, db)
+        db_personal_appointments = await get_personal_appointments_timeframe(lec_id, start_date, end_date, db)
         personal_appointments = db_personal_appointments["appointments"]
 
         return {

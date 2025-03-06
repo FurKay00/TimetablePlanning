@@ -1,15 +1,4 @@
-<div *ngIf="conflictData.length > 0">
-  <h3>Conflicting Appointments</h3>
-  <ul>
-    <li *ngFor="let conflict of conflictData">
-      <strong>{{ conflict.message }}</strong>
-      <strong>{{ conflict.conflictingAppointments }}</strong>
-      <strong>{{ conflict.conflictCausingAppointment }}</strong>
-      <strong>{{ conflict.conflict_id }}</strong>
-      <strong>{{ conflict.message }}</strong>
-    </li>
-  </ul>
-  <app-gantt>
+<div>
+  <app-gantt [ganttItems]="ganttItems" [groupItems]="groupItems" [ganttTitle]="conflictType">
   </app-gantt>
-  aeawe
 </div>
