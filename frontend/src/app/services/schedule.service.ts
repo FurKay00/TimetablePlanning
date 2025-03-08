@@ -81,12 +81,17 @@ export class ScheduleService {
       );
   }
 
-  getPartialAppointmentsByLecturer(lec_id: string):Observable<{appointments:CalendarEvent[], personalAppointments:CalendarEvent[]}> {
+  getPartialAppointmentsByLecturer(lec_id: string, start_date?:string, end_date?:string):Observable<{appointments:CalendarEvent[], personalAppointments:CalendarEvent[]}> {
+    let date_string = "";
+    if (typeof start_date !== "undefined" && typeof end_date !== "undefined"){
+      date_string = "/"+start_date+"/"+end_date;
+    }
+
     return this.http.get<{
       message: string;
       appointments: AppointmentView[],
       personalAppointments: PersonalAppointmentView[]
-    }>(this.URL + "appointmentsByLecturerImproved/" + lec_id)
+    }>(this.URL + "appointmentsByLecturerImproved/" + lec_id + date_string)
       .pipe(
         map(response => ({
             appointments: response.appointments.map(appointment => this.mapAppointmentToEvent(appointment)),

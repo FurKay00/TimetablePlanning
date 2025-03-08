@@ -4,6 +4,8 @@ import {AppointmentView, Conflict} from '../../../models/response_models';
 import {GanttComponent} from '../gantt/gantt.component';
 import {GanttGroup, GanttItem} from '@worktile/gantt';
 import {CalendarEvent} from 'angular-calendar';
+import {TimelineComponent} from '../timeline/timeline.component';
+import {DataGroup, DataItem} from 'vis-timeline';
 
 @Component({
   selector: 'app-conflict-view',
@@ -11,7 +13,8 @@ import {CalendarEvent} from 'angular-calendar';
   imports: [
     NgForOf,
     NgIf,
-    GanttComponent
+    GanttComponent,
+    TimelineComponent
   ],
   templateUrl: './conflict-view.component.html',
   styleUrl: './conflict-view.component.css'
@@ -21,6 +24,8 @@ export class ConflictViewComponent implements OnInit{
   @Input() conflictType : "Classes" | "Lecturers" | "Rooms" = "Classes";
   @Input() groupItems:GanttGroup[] = [];
   @Input() ganttItems:GanttItem[] = [];
+  @Input() timelineGroups: DataGroup[] = [];
+  @Input() timelineItems: DataItem[] = [];
 
   ngOnInit() {
   }
