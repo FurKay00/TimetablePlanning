@@ -104,61 +104,14 @@ export class CreateAppointmentModalComponent implements OnInit {
   capacityConflict: { message: string, isAllowed: boolean } = {message: "", isAllowed: true};
   ganttStartDate: number = Date.now() / 1000;
 
-  conflicts: Conflict[] = [{
-    message: "Class Conflict",
-    conflict_id: "TINF22B6",
-    conflictingAppointments: [],
-    type: "CLASS"
-  },
-    {
-      message: "Class Conflict",
-      conflict_id: "TINF22B5",
-      conflictingAppointments: [],
-      type: "CLASS"
-    },
-    {
-      message: "Class Conflict",
-      conflict_id: "TINF22B5",
-      conflictingAppointments: [],
-      type: "CLASS"
-    },
-    {
-      message: "Room Conflict",
-      conflict_id: 0,
-      conflictingAppointments: [],
-      type: "ROOM"
-    },
-    {
-      message: "Lecturer Conflict",
-      conflict_id: 5,
-      conflictingAppointments: [],
-      type: "LECTURER"
-    }
+  conflicts: Conflict[] = [
   ];
 
   classConflicts: Conflict[] = [
-    {
-      message: "Class Conflict",
-      conflict_id: "TINF22B6",
-      conflictingAppointments: [],
-      type: "CLASS"
-    }
   ];
   roomConflicts: Conflict[] = [
-    {
-      message: "Room Conflict",
-      conflict_id: 0,
-      conflictingAppointments: [],
-      type: "ROOM"
-    }
   ];
   lecturerConflicts: Conflict[] = [
-    {
-      message: "Lecturer Conflict",
-      conflict_id: 5,
-      conflictingAppointments: [],
-      type: "LECTURER"
-    }
   ];
 
 
@@ -181,6 +134,8 @@ export class CreateAppointmentModalComponent implements OnInit {
   timelineClassItems: DataItem[] = [];
   timelineRoomItems: DataItem[] = [];
   timelineLecturerItems: DataItem[] = [];
+
+  newEventsTimelineItem: DataItem[] = [];
 
   isLoaded: boolean = true;
   refresh: Subject<void> = new Subject<void>();
@@ -593,6 +548,12 @@ export class CreateAppointmentModalComponent implements OnInit {
 
   checkCollisions() {
     this.conflicts = [];
+    this.timelineClassGroups = [];
+    this.timelineLecturerGroups = [];
+    this.timelineRoomGroups = [];
+    this.timelineClassItems = [];
+    this.timelineLecturerItems = [];
+    this.timelineRoomItems = [];
     if (!this.isFormValid()) return;
 
     const conflictCheckData: ConflictCheckObjects = {
@@ -740,28 +701,53 @@ export class CreateAppointmentModalComponent implements OnInit {
                              conflict_id,
                              appointments
                            }) => this.mapRoomAppointmentsToTimelineItem(appointments, conflict_id))
-
+        const room_ids = [...this.timelineRoomGroups.map(room => room.id as number)];
+        if (this.appointmentType === "single"){
+          this.timelineRoomItems.push(...this.mapNewEventToTimelineItem(this.newEvent, room_ids))
+        }else{
+          this.newEvents.forEach(event => {
+            this.timelineRoomItems.push(...this.mapNewEventToTimelineItem(this.newEvent, room_ids))
+          })
+        }
         this.timelineRoomItems = [...this.timelineRoomItems];
+        console.log(this.timelineRoomItems)
         this.changeDetectorRef.detectChanges()
       },
     })
+
     forkJoin(classServiceCalls).subscribe({
       next: responses => {
         responses.forEach(({conflict_id, appointments}) => this.mapClassAppointmentsToTimelineItem(appointments, conflict_id));
-
+        const class_ids = [...this.timelineClassGroups.map(cls => cls.id as string)];
+        if (this.appointmentType === "single"){
+          this.timelineClassItems.push(...this.mapNewEventToTimelineItem(this.newEvent, class_ids))
+        }else{
+          this.newEvents.forEach(event => {
+            this.timelineClassItems.push(...this.mapNewEventToTimelineItem(event, class_ids))
+          })
+        }
         this.timelineClassItems = [...this.timelineClassItems];
+        console.log(this.timelineClassItems)
         this.changeDetectorRef.detectChanges()
-
       }
     })
+
     forkJoin(lecturerServiceCalls).subscribe({
       next: responses => {
         responses.forEach(({
                              conflict_id,
                              appointments
                            }) => this.mapLectureAppointmentsToTimelineItem(appointments, conflict_id));
-
+        const lec_ids = [...this.timelineLecturerGroups.map(lec => lec.id as number)];
+        if (this.appointmentType === "single"){
+          this.timelineLecturerItems.push(...this.mapNewEventToTimelineItem(this.newEvent, lec_ids))
+        }else{
+          this.newEvents.forEach(event => {
+            this.timelineLecturerItems.push(...this.mapNewEventToTimelineItem(event, lec_ids))
+          })
+        }
         this.timelineLecturerItems = [...this.timelineLecturerItems];
+        console.log(this.timelineLecturerItems)
         this.changeDetectorRef.detectChanges()
       }
     })
@@ -770,12 +756,13 @@ export class CreateAppointmentModalComponent implements OnInit {
   mapRoomAppointmentsToTimelineItem(appointments:CalendarEvent[], group_id:number){
     appointments.forEach(event => {
       const childItem:DataItem = {
-        id: event.id,
+        id: group_id +"-"+event.id,
         content: event.title,
         start: event.start,
         end: event.end,
         group: group_id,
         editable: false,
+        className: "static-events"
       }
       this.timelineRoomItems.push(childItem);
     })
@@ -784,12 +771,13 @@ export class CreateAppointmentModalComponent implements OnInit {
   mapClassAppointmentsToTimelineItem(appointments:CalendarEvent[], group_id:string){
     appointments.forEach(event => {
       const childItem:DataItem = {
-        id: event.id,
+        id: group_id +"-"+event.id,
         content: event.title,
         start: event.start,
         end: event.end,
         group: group_id,
         editable: false,
+        className: "static-events"
       }
       this.timelineClassItems.push(childItem);
     })
@@ -798,68 +786,33 @@ export class CreateAppointmentModalComponent implements OnInit {
   mapLectureAppointmentsToTimelineItem(appointments:CalendarEvent[], group_id:number){
     appointments.forEach(event => {
       const childItem:DataItem = {
-        id: event.id,
+        id: group_id +"-"+event.id,
         content: event.title,
         start: event.start,
         end: event.end,
         group: group_id,
         editable: false,
+        className: "static-events"
       }
       this.timelineLecturerItems.push(childItem);
     })
   }
 
-  mapClassAppointmentsToGantt(events: CalendarEvent[], groupId: string) {
-    const childItems = events.map((event): GanttItem => {
-      return {
-        id: String(event.id),
-        title: event.title,
-        start: event.start.getTime() / 1000,
-        end: (event.end as Date).getTime() / 1000,
-        color: this.scheduleService.previousColor.primary,
-        draggable: true,
-        itemDraggable: true,
-      };
-    });
-
-    const earliestStart = Math.min(...childItems.map(i => i.start as number));
-    const latestEnd = Math.max(...childItems.map(i => i.end as number));
-
-    const parentItem: GanttItem = {
-      id: groupId,
-      title: groupId,
-      children: childItems,
-      color: this.scheduleService.previousColor.primary
-    };
-
-    this.ganttClassTasks.push(parentItem);
+  mapNewEventToTimelineItem(event: CalendarEvent, group_ids: number[] | string[]):DataItem[]{
+    let newDataItems:DataItem[] = []
+    group_ids.forEach(id => {
+      let dataItem:DataItem = {
+        id: event.id +"_" + id,
+        content: event.title,
+        start: event.start,
+        end: event.end,
+        editable: true,
+        group: id,
+        selectable:true,
+        className: "movable-event"
+      }
+      newDataItems.push(dataItem)
+    })
+    return newDataItems;
   }
-
-  mapRoomAppointmentsToGantt(events: CalendarEvent[], groupId: string) {
-    events.forEach(event => {
-      this.ganttRoomTasks.push({
-        id: event.id + "",
-        title: event.title,
-        start: event.start.getTime() / 1000,
-        end: (event.end as Date).getTime() / 1000,
-
-        color: this.scheduleService.previousColor.primary,
-        group_id: groupId
-      });
-    });
-  }
-
-  mapLecturerAppointmentsToGantt(events: CalendarEvent[], groupId: string) {
-    events.forEach(event => {
-      this.ganttLecturerTasks.push({
-        id: event.id + "",
-        title: event.title,
-        start: event.start.getTime() / 1000,
-        end: (event.end as Date).getTime() / 1000,
-        color: this.scheduleService.previousColor.primary,
-        group_id: groupId
-      });
-    });
-  }
-
 }

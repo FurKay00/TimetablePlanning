@@ -200,18 +200,17 @@
     </mat-tab>
 
     <mat-tab *ngIf="classConflicts.length > 0" label="Class Conflicts">
-        <app-conflict-view [conflictData]="classConflictAppointments" [timelineGroups]="timelineClassGroups" [timelineItems]="timelineClassItems"  [ganttItems]="ganttClassTasks" [groupItems]="ganttClassGroups" conflictType="Classes"></app-conflict-view>
-
+        <app-conflict-view [conflictData]="classConflictAppointments" [timelineGroups]="timelineClassGroups" [timelineItems]="timelineClassItems"   conflictType="Classes"></app-conflict-view>
     </mat-tab>
 
 
     <mat-tab *ngIf="roomConflicts.length > 0" label="Room Conflicts">
-      <app-conflict-view [conflictData]="roomConflictAppointments" [timelineGroups]="timelineRoomGroups" [timelineItems]="timelineRoomItems" [ganttItems]="ganttRoomTasks" [groupItems]="ganttRoomGroups"  conflictType="Rooms"></app-conflict-view>
+      <app-conflict-view [conflictData]="roomConflictAppointments" [timelineGroups]="timelineRoomGroups" [timelineItems]="timelineRoomItems"   conflictType="Rooms"></app-conflict-view>
     </mat-tab>
 
 
     <mat-tab *ngIf="lecturerConflicts.length > 0"  label="Lecturer Conflicts">
-      <app-conflict-view [conflictData]="lecturerConflictAppointments" [timelineGroups]="timelineLecturerGroups" [timelineItems]="timelineLecturerItems" [ganttItems]="ganttLecturerTasks" [groupItems]="ganttLecturerGroups" conflictType="Lecturers"></app-conflict-view>
+      <app-conflict-view [conflictData]="lecturerConflictAppointments" [timelineGroups]="timelineLecturerGroups" [timelineItems]="timelineLecturerItems" conflictType="Lecturers"></app-conflict-view>
     </mat-tab>
   </mat-tab-group>
 </div>

@@ -40,18 +40,26 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
       stack: true,
       orientation: 'top',
       timeAxis: { scale: 'hour', step: 1 },
-      margin: { item: 10 }
+      margin: { item: 10 },
+      onMoving:  (item, callback) => {
+        this.ItemMoved(item.id + "");
+        callback(item)
+      },
     };
 
     if (this.timeline) {
-      this.timeline.destroy(); // Falls bereits existiert, erst löschen
+      this.timeline.destroy();
     }
 
     this.timeline = new Timeline(container, itemsData, groupsData, options);
 
-    // Event-Handling für Drag & Drop
-    this.timeline.on('change', (props) => {
-      console.log('Event geändert:', itemsData.get(props));
+
+    this.timeline.on('move', (props) => {
+
     });
+  }
+
+  ItemMoved(props: string){
+    console.log('Event geändert:', props);
   }
 }
