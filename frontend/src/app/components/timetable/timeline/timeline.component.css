@@ -5,12 +5,3 @@
   overflow: auto;
 }
 
-.vis-item.static-events{
-  background-color: #7E7F86FF;
-  border: 1px solid black !important;
-}
-
-.vis-item.shared-event{
-  background-color: #62D2DC !important;
-  border: 1px solid black !important;
-}

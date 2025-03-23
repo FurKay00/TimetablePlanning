@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
-import {AppointmentView, Conflict} from '../../../models/response_models';
 import {GanttComponent} from '../gantt/gantt.component';
 import {GanttGroup, GanttItem} from '@worktile/gantt';
 import {CalendarEvent} from 'angular-calendar';

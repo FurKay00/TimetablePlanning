@@ -809,7 +809,7 @@ export class CreateAppointmentModalComponent implements OnInit {
         editable: true,
         group: id,
         selectable:true,
-        className: "movable-event"
+        className: "movable-events"
       }
       newDataItems.push(dataItem)
     })
