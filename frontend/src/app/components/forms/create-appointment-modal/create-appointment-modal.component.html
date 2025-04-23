@@ -200,17 +200,17 @@
     </mat-tab>
 
     <mat-tab *ngIf="classConflicts.length > 0" label="Class Conflicts">
-        <app-conflict-view [conflictData]="classConflictAppointments" [timelineGroups]="timelineClassGroups" [timelineItems]="timelineClassItems"   conflictType="Classes"></app-conflict-view>
+        <app-conflict-view [conflictData]="classConflictAppointments" [timelineGroups]="timelineClassGroups" [timelineItems]="timelineClassItems" (eventtimeChanged)="onEventMoved($event)" conflictType="Classes"></app-conflict-view>
     </mat-tab>
 
 
     <mat-tab *ngIf="roomConflicts.length > 0" label="Room Conflicts">
-      <app-conflict-view [conflictData]="roomConflictAppointments" [timelineGroups]="timelineRoomGroups" [timelineItems]="timelineRoomItems"   conflictType="Rooms"></app-conflict-view>
+      <app-conflict-view [conflictData]="roomConflictAppointments" [timelineGroups]="timelineRoomGroups" [timelineItems]="timelineRoomItems" (eventtimeChanged)="onEventMoved($event)" conflictType="Rooms"></app-conflict-view>
     </mat-tab>
 
 
     <mat-tab *ngIf="lecturerConflicts.length > 0"  label="Lecturer Conflicts">
-      <app-conflict-view [conflictData]="lecturerConflictAppointments" [timelineGroups]="timelineLecturerGroups" [timelineItems]="timelineLecturerItems" conflictType="Lecturers"></app-conflict-view>
+      <app-conflict-view [conflictData]="lecturerConflictAppointments" [timelineGroups]="timelineLecturerGroups" [timelineItems]="timelineLecturerItems" (eventtimeChanged)="onEventMoved($event)" conflictType="Lecturers"></app-conflict-view>
     </mat-tab>
   </mat-tab-group>
 </div>

@@ -1,5 +1,23 @@
-import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, ViewChild} from '@angular/core';
-import {DataSetDataItem, DataSetDataGroup, DataGroup, DataItem, Timeline, TimelineOptions} from 'vis-timeline';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
+import {
+  DataSetDataItem,
+  DataSetDataGroup,
+  DataGroup,
+  DataItem,
+  Timeline,
+  TimelineOptions,
+  DateType
+} from 'vis-timeline';
 import {DataSet} from 'vis-data';
 import {TimelineItem} from 'vis-timeline/types';
 import {addWeeks} from 'date-fns';
@@ -17,6 +35,8 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
 
   @Input() items: DataItem[] = [];
   @Input() groups: DataGroup[] = [];
+
+  @Output() eventDateChanged = new EventEmitter<TimelineItem>();
 
   groupsData = new DataSet(this.groups);
   itemsData = new DataSet(this.items);
@@ -36,9 +56,10 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
 
     this.groupsData = new DataSet(this.groups);
     this.itemsData = new DataSet(this.items);
-
+    const startTime:DateType|undefined = this.itemsData.get().find(item => (item.id ? item.id.toString() : "").startsWith("T1_"))?.start;
+    console.log("Starttime", startTime);
     const options:TimelineOptions = {
-      start: new Date(),
+      start: startTime? startTime: new Date(),
       end: addWeeks(new Date(), 2),
       editable: true,
       zoomable: true,
@@ -58,6 +79,7 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
           }
         });
         callback(item);
+        this.eventDateChanged.emit(item);
         this.timeline.setItems(this.itemsData);
       },
     };

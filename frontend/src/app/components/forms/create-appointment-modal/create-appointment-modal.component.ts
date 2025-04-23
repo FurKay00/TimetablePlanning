@@ -247,6 +247,9 @@ export class CreateAppointmentModalComponent implements OnInit {
       startTime: newStartTime,
       endTime: newEndTime,
     });
+    if(this.conflicts.length > 0) {
+      this.refreshView();
+    }
   }
 
   closeDialog(): void {
