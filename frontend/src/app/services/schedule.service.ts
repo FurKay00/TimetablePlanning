@@ -171,7 +171,7 @@ export class ScheduleService {
       start_time: formatDate(event.start, "HH:mm", "EN-US") + ":00.000Z",
       end_time: formatDate(event.end as Date, "HH:mm", "EN-US") + ":00.000Z",
       lec_ids: event.meta.lecturerRaw.map((lecturer:any)=> lecturer.lec_id ),
-      class_ids: event.meta.classesRaw,
+      class_ids: event.meta.classesRaw.map((class_:any)=> class_.id),
       room_ids: event.meta.locationRaw.map((location:any)=> location.room_id)
     }
   }

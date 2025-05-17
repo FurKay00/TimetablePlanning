@@ -4,7 +4,7 @@ from app.data.room_data import buildings, floors_per_building, num_rooms_per_flo
 
 # Staritng the graph
 G = nx.Graph()
-average_velocity = 1.65
+average_velocity = 1.24
 # Adding intra-building connections
 for building in buildings:
     floors = floors_per_building[building]
@@ -30,7 +30,7 @@ for room1, room2, weight in building_connections:
 
 
 def find_shortest_path(room1, room2):
-    # Method using Djikstra to calculate the shortest path
+    # Method using Dijkstra to calculate the shortest path
     if room1 not in G.nodes or room2 not in G.nodes:
         return {"error": "Invalid room ID"}
 
@@ -38,7 +38,7 @@ def find_shortest_path(room1, room2):
         path = nx.shortest_path(G, source=room1, target=room2, weight="weight")
         distance = nx.shortest_path_length(G, source=room1, target=room2, weight="weight")
         time = math.floor(distance / average_velocity)  # estimated time to reach the other room
-        return {"room1": room1, "room2": room2, "path": path, "shortest_distance": distance, "estimated_time in seconds": time}
+        return {"room1": room1, "room2": room2, "path": path, "shortest_distance": distance, "estimated_time_in_seconds": time}
     except nx.NetworkXNoPath:
         return {"error": "No path found between rooms"}
 

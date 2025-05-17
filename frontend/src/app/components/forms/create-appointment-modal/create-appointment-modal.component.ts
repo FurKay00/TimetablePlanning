@@ -350,7 +350,7 @@ export class CreateAppointmentModalComponent implements OnInit {
       this.selectedClasses = []
       this.selectedRooms = []
       this.selectedLecturers = []
-      console.log(this.selectedClasses)
+
       this.appointmentForm.patchValue({
         type: "LECTURE",
         modules: null,
@@ -369,7 +369,7 @@ export class CreateAppointmentModalComponent implements OnInit {
       this.appointmentForm.patchValue({
         classes: [selectedClass],
       })
-      if (appointment_type === 'block') {
+      if (this.appointmentType === 'block') {
         this.newEvents = [];
         this.appointmentForm.get('modules')?.setValidators(Validators.required);
         this.appointmentForm.get('maxHours')?.setValidators(Validators.required);
@@ -536,8 +536,8 @@ export class CreateAppointmentModalComponent implements OnInit {
         newAppointments.push(newAppointment);
       });
       console.log(newAppointments)
+      this.isLoaded = false;
       this.scheduleService.createNewAppointments(newAppointments).subscribe(() => {
-        this.isLoaded = false;
         this.scheduleService.getAppointmentsByClass(this.selectedClass.id).subscribe(data => {
           this.previousEvents = this.scheduleService.createPreviousAppointments(data);
           this.newEvents = [];
