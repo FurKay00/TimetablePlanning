@@ -1,6 +1,6 @@
 # 📅 Conflict visualization and editing for timetable planning 
 
-_Repository for a case study. Read only and won't be maintained further
+_Repository for a case study. Read only and won't be maintained further!_
 
 ---
 
