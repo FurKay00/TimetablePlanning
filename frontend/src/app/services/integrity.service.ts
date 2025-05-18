@@ -16,7 +16,6 @@ import {ScheduleService} from './schedule.service';
   providedIn: 'root'
 })
 export class IntegrityService {
-  URL: string = "http://127.0.0.1:8000/"
 
   constructor(private http:HttpClient, private scheduleService:ScheduleService) {
   }

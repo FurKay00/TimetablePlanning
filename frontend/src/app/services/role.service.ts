@@ -8,7 +8,7 @@ import {ClassModel, LecturerView, ModuleView, RoomView} from '../models/response
   providedIn: 'root'
 })
 export class RoleService {
-  URL: string = "http://127.0.0.1:8000/accounts/"
+  URL: string = "http://127.0.0.1:8000/api/v1/administrative/"
   currentAccounts: ProfileInfo[] = [];
   currentLecturers: LecturerView[] = [];
   currentRooms: RoomView[] = [];
@@ -59,12 +59,11 @@ export class RoleService {
   }
 
   retrieveAllAccounts() {
-    return this.http.get<{
-      message: string;
-      accounts: ProfileInfo[]
-    }>(this.URL + "all/")
+    return this.http.get<
+      ProfileInfo[]
+    >(this.URL + "accounts/")
       .pipe(
-        map(response => this.currentAccounts=response.accounts
+        map(response => this.currentAccounts= response
         )
       );
   }
@@ -74,39 +73,33 @@ export class RoleService {
   }
 
   retrieveAllLecturers(){
-    return this.http.get<{
-      message: string,
-      lecturers: LecturerView[]
-    }>(this.URL + "lecturers/")
+    return this.http.get<
+       LecturerView[]
+    >(this.URL + "lecturers/")
       .pipe(
-        map( response => this.currentLecturers = response.lecturers
+        map( response => this.currentLecturers = response
         ));
   }
 
   retrieveAllClasses(){
-    return this.http.get<{
-      message: string,
-      classes: ClassModel[]
-    }>(this.URL + "class_models/")
+    return this.http.get<
+       ClassModel[]
+    >(this.URL + "class_models/")
       .pipe(
-        map( response => this.currentClasses = response.classes
+        map( response => this.currentClasses = response
         ));
   }
 
   retrieveClassById(classId: string){
-    return this.http.get<{
-      message: string,
-      class: ClassModel
-    }>(this.URL+ "class_models/" + classId);
+    return this.http.get<ClassModel
+    >(this.URL+ "class_models/" + classId);
   }
 
   retrieveAllModules(){
-    return this.http.get<{
-      message: string,
-      modules: ModuleView[]
-    }>(this.URL + "modules/")
+    return this.http.get< ModuleView[]
+    >(this.URL + "modules/")
       .pipe(
-        map( response => this.currentModules = response.modules
+        map( response => this.currentModules = response
         ));
   }
 }

@@ -25,7 +25,7 @@ async def get_all_rooms(db: db_dependency):
     db_rooms = db.query(models.Room).order_by(models.Room.id)
     for room_entry in db_rooms:
         rooms.append(room_entry)
-    return {"message": "Rooms retrieved successfully", "rooms": rooms}
+    return rooms
 
 
 @router.post("/shortest_path/")
