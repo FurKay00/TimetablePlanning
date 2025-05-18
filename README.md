@@ -42,7 +42,7 @@ This project aims to provide a full-stack solution to create, visualize, and man
 
 ## 🛠 Manual Setup
 > [!WARNING]
-> The database is not included and both backend and frontend are currently only locally executable. The database relational model is available [here](https://github.com/FurKay00/TimetablePlanning/blob/main/docs/architecture/er_diagram.jpg)
+> The database is not included and both backend and frontend are currently only locally executable. The database relational model is available [here](https://github.com/FurKay00/TimetablePlanning/blob/main/docs/architecture/relational_model_diagram.jpg)
 ### Clone the project  
 ```bash
 git clone https://github.com/FurKay00/TimetablePlanning.git
