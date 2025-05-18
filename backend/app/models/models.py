@@ -93,3 +93,4 @@ class AppointmentsFlat(Base):
     class_ids = Column(ARRAY(String))
     room_ids = Column(ARRAY(Integer))
     room_names = Column(ARRAY(String))
+

@@ -14,7 +14,7 @@ import {formatDate} from '@angular/common';
   providedIn: 'root',
 })
 export class ScheduleService {
-  URL: string = "http://127.0.0.1:8000/appointments/"
+  URL: string = "http://127.0.0.1:8000/api/v1/appointments"
   lectureColor = {primary: '#62D2DC', secondary: '#62D2DC'}
   examColor = {primary: '#D83B3B', secondary: '#D83B3B'}
   informationalColor = {primary: '#DFED70', secondary: '#DFED70'}
@@ -27,15 +27,15 @@ export class ScheduleService {
   }
 
   getAppointmentsByClass(class_id: string, start_date?:string, end_date?:string): Observable<CalendarEvent[]> {
-    let date_string = "";
+    let query_string = "?class_id="+class_id;
+
     if (typeof start_date !== "undefined" && typeof end_date !== "undefined"){
-      date_string = "/"+start_date+"/"+end_date;
+      query_string += "&start_date="+start_date+"&end_date="+end_date;
     }
-    console.log(date_string)
-    return this.http.get<{
-      message: string;
-      appointments: AppointmentView[]
-    }>(this.URL + "appointmentsByClassImproved/" + class_id + date_string)
+    return this.http.get<
+      { appointments: AppointmentView[]
+      }
+    >(this.URL+query_string)
       .pipe(
         map(response => response.appointments.map(
           appointment => this.mapAppointmentToEvent(appointment))
@@ -44,15 +44,15 @@ export class ScheduleService {
   }
 
   getAppointmentsByRoom(room_id: string,start_date?:string, end_date?:string): Observable<CalendarEvent[]> {
-    let date_string = "";
-    if (typeof start_date !== "undefined" && typeof end_date !== "undefined"){
-      date_string = "/"+start_date+"/"+end_date;
-    }
+    let query_string = "?room_id="+room_id;
 
-    return this.http.get<{
-      message: string;
-      appointments: AppointmentView[]
-    }>(this.URL + "appointmentsByRoomImproved/" + room_id + date_string)
+    if (typeof start_date !== "undefined" && typeof end_date !== "undefined"){
+      query_string += "&start_date="+start_date+"&end_date="+end_date;
+    }
+    return this.http.get<
+      { appointments: AppointmentView[]
+      }
+    >(this.URL+query_string)
       .pipe(
         map(response => response.appointments.map(
           appointment => this.mapAppointmentToEvent(appointment))
@@ -62,16 +62,16 @@ export class ScheduleService {
 
   // This method is used, when the lecturer wants to retrieve their own full schedule
   getFullAppointmentsByLecturer(lec_id: string,start_date?:string, end_date?:string):Observable<{appointments:CalendarEvent[], personalAppointments:CalendarEvent[]}> {
-    let date_string = "";
+    let query_string = "?lecturer_id="+lec_id+"&personal=true";
+
     if (typeof start_date !== "undefined" && typeof end_date !== "undefined"){
-      date_string = "/"+start_date+"/"+end_date;
+      query_string += "&start_date="+start_date+"&end_date="+end_date;
     }
 
     return this.http.get<{
-      message: string;
       appointments: AppointmentView[],
       personalAppointments: PersonalAppointmentView[]
-    }>(this.URL + "appointmentsByLecturerImproved/" + lec_id + date_string)
+    }>(this.URL + query_string)
       .pipe(
         map(response => ({
             appointments: response.appointments.map(appointment => this.mapAppointmentToEvent(appointment)),
@@ -81,55 +81,58 @@ export class ScheduleService {
       );
   }
 
-  getPartialAppointmentsByLecturer(lec_id: string):Observable<{appointments:CalendarEvent[], personalAppointments:CalendarEvent[]}> {
+  getPartialAppointmentsByLecturer(lec_id: string, start_date?:string, end_date?:string):Observable<{appointments:CalendarEvent[], personalAppointments:CalendarEvent[]}> {
+    let query_string = "?lecturer_id="+lec_id+"&personal=true";
+
+    if (typeof start_date !== "undefined" && typeof end_date !== "undefined"){
+      query_string += "&start_date="+start_date+"&end_date="+end_date;
+    }
+
     return this.http.get<{
-      message: string;
       appointments: AppointmentView[],
       personalAppointments: PersonalAppointmentView[]
-    }>(this.URL + "appointmentsByLecturerImproved/" + lec_id)
+    }>(this.URL + query_string)
       .pipe(
         map(response => ({
             appointments: response.appointments.map(appointment => this.mapAppointmentToEvent(appointment)),
-            personalAppointments: response.personalAppointments.map(personalAppointment =>
-              this.mapPersonalAppointmentToEvent(personalAppointment,true)
-            )
+            personalAppointments: response.personalAppointments.map(personalAppointment => this.mapPersonalAppointmentToEvent(personalAppointment, true))
           })
         )
       );
   }
 
   createNewAppointment(appointment:BasicAppointmentRequest):Observable<BasicAppointmentPutRequest>{
-    return this.http.post<{ message:string,appointment: BasicAppointmentPutRequest }>(this.URL + "basic/", appointment)
+    return this.http.post<{ message:string,appointment: BasicAppointmentPutRequest }>(this.URL + "/basic/", appointment)
       .pipe(map(response => response.appointment))
   }
 
   createNewAppointments(appointments:BasicAppointmentRequest[]):Observable<BasicAppointmentPutRequest[]>{
-    return this.http.post<{ message:string, appointments: BasicAppointmentPutRequest[] }>(this.URL + "basic/bulk", appointments)
+    return this.http.post<{ message:string, appointments: BasicAppointmentPutRequest[] }>(this.URL + "/basic/bulk", appointments)
       .pipe(map(response => response.appointments))
   }
 
   createNewPersonalAppointment(appointment: PersonalAppointmentRequest):Observable<PersonalAppointmentRequest>{
-    return this.http.post<{ message: string, appointment:PersonalAppointmentRequest }>(this.URL + "personal/", appointment).pipe(
+    return this.http.post<{ message: string, appointment:PersonalAppointmentRequest }>(this.URL + "/personal/", appointment).pipe(
       map(response => response.appointment)
     )
   }
 
   updateAppointments(appointments:BasicAppointmentPutRequest[]):Observable<BasicAppointmentPutRequest[]>{
-    return this.http.put<{ message: string, appointments: BasicAppointmentPutRequest[] }>(this.URL + "basic/", appointments)
+    return this.http.put<{ message: string, appointments: BasicAppointmentPutRequest[] }>(this.URL + "/basic/", appointments)
       .pipe( map(response => response.appointments))
   }
 
   updatePersonalAppointments(appointments:PersonalAppointmentView[]):Observable<PersonalAppointmentView[]>{
-    return this.http.put<{ message: string, appointments:PersonalAppointmentView[] }>(this.URL + "personal/", appointments)
+    return this.http.put<{ message: string, appointments:PersonalAppointmentView[] }>(this.URL + "/personal/", appointments)
       .pipe( map(response => response.appointments))
   }
 
   deleteAppointment(appointment_id:number):Observable<any>{
-    return this.http.delete(this.URL +"basic/"+appointment_id).pipe();
+    return this.http.delete(this.URL +"/basic/"+appointment_id).pipe();
   }
 
   deletePersonalAppointment(appointment_id:number):Observable<any>{
-    return this.http.delete(this.URL +"personal/"+appointment_id).pipe();
+    return this.http.delete(this.URL +"/personal/"+appointment_id).pipe();
   }
 
   private mapAppointmentToEvent(appointment: AppointmentView): any {
@@ -166,7 +169,7 @@ export class ScheduleService {
       start_time: formatDate(event.start, "HH:mm", "EN-US") + ":00.000Z",
       end_time: formatDate(event.end as Date, "HH:mm", "EN-US") + ":00.000Z",
       lec_ids: event.meta.lecturerRaw.map((lecturer:any)=> lecturer.lec_id ),
-      class_ids: event.meta.classesRaw,
+      class_ids: event.meta.classesRaw.map((class_:any)=> class_.id),
       room_ids: event.meta.locationRaw.map((location:any)=> location.room_id)
     }
   }

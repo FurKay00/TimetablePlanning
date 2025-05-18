@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @use "@worktile/gantt/styles/index.scss";
+@import "vis-timeline/dist/vis-timeline-graph2d.min.css";
 
 /* Updated green primary theme (originally purple). */
 .material-icons.color_green { color: #00FF00; }

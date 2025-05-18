@@ -7,7 +7,7 @@ import {RoomModel, RoomView} from '../models/response_models';
   providedIn: 'root'
 })
 export class RoomService {
-  URL: string = "http://127.0.0.1:8000/rooms/";
+  URL: string = "http://127.0.0.1:8000/api/v1/rooms/";
   currentRooms: RoomView[] = [];
 
 
@@ -16,7 +16,7 @@ export class RoomService {
   retrieveAllRooms():Observable<RoomView[]> {
     return this.http.get<
       RoomModel[]
-    >(this.URL)
+    >(this.URL+"room_models/")
       .pipe(
         map(response => response.map(room => this.mapToRoomView(room))
         )

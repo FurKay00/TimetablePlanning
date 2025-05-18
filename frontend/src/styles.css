@@ -47,3 +47,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
 .mat-mdc-tab-body-wrapper{
   height: inherit !important;
 }
+
+.vis-item.static-events{
+  background-color: #7E7F86FF;
+  border: 1px solid black !important;
+  border-radius: 15px;
+}
+
+.vis-item.movable-events{
+  background-color: #62D2DC !important;
+  border: 1px solid black !important;
+  border-radius: 7px;
+}

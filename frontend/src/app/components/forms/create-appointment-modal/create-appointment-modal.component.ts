@@ -40,6 +40,9 @@ import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {ConflictViewComponent} from '../../timetable/conflict-view/conflict-view.component';
 import {GanttDate, GanttGroup, GanttItem} from '@worktile/gantt';
 import {subWeeks} from 'date-fns';
+import {DataSet} from 'vis-data';
+import {DataGroup, DataItem} from 'vis-timeline';
+import {content} from 'html2canvas/dist/types/css/property-descriptors/content';
 
 @Component({
   selector: 'app-create-appointment-modal',
@@ -101,61 +104,14 @@ export class CreateAppointmentModalComponent implements OnInit {
   capacityConflict: { message: string, isAllowed: boolean } = {message: "", isAllowed: true};
   ganttStartDate: number = Date.now() / 1000;
 
-  conflicts: Conflict[] = [{
-    message: "Class Conflict",
-    conflict_id: "TINF22B6",
-    conflictingAppointments: [],
-    type: "CLASS"
-  },
-    {
-      message: "Class Conflict",
-      conflict_id: "TINF22B5",
-      conflictingAppointments: [],
-      type: "CLASS"
-    },
-    {
-      message: "Class Conflict",
-      conflict_id: "TINF22B5",
-      conflictingAppointments: [],
-      type: "CLASS"
-    },
-    {
-      message: "Room Conflict",
-      conflict_id: 0,
-      conflictingAppointments: [],
-      type: "ROOM"
-    },
-    {
-      message: "Lecturer Conflict",
-      conflict_id: 5,
-      conflictingAppointments: [],
-      type: "LECTURER"
-    }
+  conflicts: Conflict[] = [
   ];
 
   classConflicts: Conflict[] = [
-    {
-      message: "Class Conflict",
-      conflict_id: "TINF22B6",
-      conflictingAppointments: [],
-      type: "CLASS"
-    }
   ];
   roomConflicts: Conflict[] = [
-    {
-      message: "Room Conflict",
-      conflict_id: 0,
-      conflictingAppointments: [],
-      type: "ROOM"
-    }
   ];
   lecturerConflicts: Conflict[] = [
-    {
-      message: "Lecturer Conflict",
-      conflict_id: 5,
-      conflictingAppointments: [],
-      type: "LECTURER"
-    }
   ];
 
 
@@ -167,9 +123,19 @@ export class CreateAppointmentModalComponent implements OnInit {
   ganttRoomGroups: GanttGroup[] = [];
   ganttLecturerGroups: GanttGroup[] = [];
 
+  timelineClassGroups: DataGroup[] = [];
+  timelineRoomGroups: DataGroup[] = [];
+  timelineLecturerGroups: DataGroup[] = [];
+
   ganttClassTasks: GanttItem[] = [];
   ganttRoomTasks: GanttItem[] = [];
   ganttLecturerTasks: GanttItem[] = [];
+
+  timelineClassItems: DataItem[] = [];
+  timelineRoomItems: DataItem[] = [];
+  timelineLecturerItems: DataItem[] = [];
+
+  newEventsTimelineItem: DataItem[] = [];
 
   isLoaded: boolean = true;
   refresh: Subject<void> = new Subject<void>();
@@ -187,13 +153,13 @@ export class CreateAppointmentModalComponent implements OnInit {
     this.previousEvents = data.previousEvents;
     this.pickedDate = data.pickedDate;
     this.selectedClass = data.selectedClass;
-    this.selectedClasses = [this.selectedClass];
 
     this.getAllLecturers();
     this.getAllRooms();
     this.getAllClasses();
     this.getAllModules();
     this.appointmentForm = this.initializeForm();
+
     this.newEvent = this.createInitialEvent();
     this.events = [this.newEvent].concat(this.previousEvents);
 
@@ -281,6 +247,9 @@ export class CreateAppointmentModalComponent implements OnInit {
       startTime: newStartTime,
       endTime: newEndTime,
     });
+    if(this.conflicts.length > 0) {
+      this.refreshView();
+    }
   }
 
   closeDialog(): void {
@@ -290,8 +259,10 @@ export class CreateAppointmentModalComponent implements OnInit {
   private getAllClasses() {
     this.roleService.retrieveAllClasses().subscribe(data => {
       this.classes = data;
+
       const selectedClass = this.classes.find(class_ => class_.id === this.selectedClass.id) as ClassModel;
       this.selectedClasses.push(selectedClass);
+
       this.appointmentForm.patchValue({
         classes: [selectedClass],
       })
@@ -376,7 +347,7 @@ export class CreateAppointmentModalComponent implements OnInit {
     this.appointmentForm.get('appointment_type')?.valueChanges.subscribe((appointment_type) => {
 
       this.appointmentType = appointment_type;
-      this.selectedClasses = [this.selectedClass]
+      this.selectedClasses = []
       this.selectedRooms = []
       this.selectedLecturers = []
 
@@ -387,14 +358,18 @@ export class CreateAppointmentModalComponent implements OnInit {
         date: formatDate(this.pickedDate, "YYYY-MM-dd", "EN-US"),
         startTime: '12:00',
         endTime: '14:30',
-        classes: [this.selectedClass],
         lecturers: [],
         rooms: [],
         maxHours: 4,
         weekdays: []
       });
+      const selectedClass = this.classes.find(class_ => class_.id === this.selectedClass.id) as ClassModel;
+      this.selectedClasses.push(selectedClass);
 
-      if (appointment_type === 'block') {
+      this.appointmentForm.patchValue({
+        classes: [selectedClass],
+      })
+      if (this.appointmentType === 'block') {
         this.newEvents = [];
         this.appointmentForm.get('modules')?.setValidators(Validators.required);
         this.appointmentForm.get('maxHours')?.setValidators(Validators.required);
@@ -561,8 +536,8 @@ export class CreateAppointmentModalComponent implements OnInit {
         newAppointments.push(newAppointment);
       });
       console.log(newAppointments)
+      this.isLoaded = false;
       this.scheduleService.createNewAppointments(newAppointments).subscribe(() => {
-        this.isLoaded = false;
         this.scheduleService.getAppointmentsByClass(this.selectedClass.id).subscribe(data => {
           this.previousEvents = this.scheduleService.createPreviousAppointments(data);
           this.newEvents = [];
@@ -576,6 +551,12 @@ export class CreateAppointmentModalComponent implements OnInit {
 
   checkCollisions() {
     this.conflicts = [];
+    this.timelineClassGroups = [];
+    this.timelineLecturerGroups = [];
+    this.timelineRoomGroups = [];
+    this.timelineClassItems = [];
+    this.timelineLecturerItems = [];
+    this.timelineRoomItems = [];
     if (!this.isFormValid()) return;
 
     const conflictCheckData: ConflictCheckObjects = {
@@ -605,8 +586,8 @@ export class CreateAppointmentModalComponent implements OnInit {
         } else {
           this.newEvents.forEach(event => event.color = this.scheduleService.acceptableColor);
           this.refresh.next();
-
         }
+        return;
       }
       this.conflicts.forEach(conflict => {
         if (conflict.conflictingAppointments) {
@@ -680,14 +661,11 @@ export class CreateAppointmentModalComponent implements OnInit {
       end_date = formatDate(this.newEvents[this.newEvents.length - 1].end as Date, "YYYY-MM-dd", "EN-US");
     }
     this.ganttStartDate = new Date(start_date).getTime();
-    /*
-    const uniqueRoomConflictIds = [...new Set(this.roomConflicts.map(conflict => conflict.conflict_id))];
-    const uniqueClassConflictIds = [...new Set(this.classConflicts.map(conflict => conflict.conflict_id))];
-    const uniqueLecturerConflictIds = [...new Set(this.lecturerConflicts.map(conflict => conflict.conflict_id))];
-    */
+
     const uniqueRoomConflictIds = [...this.selectedRooms.map(room => room.room_id)];
     const uniqueClassConflictIds = [...this.selectedClasses.map(class_ => class_.id)];
     const uniqueLecturerConflictIds = [...this.selectedLecturers.map(lecturer => lecturer.lec_id)];
+
 
     const roomServiceCalls = uniqueRoomConflictIds.map(conflict_id =>
       this.scheduleService.getAppointmentsByRoom(conflict_id + "", start_date, end_date)
@@ -700,11 +678,12 @@ export class CreateAppointmentModalComponent implements OnInit {
     );
 
     const lecturerServiceCalls = uniqueLecturerConflictIds.map(conflict_id =>
-      this.scheduleService.getFullAppointmentsByLecturer(conflict_id + "", start_date, end_date).pipe(map(response => ({
+      this.scheduleService.getPartialAppointmentsByLecturer(conflict_id + "", start_date, end_date).pipe(map(response => ({
         conflict_id,
         appointments: [...response.appointments, ...response.personalAppointments]
       })))
     );
+
     this.ganttClassGroups = [...this.selectedClasses.map(cls => ({id: cls.id, title: cls.id, expanded: false}))]
     this.ganttRoomGroups = [...this.selectedRooms.map(room => ({
       id: room.room_id.toString(),
@@ -715,91 +694,128 @@ export class CreateAppointmentModalComponent implements OnInit {
       title: lec.fullname,
     }))]
 
+    this.timelineClassGroups = [...this.selectedClasses.map(cls => ({id: cls.id, content: cls.id}))]
+    this.timelineRoomGroups = [...this.selectedRooms.map(room => ({id: room.room_id, content: room.room_name}))]
+    this.timelineLecturerGroups = [...this.selectedLecturers.map(lecturer => ({id: lecturer.lec_id, content: lecturer.fullname}))]
 
     forkJoin(roomServiceCalls).subscribe({
       next: responses => {
         responses.forEach(({
                              conflict_id,
                              appointments
-                           }) => this.mapRoomAppointmentsToGantt(appointments, conflict_id.toString()))
-
-        this.ganttRoomTasks = [...this.ganttRoomTasks];
+                           }) => this.mapRoomAppointmentsToTimelineItem(appointments, conflict_id))
+        const room_ids = [...this.timelineRoomGroups.map(room => room.id as number)];
+        if (this.appointmentType === "single"){
+          this.timelineRoomItems.push(...this.mapNewEventToTimelineItem(this.newEvent, room_ids))
+        }else{
+          this.newEvents.forEach(event => {
+            this.timelineRoomItems.push(...this.mapNewEventToTimelineItem(this.newEvent, room_ids))
+          })
+        }
+        this.timelineRoomItems = [...this.timelineRoomItems];
+        console.log(this.timelineRoomItems)
         this.changeDetectorRef.detectChanges()
       },
     })
+
     forkJoin(classServiceCalls).subscribe({
       next: responses => {
-        responses.forEach(({conflict_id, appointments}) => this.mapClassAppointmentsToGantt(appointments, conflict_id));
-
-        this.ganttClassTasks = [...this.ganttClassTasks];
+        responses.forEach(({conflict_id, appointments}) => this.mapClassAppointmentsToTimelineItem(appointments, conflict_id));
+        const class_ids = [...this.timelineClassGroups.map(cls => cls.id as string)];
+        if (this.appointmentType === "single"){
+          this.timelineClassItems.push(...this.mapNewEventToTimelineItem(this.newEvent, class_ids))
+        }else{
+          this.newEvents.forEach(event => {
+            this.timelineClassItems.push(...this.mapNewEventToTimelineItem(event, class_ids))
+          })
+        }
+        this.timelineClassItems = [...this.timelineClassItems];
+        console.log(this.timelineClassItems)
         this.changeDetectorRef.detectChanges()
-
       }
     })
+
     forkJoin(lecturerServiceCalls).subscribe({
       next: responses => {
         responses.forEach(({
                              conflict_id,
                              appointments
-                           }) => this.mapLecturerAppointmentsToGantt(appointments, conflict_id.toString()));
-
-        this.ganttLecturerTasks = [...this.ganttLecturerTasks];
+                           }) => this.mapLectureAppointmentsToTimelineItem(appointments, conflict_id));
+        const lec_ids = [...this.timelineLecturerGroups.map(lec => lec.id as number)];
+        if (this.appointmentType === "single"){
+          this.timelineLecturerItems.push(...this.mapNewEventToTimelineItem(this.newEvent, lec_ids))
+        }else{
+          this.newEvents.forEach(event => {
+            this.timelineLecturerItems.push(...this.mapNewEventToTimelineItem(event, lec_ids))
+          })
+        }
+        this.timelineLecturerItems = [...this.timelineLecturerItems];
+        console.log(this.timelineLecturerItems)
         this.changeDetectorRef.detectChanges()
       }
     })
   }
 
-  mapClassAppointmentsToGantt(events: CalendarEvent[], groupId: string) {
-    const childItems = events.map((event): GanttItem => {
-      return {
-        id: String(event.id),
-        title: event.title,
-        start: event.start.getTime() / 1000,
-        end: (event.end as Date).getTime() / 1000,
-        color: this.scheduleService.previousColor.primary,
-        draggable: true,
-        itemDraggable: true,
-      };
-    });
-
-    const earliestStart = Math.min(...childItems.map(i => i.start as number));
-    const latestEnd = Math.max(...childItems.map(i => i.end as number));
-
-    const parentItem: GanttItem = {
-      id: groupId,
-      title: groupId,
-      children: childItems,
-      color: this.scheduleService.previousColor.primary
-    };
-
-    this.ganttClassTasks.push(parentItem);
+  mapRoomAppointmentsToTimelineItem(appointments:CalendarEvent[], group_id:number){
+    appointments.forEach(event => {
+      const childItem:DataItem = {
+        id: group_id +"-"+event.id,
+        content: event.title,
+        start: event.start,
+        end: event.end,
+        group: group_id,
+        editable: false,
+        className: "static-events"
+      }
+      this.timelineRoomItems.push(childItem);
+    })
   }
 
-  mapRoomAppointmentsToGantt(events: CalendarEvent[], groupId: string) {
-    events.forEach(event => {
-      this.ganttRoomTasks.push({
-        id: event.id + "",
-        title: event.title,
-        start: event.start.getTime() / 1000,
-        end: (event.end as Date).getTime() / 1000,
-
-        color: this.scheduleService.previousColor.primary,
-        group_id: groupId
-      });
-    });
+  mapClassAppointmentsToTimelineItem(appointments:CalendarEvent[], group_id:string){
+    appointments.forEach(event => {
+      const childItem:DataItem = {
+        id: group_id +"-"+event.id,
+        content: event.title,
+        start: event.start,
+        end: event.end,
+        group: group_id,
+        editable: false,
+        className: "static-events"
+      }
+      this.timelineClassItems.push(childItem);
+    })
   }
 
-  mapLecturerAppointmentsToGantt(events: CalendarEvent[], groupId: string) {
-    events.forEach(event => {
-      this.ganttLecturerTasks.push({
-        id: event.id + "",
-        title: event.title,
-        start: event.start.getTime() / 1000,
-        end: (event.end as Date).getTime() / 1000,
-        color: this.scheduleService.previousColor.primary,
-        group_id: groupId
-      });
-    });
+  mapLectureAppointmentsToTimelineItem(appointments:CalendarEvent[], group_id:number){
+    appointments.forEach(event => {
+      const childItem:DataItem = {
+        id: group_id +"-"+event.id,
+        content: event.title,
+        start: event.start,
+        end: event.end,
+        group: group_id,
+        editable: false,
+        className: "static-events"
+      }
+      this.timelineLecturerItems.push(childItem);
+    })
   }
 
+  mapNewEventToTimelineItem(event: CalendarEvent, group_ids: number[] | string[]):DataItem[]{
+    let newDataItems:DataItem[] = []
+    group_ids.forEach(id => {
+      let dataItem:DataItem = {
+        id: event.id +"_" + id,
+        content: event.title,
+        start: event.start,
+        end: event.end,
+        editable: true,
+        group: id,
+        selectable:true,
+        className: "movable-events"
+      }
+      newDataItems.push(dataItem)
+    })
+    return newDataItems;
+  }
 }

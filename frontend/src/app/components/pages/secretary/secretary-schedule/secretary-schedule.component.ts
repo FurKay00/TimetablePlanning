@@ -52,7 +52,7 @@ export class SecretaryScheduleComponent implements OnInit{
     this.isLoaded = false;
     if(this.classId === "")
       return;
-    this.roleService.retrieveClassById(this.classId).subscribe((data) => this.classModel = data.class)
+    this.roleService.retrieveClassById(this.classId).subscribe((data) => this.classModel = data)
     this.scheduleService.getAppointmentsByClass(this.classId).subscribe(
       (data: any[]) => {
           this.classAppointments = data;
